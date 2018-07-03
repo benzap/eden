@@ -73,6 +73,152 @@ function fib (n)
 end
 
 
+;; closures
+
+function adder (x)
+  return function (y) return x + y end
+end
+
+a1 = adder (2)
+a2 = adder (3)
+
+print (a1 (1))
+
+
+;; adopt destructuring over lua multiple return arguments
+
+;; interop? likely not.
+
+;; Lambda functions?
+
+local y = (x y) -> (x + y)
+
+
+;; multi-line statements are separated out using parenthesis
+
+function foo (y)
+  y = y + 1 ;; placing in brackets invokes a newline
+  y = y * 2
+end
+
+;; destructuring
+
+function pair (x y)
+  return [x y]
+end
+
+
+z = pair (1 2) ;; [1 2]
+[x y] = pair (2 3) ;; x = 2, y = 3
+
+
+function print-context(ctx)
+  {:keys [first-name last-name]} = ctx
+  println(first-name " " last-name)
+end
+
+
+;; map gets passed in as first argument
+print-context {:first-name "Ben" :last-name "Zaporzan"}
+
+
+;; maps are special objects, similar to lua tables
+
+x = {:first-name "Benjamin"}
+x.last-name = "Zaporzan"
+x.printName = (self) -> (println (self.first-name " " self.last-name)) 
+
+x.printName (x) ;; Benjamin Zaporzan
+x..printName () ;; Benjamin Zaporzan
+
+;; nested gets
+
+m = {:x {:y {:z 123}}}
+println (m.x.y.z) ;; 123
+println (m.x.y.z or 12) ;; 123
+println (m.x.y.w) ;; nil
+println (m.x.y.w or 13) ;; 13
+
+
+;; ISSUE: vectors don't have the same level of control as maps for representing lua tables
+;; implement vector functionality in map? (-) Complexity (+) Flexibility
+;; Solution: consider it a non-issue, wrap a vector in a map? (++)
+
+
+v = []
+push (v 1)
+push (v 2)
+push (v 3)
+
+println(v) ;; [1 2 3]
+println(v [0]) ;; 1 (0-indexed?!?!!)
+println(v.0) ;; 1
+
+
+;; different from lua, no weak referencing.
+
+x = {:a 123 :b "456"}
+y = {:x x :value 789}
+
+x.c = "Hello"
+println(x.c) ;; Hello
+println(y.x.c) ;; nil
+
+
+;; Functional Programming
+;; Note: functions are denoted with an asterisk to negate function calling
+
+inc = (x) -> (x + 1)
+print (
+  map(*inc [1 2 3 4]) ;;
+) ;; [2 3 4 5]
+
+
+;; Concatenation
+
+println ("Hello " .. "World!") ;; Hello World!
+
+
+;; metatables
+favs-proto = {
+  :animal "gru"
+  :food "donuts"
+}
+favs = {
+  :food "pizza"
+}
+setmeta (favs {:--index favs-proto})
+println (favs.animal) ;; gru
+println (favs.food) ;; donuts
+
+
+;; class-based programming
+
+Dog = {}
+
+Dog.new = (self) -> (
+  local obj = {:sound "woof"}
+  self.--index = self
+  return setmeta(obj, Dog)
+)
+
+Dog.make-sound = (self) -> (
+  print ("I say " .. self.sound)
+)
+
+dog = Dog..new ()
+dog..make-sound () ;; I say woof
+
+
+LoudDog = Dog..new()
+
+LoudDog.make-sound = (self) -> (
+  print ("I SAY!!! " self.sound)
+)
+
+seymour = LoudDog..new ()
+saymour.sound = "YIP!"
+seymour..make-sound () ;; I SAY YIP!
 
 
 #+END_SRC
