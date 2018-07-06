@@ -1,4 +1,6 @@
-(ns eden.state-machine)
+(ns eden.state-machine
+  (:require
+   [eden.context.global :refer [new-global-context]]))
 
 
 (defrecord EdenStateMachine
@@ -9,13 +11,15 @@
 
 (defn new-state-machine []
   (map->EdenStateMachine
-   :contexts '()
+   :contexts '((new-global-context))
    :code-queue '()
    :halt? false))
 
 
-(defn process-current-context [sm])
+(defn process-current-context
+  [sm])
 
 
-(defn step [sm]
+(defn step
+  [sm]
   (process-current-context sm))
