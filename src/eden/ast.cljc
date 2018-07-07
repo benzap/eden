@@ -62,7 +62,9 @@
 
 (defn set-tokens
   [astm tokens]
-  (assoc astm :tokens (conj (vec tokens) ::eot)))
+  (assoc astm
+         :tokens (conj (vec tokens) ::eot)
+         :index 0))
 
 
 (defn parse [astm tokens]
@@ -138,11 +140,12 @@
     (check-token astm keyword?) [(advance-token astm) (current-token astm)]
     (check-token astm number?) [(advance-token astm) (current-token astm)]
     (check-token astm nil?) [(advance-token astm) (current-token astm)]
-    ;; TODO: groupings ie. ( expression ), [ values ], { key-val }
+    (check-token astm list?) [(advance-token astm) (parse astm (current-token astm))]
+    (check-token astm vector?) [(advance-token astm) (vec (for [val (current-token astm)]
+                                                            (parse astm [val])))]
+    (check-token astm map?) [(advance-token astm) (into {} (for [[k v] (current-token astm)]
+                                                             [(parse astm [k]) (parse astm [v])]))]
     :else (throw (Throwable. (str "Failed to parse token: " (current-token astm))))))
-
-
-;;(comparison-rule (set-tokens astm '[2 + 2 * 4 / 2]))
 
 
 (def astm
@@ -156,53 +159,12 @@
       (add-rule ::primary primary-rule)))
       
 
-;;(parse astm '[2 + 2 / 2 > 2 == :key])
+;;(parse astm '[[1 2 3 (2 + 2) {:a ((123 + 5) * 5)}]])
 
 
 (comment
-  (defrule expression
-    literal
-    ::or unary
-    ::or binary
-    ::or grouping)
-
-
-  (defrule literal
-    number?
-    ::or string?
-    ::or keyword?
-    ::or true
-    ::or false
-    ::or nil)
-
-
-  (defrule grouping
-    ::list-of expression)
-
-
-  (defrule unary
-    ( - ::or ! ) expression)
-
-
-  (defrule binary
-    expression operator expression)
-
-
-  (defrule operator
-    ==
-    ::or !=
-    ::or <
-    ::or <=
-    ::or >
-    ::or >=
-    ::or +
-    ::or -
-    ::or *
-    ::or /)
-
 
   ;; precedence and associativity
-
 
   (defrule expression equality)
 
