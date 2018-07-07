@@ -14,7 +14,9 @@
 
 (defn call-rule
   [astm head]
-  ((get (:rules astm) head) astm))
+  (if-let [rule-fn (get (:rules astm) head)]
+    (rule-fn astm)
+    (throw (Throwable. (str "Failed to find rule function: " head)))))
 
 
 (defn eot?
@@ -148,12 +150,13 @@
       (add-rule ::expression expression-rule)
       (add-rule ::equality equality-rule)
       (add-rule ::comparison comparison-rule)
+      (add-rule ::addition addition-rule)
       (add-rule ::multiplication multiplication-rule)
       (add-rule ::unary unary-rule)
       (add-rule ::primary primary-rule)))
       
 
-;;(parse astm '[2 + 2])
+;;(parse astm '[2 + 2 / 2 > 2 == :key])
 
 
 (comment
