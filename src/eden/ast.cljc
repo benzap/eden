@@ -1,4 +1,6 @@
-(ns eden.ast)
+(ns eden.ast
+  (:require
+   [eden.token :as token]))
 
 
 (defn new-astm []
@@ -73,79 +75,174 @@
     expr))
 
 
+(defn parse-expression
+  [astm tokens]
+  (let [astm (set-tokens astm tokens)
+        [_ expr] (call-rule astm ::expression)]
+    expr))
+
+
 (defn expression-rule
   [astm]
   (call-rule astm ::equality))
 
 
+;; TODO: make more DRY?
+
+
 (defn equality-rule
   [astm]
   (loop [[astm expr-left] (call-rule astm ::comparison)]
-    (if (or (check-token astm '==)
-            (check-token astm '!=))
+    (cond
+
+      (check-token astm '==)
       (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::comparison)]
-        (recur [astm (list operator expr-left expr-right)]))
-        [astm expr-left])))
+            [astm expr-right] (call-rule (advance-token astm) ::comparison)
+            expr (token/->EqualityExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      (check-token astm '!=)
+      (let [operator (current-token astm)
+            [astm expr-right] (call-rule (advance-token astm) ::comparison)
+            expr (token/->NonEqualityExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      :else [astm expr-left])))
 
 
 (defn comparison-rule
   [astm]
   (loop [[astm expr-left] (call-rule astm ::addition)]
-    (if (or (check-token astm '>)
-            (check-token astm '>=)
-            (check-token astm '<)
-            (check-token astm '<=))
+    (cond
+
+      (check-token astm '>)
       (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::addition)]
-        (recur [astm (list operator expr-left expr-right)]))
-        [astm expr-left])))
+            [astm expr-right] (call-rule (advance-token astm) ::addition)
+            expr (token/->GreaterThanExpression expr-left expr-right)]
+        (recur [astm expr]))
+      
+      (check-token astm '>=)
+      (let [operator (current-token astm)
+            [astm expr-right] (call-rule (advance-token astm) ::addition)
+            expr (token/->GreaterThanOrEqualExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      (check-token astm '<)
+      (let [operator (current-token astm)
+            [astm expr-right] (call-rule (advance-token astm) ::addition)
+            expr (token/->LessThanExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      (check-token astm '<=)
+      (let [operator (current-token astm)
+            [astm expr-right] (call-rule (advance-token astm) ::addition)
+            expr (token/->LessThanOrEqualExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      :else [astm expr-left])))
 
 
 (defn addition-rule
   [astm]
   (loop [[astm expr-left] (call-rule astm ::multiplication)]
-    (if (or (check-token astm '+)
-            (check-token astm '-))
+    (cond
+
+      (check-token astm '+)
       (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::multiplication)]
-        (recur [astm (list operator expr-left expr-right)]))
-      [astm expr-left])))
+            [astm expr-right] (call-rule (advance-token astm) ::multiplication)
+            expr (token/->AdditionExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      (check-token astm '-)
+      (let [operator (current-token astm)
+            [astm expr-right] (call-rule (advance-token astm) ::multiplication)
+            expr (token/->SubtractionExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      :else [astm expr-left])))
 
 
 (defn multiplication-rule
   [astm]
   (loop [[astm expr-left] (call-rule astm ::unary)]
-    (if (or (check-token astm '/)
-            (check-token astm '*))
+    (cond
+
+      (check-token astm '*)
       (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::unary)]
-        (recur [astm (list operator expr-left expr-right)]))
-        [astm expr-left])))
+            [astm expr-right] (call-rule (advance-token astm) ::unary)
+            expr (token/->MultiplicationExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      (check-token astm '/)
+      (let [operator (current-token astm)
+            [astm expr-right] (call-rule (advance-token astm) ::unary)
+            expr (token/->DivisionExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      :else [astm expr-left])))
 
 
 (defn unary-rule [astm]
-  (if (check-token astm '-)
-    (let [operator (current-token astm)
-          [astm expr-right] (call-rule (advance-token astm) ::unary)]
-      (recur [astm (list operator expr-right)]))
-    (call-rule astm ::primary)))
+  (cond
+
+    (check-token astm 'not)
+    (let [[astm expr-right] (call-rule (advance-token astm) ::primary)
+          expr (token/->NotExpression expr-right)]
+      [astm expr])
+
+    (check-token astm '-)
+    (let [[astm expr-right] (call-rule (advance-token astm) ::primary)
+          expr (token/->NegationExpression expr-right)]
+      [astm expr])
+
+    :else (call-rule astm ::primary)))
 
 
 (defn primary-rule [astm]
   (cond
-    (check-token astm true) [(advance-token astm) true]
-    (check-token astm false) [(advance-token astm) false]
-    (check-token astm string?) [(advance-token astm) (current-token astm)]
-    (check-token astm keyword?) [(advance-token astm) (current-token astm)]
-    (check-token astm number?) [(advance-token astm) (current-token astm)]
-    (check-token astm nil?) [(advance-token astm) (current-token astm)]
-    (check-token astm list?) [(advance-token astm) (parse astm (current-token astm))]
-    (check-token astm vector?) [(advance-token astm) (vec (for [val (current-token astm)]
-                                                            (parse astm [val])))]
-    (check-token astm map?) [(advance-token astm) (into {} (for [[k v] (current-token astm)]
-                                                             [(parse astm [k]) (parse astm [v])]))]
-    :else (throw (Throwable. (str "Failed to parse token: " (current-token astm))))))
+    (check-token astm true)
+    [(advance-token astm) (token/->BooleanExpression true)]
+
+    (check-token astm false)
+    [(advance-token astm) (token/->BooleanExpression false)]
+
+    (check-token astm string?)
+    [(advance-token astm) (token/->StringExpression (current-token astm))]
+
+    (check-token astm keyword?)
+    [(advance-token astm) (token/->KeywordExpression (current-token astm))]
+
+    (check-token astm float?)
+    [(advance-token astm) (token/->FloatExpression (current-token astm))]
+
+    (check-token astm integer?)
+    [(advance-token astm) (token/->IntegerExpression (current-token astm))]
+
+    (check-token astm nil?)
+    [(advance-token astm) (token/->NullExpression(current-token astm))]
+
+    (check-token astm list?)
+    [(advance-token astm) (parse-expression astm (current-token astm))]
+
+    (check-token astm vector?)
+    [(advance-token astm)
+     (token/->VectorExpression
+      (vec (for [val (current-token astm)]
+             (parse-expression astm [val]))))]
+
+    (check-token astm map?)
+    [(advance-token astm)
+     (token/->HashMapExpression
+      (into {} (for [[k v] (current-token astm)]
+                 [(parse-expression astm [k]) (parse-expression astm [v])])))]
+
+    (check-token astm set?)
+    [(advance-token astm)
+     (token/->HashSetExpression
+      (set (for [val (current-token astm)]
+             (parse-expression astm [val]))))]
+
+    :else (throw (Throwable. (str "Failed to parse expression token: " (current-token astm))))))
 
 
 (def astm
@@ -157,9 +254,18 @@
       (add-rule ::multiplication multiplication-rule)
       (add-rule ::unary unary-rule)
       (add-rule ::primary primary-rule)))
-      
 
-;;(parse astm '[[1 2 3 (2 + 2) {:a ((123 + 5) * 5)}]])
+
+;;(parse-expression astm '[- 2 + 2])
+;;(parse-expression astm '[2 - 2])
+;;(parse-expression astm '[2 * 2])
+;;(parse-expression astm '[2 / 2])
+;;(parse-expression astm '[not 12 < 3])
+;;(parse-expression astm '[2 == 1])
+;;(parse-expression astm '[2 > 2 >= 5])
+;;(parse-expression astm '[2 + 2 * 4])
+;;(parse-expression astm '[(2 + 2) * 4])
+;;(parse-expression astm '[[1 2 3 (2 + 2) {:a ((123 + 5) * 5)}]])
 
 
 (comment
@@ -182,7 +288,7 @@
 
 
   (defrule multiplication
-    unary [( ! ::or - ) unary])
+    unary [( not ::or - ) unary])
 
 
   (defrule unary
