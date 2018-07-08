@@ -268,6 +268,33 @@
 ;;(parse-expression astm '[[1 2 3 (2 + 2) {:a ((123 + 5) * 5)}]])
 
 
+(defn evaluate-expression [tokens]
+  (let [syntax-tree (parse-expression astm tokens)]
+    (token/evaluate-expression syntax-tree)))
+
+
+;;(evaluate-expression '[[2 4 (2 + 2 * 4)]])
+;;(evaluate-expression '[2 + 2 * 4])
+;;(evaluate-expression '[(2 + 2) * 4])
+
+#_(evaluate-expression
+   '[
+     {:a (2 + 2 * 4)}
+     ])
+
+
+#_(evaluate-expression
+   '[
+     {:a [1 2 (2 + 2)]}
+     ])
+
+
+#_(evaluate-expression
+   '[
+     #{:a [1 2 (2 + 2)]}
+     ])
+
+
 (comment
 
   ;; precedence and associativity

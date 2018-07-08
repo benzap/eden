@@ -8,7 +8,7 @@
 
 
 (defprotocol Expression
-  (evaluate [this]
+  (evaluate-expression [this]
     "Evaluates the expression, usually in a recursive manner"))
 
 
@@ -40,7 +40,10 @@
   (token-type [_] EXPRESSION##)
   
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (let [left (evaluate-expression left)
+          right (evaluate-expression right)]
+      (= left right))))
 
 
 (defrecord NonEqualityExpression [left right]
@@ -48,7 +51,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (not=
+     (evaluate-expression left)
+     (evaluate-expression right))))
 
 
 ;;
@@ -61,7 +67,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (>
+     (evaluate-expression left)
+     (evaluate-expression right))))
 
 
 (defrecord GreaterThanOrEqualExpression [left right]
@@ -69,7 +78,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (>=
+     (evaluate-expression left)
+     (evaluate-expression right))))
 
 
 (defrecord LessThanExpression [left right]
@@ -77,7 +89,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (<
+     (evaluate-expression left)
+     (evaluate-expression right))))
 
 
 (defrecord LessThanOrEqualExpression [left right]
@@ -85,7 +100,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (<=
+     (evaluate-expression left)
+     (evaluate-expression right))))
 
 
 ;;
@@ -98,7 +116,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (+
+     (evaluate-expression left)
+     (evaluate-expression right))))
 
 
 (defrecord SubtractionExpression [left right]
@@ -106,7 +127,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (-
+     (evaluate-expression left)
+     (evaluate-expression right))))
 
 
 ;;
@@ -119,7 +143,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (*
+     (evaluate-expression left)
+     (evaluate-expression right))))
 
 
 (defrecord DivisionExpression [left right]
@@ -127,7 +154,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (/
+     (evaluate-expression left)
+     (evaluate-expression right))))
 
 
 ;;
@@ -140,7 +170,8 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (not (evaluate-expression value))))
 
 
 (defrecord NegationExpression [value]
@@ -148,7 +179,8 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (- (evaluate-expression value))))
 
 
 ;;
@@ -161,7 +193,7 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] value))
+  (evaluate-expression [_] value))
 
 
 (defrecord KeywordExpression [value]
@@ -169,7 +201,7 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] value))
+  (evaluate-expression [_] value))
 
 
 (defrecord FloatExpression [value]
@@ -177,7 +209,7 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] value))
+  (evaluate-expression [_] value))
 
 
 (defrecord IntegerExpression [value]
@@ -185,7 +217,7 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] value))
+  (evaluate-expression [_] value))
 
 
 (defrecord BooleanExpression [value]
@@ -193,7 +225,7 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] value))
+  (evaluate-expression [_] value))
 
 
 (defrecord NullExpression []
@@ -201,7 +233,7 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] nil))
+  (evaluate-expression [_] nil))
 
 
 (defrecord VectorExpression [value]
@@ -209,7 +241,8 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (vec (for [expr value] (evaluate-expression expr)))))
 
 
 (defrecord HashMapExpression [value]
@@ -217,7 +250,10 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (into {} (for [[k v] value]
+               [(evaluate-expression k)
+                (evaluate-expression v)]))))
 
 
 (defrecord HashSetExpression [value]
@@ -225,4 +261,5 @@
   (token-type [_] EXPRESSION##)
 
   Expression
-  (evaluate [_] (not-implemented)))
+  (evaluate-expression [_]
+    (set (for [expr value] (evaluate-expression expr)))))
