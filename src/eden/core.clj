@@ -15,4 +15,4 @@
     (eden.ast/evaluate-expression (:astm eden) tokens)))
   
 
-(evaluate-expression '[2 + 2 * 2])
+;;(evaluate-expression '[ten])

@@ -1,4 +1,6 @@
-(ns eden.token)
+(ns eden.token
+  (:require
+   [eden.state-machine :as state]))
 
 
 (defprotocol TokenType
@@ -263,3 +265,12 @@
   Expression
   (evaluate-expression [_]
     (set (for [expr value] (evaluate-expression expr)))))
+
+
+(defrecord IdentifierExpression [*sm value]
+  TokenType
+  (token-type [_] EXPRESSION##)
+
+  Expression
+  (evaluate-expression [_]
+    (state/get-var @*sm value)))

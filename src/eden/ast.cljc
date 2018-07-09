@@ -220,7 +220,7 @@
     [(advance-token astm) (token/->IntegerExpression (current-token astm))]
 
     (check-token astm nil?)
-    [(advance-token astm) (token/->NullExpression(current-token astm))]
+    [(advance-token astm) (token/->NullExpression)]
 
     (check-token astm list?)
     [(advance-token astm) (parse-expression astm (current-token astm))]
@@ -243,6 +243,10 @@
       (set (for [val (current-token astm)]
              (parse-expression astm [val]))))]
 
+    ;; TODO: exclude reserved
+    (check-token astm symbol?)
+    [(advance-token astm) (token/->IdentifierExpression (:*sm astm) (current-token astm))]
+
     :else (throw (Throwable. (str "Failed to parse expression token: " (current-token astm))))))
 
 
@@ -257,43 +261,9 @@
       (add-rule ::primary primary-rule)))
 
 
-;;(parse-expression astm '[- 2 + 2])
-;;(parse-expression astm '[2 - 2])
-;;(parse-expression astm '[2 * 2])
-;;(parse-expression astm '[2 / 2])
-;;(parse-expression astm '[not 12 < 3])
-;;(parse-expression astm '[2 == 1])
-;;(parse-expression astm '[2 > 2 >= 5])
-;;(parse-expression astm '[2 + 2 * 4])
-;;(parse-expression astm '[(2 + 2) * 4])
-;;(parse-expression astm '[[1 2 3 (2 + 2) {:a ((123 + 5) * 5)}]])
-
-
 (defn evaluate-expression [astm tokens]
   (let [syntax-tree (parse-expression astm tokens)]
     (token/evaluate-expression syntax-tree)))
-
-
-;;(evaluate-expression '[[2 4 (2 + 2 * 4)]])
-;;(evaluate-expression '[2 + 2 * 4])
-;;(evaluate-expression '[(2 + 2) * 4])
-
-#_(evaluate-expression
-   '[
-     {:a (2 + 2 * 4)}
-     ])
-
-
-#_(evaluate-expression
-   '[
-     {:a [1 2 (2 + 2)]}
-     ])
-
-
-#_(evaluate-expression
-   '[
-     #{:a [1 2 (2 + 2)]}
-     ])
 
 
 (comment
