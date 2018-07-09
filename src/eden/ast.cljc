@@ -3,10 +3,11 @@
    [eden.token :as token]))
 
 
-(defn new-astm []
+(defn new-astm [*sm]
   {:rules {}
    :tokens []
-   :index 0})
+   :index 0
+   :*sm *sm})
 
 
 (defn add-rule
@@ -245,8 +246,8 @@
     :else (throw (Throwable. (str "Failed to parse expression token: " (current-token astm))))))
 
 
-(def astm
-  (-> (new-astm)
+(defn astm [*sm]
+  (-> (new-astm *sm)
       (add-rule ::expression expression-rule)
       (add-rule ::equality equality-rule)
       (add-rule ::comparison comparison-rule)
@@ -268,7 +269,7 @@
 ;;(parse-expression astm '[[1 2 3 (2 + 2) {:a ((123 + 5) * 5)}]])
 
 
-(defn evaluate-expression [tokens]
+(defn evaluate-expression [astm tokens]
   (let [syntax-tree (parse-expression astm tokens)]
     (token/evaluate-expression syntax-tree)))
 
