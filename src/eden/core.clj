@@ -55,4 +55,6 @@
    10 != 12 and "Yes" or "No")
 
 #_(eval
-   print("Test"))
+   print("Test")
+   x = 12
+   print(x))

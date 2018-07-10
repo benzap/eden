@@ -1,6 +1,13 @@
 (ns eden.token
   (:require
-   [eden.state-machine :as state]))
+   [eden.state-machine :as state]
+   [eden.reserved :refer [reserved?]]))
+
+
+(defn identifier? [sym]
+  (and
+   (symbol? sym)
+   (not (reserved? sym))))
 
 
 (defprotocol TokenType
@@ -327,3 +334,13 @@
   Statement
   (evaluate-statement [_]
     (evaluate-expression expr)))
+
+
+(defrecord DeclareGlobalVariableStatement [*sm var expr]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (let [value (evaluate-expression expr)]
+      (swap! *sm state/set-var var expr))))

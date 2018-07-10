@@ -1,6 +1,6 @@
 (ns eden.ast
   (:require
-   [eden.token :as token]
+   [eden.token :as token :refer [identifier?]]
    [eden.reserved :refer [reserved?]]))
 
 
@@ -83,9 +83,24 @@
   (loop [astm (set-tokens astm tokens)
          statements []]
     (if-not (eot? astm)
-      (let [[astm stmt] (call-rule astm ::statement)]
+      (let [[astm stmt] (call-rule astm ::declaration)]
         (recur astm (conj statements stmt)))
       statements)))
+
+
+(defn declaration-rule
+  [astm]
+  (cond
+    ;;TODO: local variable declaration
+
+    (and (check-token astm identifier?)
+         (check-token (advance-token astm) '=))
+    (let [astm (advance-token astm)
+          var (current-token astm)
+          [astm expr] (call-rule (advance-token astm) ::expression)]
+      [astm (token/->DeclareGlobalVariableStatement (:*sm astm) var expr)])
+
+    :else (call-rule astm ::statement)))
 
 
 (defn statement-rule
@@ -130,14 +145,12 @@
     (cond
 
       (check-token astm '==)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::comparison)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::comparison)
             expr (token/->EqualityExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '!=)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::comparison)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::comparison)
             expr (token/->NonEqualityExpression expr-left expr-right)]
         (recur [astm expr]))
 
@@ -150,26 +163,22 @@
     (cond
 
       (check-token astm '>)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::addition)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::addition)
             expr (token/->GreaterThanExpression expr-left expr-right)]
         (recur [astm expr]))
       
       (check-token astm '>=)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::addition)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::addition)
             expr (token/->GreaterThanOrEqualExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '<)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::addition)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::addition)
             expr (token/->LessThanExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '<=)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::addition)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::addition)
             expr (token/->LessThanOrEqualExpression expr-left expr-right)]
         (recur [astm expr]))
 
@@ -182,14 +191,12 @@
     (cond
 
       (check-token astm '+)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::multiplication)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::multiplication)
             expr (token/->AdditionExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '-)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::multiplication)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::multiplication)
             expr (token/->SubtractionExpression expr-left expr-right)]
         (recur [astm expr]))
 
@@ -202,14 +209,12 @@
     (cond
 
       (check-token astm '*)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::unary)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::unary)
             expr (token/->MultiplicationExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '/)
-      (let [operator (current-token astm)
-            [astm expr-right] (call-rule (advance-token astm) ::unary)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::unary)
             expr (token/->DivisionExpression expr-left expr-right)]
         (recur [astm expr]))
 
@@ -230,12 +235,6 @@
       [astm expr])
 
     :else (call-rule astm ::primary)))
-
-
-(defn identifier? [sym]
-  (and
-   (symbol? sym)
-   (not (reserved? sym))))
 
 
 (defn primary-rule [astm]
@@ -282,7 +281,6 @@
       (set (for [val (current-token astm)]
              (parse-expression astm [val]))))]
 
-    ;; TODO: exclude reserved
     (check-token astm identifier?)
     [(advance-token astm) (token/->IdentifierExpression (:*sm astm) (current-token astm))]
 
@@ -291,6 +289,7 @@
 
 (defn astm [*sm]
   (-> (new-astm *sm)
+      (add-rule ::declaration declaration-rule)
       (add-rule ::statement statement-rule)
       (add-rule ::expression expression-rule)
       (add-rule ::logical logical-rule)
