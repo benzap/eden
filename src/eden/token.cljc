@@ -10,8 +10,11 @@
 
 
 (defprotocol Expression
-  (evaluate-expression [this]
-    "Evaluates the expression, usually in a recursive manner"))
+  (evaluate-expression [this]))
+
+
+(defprotocol Statement
+  (evaluate-statement [this]))
 
 
 (def EXPRESSION## ::expression)
@@ -30,6 +33,33 @@
   ([msg]
    (throw (Throwable. (str "Not Implemented " msg))))
   ([] (not-implemented "")))
+
+
+;;
+;; Logical
+;;
+
+
+(defrecord AndExpression [left right]
+  TokenType
+  (token-type [_] EXPRESSION##)
+  
+  Expression
+  (evaluate-expression [_]
+    (let [left (evaluate-expression left)
+          right (evaluate-expression right)]
+      (and left right))))
+
+
+(defrecord OrExpression [left right]
+  TokenType
+  (token-type [_] EXPRESSION##)
+  
+  Expression
+  (evaluate-expression [_]
+    (let [left (evaluate-expression left)
+          right (evaluate-expression right)]
+      (or left right))))
 
 
 ;;
@@ -274,3 +304,26 @@
   Expression
   (evaluate-expression [_]
     (state/get-var @*sm value)))
+
+
+;;
+;; Statements
+;;
+
+
+(defrecord PrintStatement [expr]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (println (evaluate-expression expr))))
+
+
+(defrecord ExpressionStatement [expr]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (evaluate-expression expr)))

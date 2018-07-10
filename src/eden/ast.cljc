@@ -70,12 +70,6 @@
          :index 0))
 
 
-(defn parse [astm tokens]
-  (let [astm (set-tokens astm tokens)
-        [_ expr] (call-rule astm ::expression)]
-    expr))
-
-
 (defn parse-expression
   [astm tokens]
   (let [astm (set-tokens astm tokens)
@@ -83,12 +77,49 @@
     expr))
 
 
+(defn parse [astm tokens]
+  (loop [astm (set-tokens astm tokens)
+         statements []]
+    (if-not (eot? astm)
+      (let [[astm stmt] (call-rule astm ::statement)]
+        (recur astm (conj statements stmt)))
+      statements)))
+
+
+(defn statement-rule
+  [astm]
+  (cond
+    (check-token astm 'print)
+    (let [[astm expr] (call-rule (advance-token astm) ::expression)
+          stmt (token/->PrintStatement expr)]
+      [(advance-token astm) stmt])
+
+    :else
+    (let [[astm expr] (call-rule astm ::expression)
+          stmt (token/->ExpressionStatement expr)]
+      [(advance-token astm) stmt])))
+
+
 (defn expression-rule
   [astm]
-  (call-rule astm ::equality))
+  (call-rule astm ::logical))
 
 
-;; TODO: make more DRY?
+(defn logical-rule
+  [astm]
+  (loop [[astm expr-left] (call-rule astm ::equality)]
+    (cond
+      (check-token astm 'and)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::equality)
+            expr (token/->AndExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      (check-token astm 'or)
+      (let [[astm expr-right] (call-rule (advance-token astm) ::equality)
+            expr (token/->OrExpression expr-left expr-right)]
+        (recur [astm expr]))
+
+      :else [astm expr-left])))
 
 
 (defn equality-rule
@@ -252,7 +283,9 @@
 
 (defn astm [*sm]
   (-> (new-astm *sm)
+      (add-rule ::statement statement-rule)
       (add-rule ::expression expression-rule)
+      (add-rule ::logical logical-rule)
       (add-rule ::equality equality-rule)
       (add-rule ::comparison comparison-rule)
       (add-rule ::addition addition-rule)
@@ -266,9 +299,19 @@
     (token/evaluate-expression syntax-tree)))
 
 
+(defn evaluate [astm tokens]
+  (let [statements (parse astm tokens)]
+    (doseq [stmt statements]
+      (token/evaluate-statement stmt))))
+
+
 (comment
 
   ;; precedence and associativity
+
+  (defrule program [statement] ::eof)
+
+  (defrule statement expression ::or print)
 
   (defrule expression equality)
 
@@ -300,6 +343,6 @@
     ::or true
     ::or false
     ::or nil
-    ::or ::list-of expression)
+    ::or ::list-of expression))
   
-  )
+  

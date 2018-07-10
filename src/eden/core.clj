@@ -15,4 +15,13 @@
     (eden.ast/evaluate-expression (:astm eden) tokens)))
   
 
+(defn evaluate [tokens]
+  (let [eden (eden)]
+    (eden.ast/evaluate (:astm eden) tokens)))
+
+
 ;;(evaluate-expression '[ten])
+;;(evaluate-expression '[10 != 12 and "Yes" or "No"])
+
+
+;;(evaluate '[print "Hello World"])
