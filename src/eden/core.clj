@@ -53,3 +53,6 @@
 
 #_(eval-expression
    10 != 12 and "Yes" or "No")
+
+#_(eval
+   print("Test"))

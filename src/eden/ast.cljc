@@ -1,6 +1,7 @@
 (ns eden.ast
   (:require
-   [eden.token :as token]))
+   [eden.token :as token]
+   [eden.reserved :refer [reserved?]]))
 
 
 (defn new-astm [*sm]
@@ -231,6 +232,12 @@
     :else (call-rule astm ::primary)))
 
 
+(defn identifier? [sym]
+  (and
+   (symbol? sym)
+   (not (reserved? sym))))
+
+
 (defn primary-rule [astm]
   (cond
     (check-token astm true)
@@ -276,7 +283,7 @@
              (parse-expression astm [val]))))]
 
     ;; TODO: exclude reserved
-    (check-token astm symbol?)
+    (check-token astm identifier?)
     [(advance-token astm) (token/->IdentifierExpression (:*sm astm) (current-token astm))]
 
     :else (throw (Throwable. (str "Failed to parse expression token: " (current-token astm))))))
