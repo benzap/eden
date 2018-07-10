@@ -13,7 +13,12 @@
 (defn evaluate-expression [tokens]
   (let [eden (eden)]
     (eden.ast/evaluate-expression (:astm eden) tokens)))
-  
+
+
+(defn parse [tokens]
+  (let [eden (eden)]
+    (eden.ast/parse (:astm eden) tokens)))
+
 
 (defn evaluate [tokens]
   (let [eden (eden)]
@@ -25,3 +30,5 @@
 
 
 ;;(evaluate '[print "Hello World"])
+
+;;(parse '[print "Hello World" 2 + 2])

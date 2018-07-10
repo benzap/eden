@@ -50,8 +50,9 @@
 
 (defn advance-token
   [{:keys [index] :as astm}]
-  (when-not (eot? astm)
-    (assoc astm :index (inc index))))
+  (if-not (eot? astm)
+    (assoc astm :index (inc index))
+    astm))
 
 
 (defn check-token
@@ -92,12 +93,12 @@
     (check-token astm 'print)
     (let [[astm expr] (call-rule (advance-token astm) ::expression)
           stmt (token/->PrintStatement expr)]
-      [(advance-token astm) stmt])
+      [astm stmt])
 
     :else
     (let [[astm expr] (call-rule astm ::expression)
           stmt (token/->ExpressionStatement expr)]
-      [(advance-token astm) stmt])))
+      [astm stmt])))
 
 
 (defn expression-rule
