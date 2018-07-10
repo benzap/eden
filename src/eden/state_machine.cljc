@@ -31,9 +31,6 @@
   [sm identifier value])
 
 
-(assoc-in [1 2 3 4] [2] 4)
-
-
-(-> (new-state-machine)
-    (set-var 'test :test)
-    (get-var 'test))
+#_(-> (new-state-machine)
+      (set-var 'test :test)
+      (get-var 'test))
