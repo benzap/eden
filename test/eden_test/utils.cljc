@@ -8,6 +8,9 @@
   `(eden/eval ~@tokens))
 
 
+;;(teval x = 5)
+
+
 (defmacro teval-expression [& tokens]
   `(eden/eval-expression ~@tokens))
 
@@ -19,3 +22,11 @@
 (defmacro are-eq* [& body]
   `(are [x# _sep# y#] (= y# x#)
      ~@body))
+
+
+(defmacro with-test-instance
+  [& body]
+  `(eden/with-eden-instance (eden/eden)
+     ~@body
+     (eden/reset-instance!)
+     nil))

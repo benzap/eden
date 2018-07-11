@@ -28,8 +28,8 @@
   (eden.state-machine/get-var (-> *default-eden-instance* :*sm deref) identifier))
 
 
-(defmacro with-eden-instance [eden & body]
-  (binding [*default-eden-instance* eden]
+(defmacro with-eden-instance [instance & body]
+  `(binding [*default-eden-instance* ~instance]
     ~@body))
 
 

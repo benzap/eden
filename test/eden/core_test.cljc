@@ -1,7 +1,8 @@
 (ns eden.core-test
   (:require
    [clojure.test :refer [deftest is testing]]
-   [eden-test.utils :refer [teval-expression teval are-eq*]]))
+   [eden.core :as eden]
+   [eden-test.utils :refer [teval-expression teval are-eq* with-test-instance]]))
 
 
 (deftest basic-arithmetic
@@ -66,3 +67,15 @@
      (teval-expression (2 * 2 + 4) and "t" or "f")
      
      => "t")))
+
+
+(deftest declaration-and-assignment
+  (testing "Declaring Variable"
+    (with-test-instance
+      (teval x = 5)
+      (is (= (eden/get-var 'x) 5))))
+
+  (testing "Reassigning Variable"
+    (with-test-instance
+      (teval x = 5 x = 10)
+      (is (= (eden/get-var 'x) 10)))))
