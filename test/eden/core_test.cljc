@@ -17,7 +17,7 @@
 
      (teval-expression 4 - 2 + 2)
      
-     => 0))
+     => 4))
 
   (testing "Multiplication / Division"
     (are-eq*

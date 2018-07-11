@@ -17,20 +17,22 @@
   (-> sm :environments first (environment/get-var identifier)))
 
 
-(defn set-var
-  [sm identifier value]
-  (let [env (-> sm :environments first (environment/set-var identifier value))]
-    (assoc-in sm [:environments 0] env)))
+(defn last-env-index
+  [sm]
+  (-> sm :environments count dec))
 
 
 (defn set-global-var
-  [sm identifier value])
+  [sm identifier value]
+  (let [env (-> sm :environments last (environment/set-var identifier value))]
+    (assoc-in sm [:environments 0] env)))
 
 
 (defn set-local-var
-  [sm identifier value])
+  [sm identifier value]
+  (let [env (-> sm :environments last (environment/set-var identifier value))]
+    (assoc-in sm [:environments (last-env-index sm)] env)))
 
 
-#_(-> (new-state-machine)
-      (set-var 'test :test)
-      (get-var 'test))
+(defn set-var
+  [sm identifier])
