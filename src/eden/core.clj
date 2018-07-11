@@ -11,9 +11,30 @@
      :astm (astm *sm)}))
 
 
+(def ^:dynamic *default-eden-instance* (eden))
+
+
+(defn reset-instance! []
+  (reset! (:*sm *default-eden-instance*) (new-state-machine)))
+
+
+(defn set-var!
+  [identifier value]
+  (swap! (:*sm eden) eden.state-machine/set-global-var identifier value))
+
+
+(defn get-var
+  [identifier]
+  (eden.state-machine/get-var (-> *default-eden-instance* :*sm deref) identifier))
+
+
+(defmacro with-eden-instance [eden & body]
+  (binding [*default-eden-instance* eden]
+    ~@body))
+
+
 (defn eval-expression-fn [tokens]
-  (let [eden (eden)]
-    (eden.ast/evaluate-expression (:astm eden) tokens)))
+  (eden.ast/evaluate-expression (:astm *default-eden-instance*) tokens))
 
 
 ;; (eval-expression-fn '[4 * 2])
@@ -28,8 +49,7 @@
 
 
 (defn parse-fn [tokens]
-  (let [eden (eden)]
-    (eden.ast/parse (:astm eden) tokens)))
+  (eden.ast/parse (:astm *default-eden-instance*) tokens))
 
 
 (defmacro parse [& tokens]
@@ -40,8 +60,7 @@
 
 
 (defn eval-fn [tokens]
-  (let [eden (eden)]
-    (eden.ast/evaluate (:astm eden) tokens)))
+  (eden.ast/evaluate (:astm *default-eden-instance*) tokens))
 
 
 (defmacro eval [& tokens]
@@ -56,8 +75,10 @@
 
 #_(eval
    print("Test")
-   x = 12
+   x = 2 + 2 * 4
    print(x))
+
+#_(get-var 'x)
 
 
 #_(eval-expression

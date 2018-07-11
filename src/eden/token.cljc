@@ -343,4 +343,4 @@
   Statement
   (evaluate-statement [_]
     (let [value (evaluate-expression expr)]
-      (swap! *sm state/set-var var expr))))
+      (swap! *sm state/set-global-var var value))))

@@ -95,8 +95,8 @@
 
     (and (check-token astm identifier?)
          (check-token (advance-token astm) '=))
-    (let [astm (advance-token astm)
-          var (current-token astm)
+    (let [var (current-token astm)
+          astm (advance-token astm)
           [astm expr] (call-rule (advance-token astm) ::expression)]
       [astm (token/->DeclareGlobalVariableStatement (:*sm astm) var expr)])
 
