@@ -344,3 +344,19 @@
   (evaluate-statement [_]
     (let [value (evaluate-expression expr)]
       (swap! *sm state/set-global-var var value))))
+
+
+(defrecord IfConditionalStatement [conditional-expr truthy-stmts falsy-stmts]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (let [value (evaluate-expression conditional-expr)]
+      (if value
+        (doseq [stmt truthy-stmts]
+          (evaluate-statement stmt))
+
+        (doseq [stmt falsy-stmts]
+          (evaluate-statement stmt))))))
+        

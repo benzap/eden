@@ -79,6 +79,18 @@
     expr))
 
 
+(defn parse-statements
+  [astm]
+  (loop [astm astm
+         statements []]
+    (if-not (or (check-token astm 'end)
+                (check-token astm 'else)
+                (check-token astm 'elseif))
+      (let [[astm stmt] (call-rule astm ::declaration)]
+        (recur astm (conj statements stmt)))
+      [astm statements])))
+
+
 (defn parse [astm tokens]
   (loop [astm (set-tokens astm tokens)
          statements []]
@@ -89,10 +101,10 @@
 
 
 (defn declaration-rule
+  "Also assignment."
   [astm]
   (cond
     ;;TODO: local variable declaration
-
     (and (check-token astm identifier?)
          (check-token (advance-token astm) '=))
     (let [var (current-token astm)
@@ -103,6 +115,28 @@
     :else (call-rule astm ::statement)))
 
 
+(defn if-statement-rule
+  [astm]
+  (let [[astm conditional-expr] (call-rule (advance-token astm) ::expression)
+        ;; TODO: expect 'then
+        astm (advance-token astm)
+        [astm truthy-stmts] (parse-statements astm)]
+    (cond
+      (check-token astm 'else)
+      (let [[astm falsy-stmts] (parse-statements (advance-token astm))]
+        ;; TODO: check if it's at the end
+        [(advance-token astm)
+         (token/->IfConditionalStatement conditional-expr truthy-stmts falsy-stmts)])
+
+      ;;(check-token astm 'elseif)
+      ;;...
+
+      (check-token astm 'end)
+      [(advance-token astm) (token/->IfConditionalStatement conditional-expr truthy-stmts [])]
+
+      :else (throw (Throwable. "Failed to find end of if conditional")))))
+
+
 (defn statement-rule
   [astm]
   (cond
@@ -110,6 +144,15 @@
     (let [[astm expr] (call-rule (advance-token astm) ::expression)
           stmt (token/->PrintStatement expr)]
       [astm stmt])
+
+    (check-token astm 'if)
+    (call-rule astm ::if-statement)
+
+    ;;(check-token astm 'while)
+    ;;(call-rule astm ::while-statement)
+
+    ;;(check-token astm 'for)
+    ;;(call-rule astm ::for-statement)
 
     :else
     (let [[astm expr] (call-rule astm ::expression)
@@ -290,6 +333,7 @@
 (defn astm [*sm]
   (-> (new-astm *sm)
       (add-rule ::declaration declaration-rule)
+      (add-rule ::if-statement if-statement-rule)
       (add-rule ::statement statement-rule)
       (add-rule ::expression expression-rule)
       (add-rule ::logical logical-rule)
