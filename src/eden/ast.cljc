@@ -137,6 +137,19 @@
       :else (throw (Throwable. "Failed to find end of if conditional")))))
 
 
+(defn while-statement-rule
+  [astm]
+  (let [[astm conditional-expr] (call-rule (advance-token astm) ::expression)
+        ;; TODO: expect 'do
+        astm (advance-token astm)
+        [astm stmts] (parse-statements astm)]
+    (cond
+      (check-token astm 'end)
+      [(advance-token astm) (token/->WhileStatement conditional-expr stmts)]
+      
+      :else (throw (Throwable. "Failed to find end of while conditional")))))
+
+
 (defn statement-rule
   [astm]
   (cond
@@ -148,8 +161,8 @@
     (check-token astm 'if)
     (call-rule astm ::if-statement)
 
-    ;;(check-token astm 'while)
-    ;;(call-rule astm ::while-statement)
+    (check-token astm 'while)
+    (call-rule astm ::while-statement)
 
     ;;(check-token astm 'for)
     ;;(call-rule astm ::for-statement)
@@ -334,6 +347,7 @@
   (-> (new-astm *sm)
       (add-rule ::declaration declaration-rule)
       (add-rule ::if-statement if-statement-rule)
+      (add-rule ::while-statement while-statement-rule)
       (add-rule ::statement statement-rule)
       (add-rule ::expression expression-rule)
       (add-rule ::logical logical-rule)

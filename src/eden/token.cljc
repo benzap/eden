@@ -359,4 +359,14 @@
 
         (doseq [stmt falsy-stmts]
           (evaluate-statement stmt))))))
-        
+
+
+(defrecord WhileStatement [conditional-expr stmts]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (while (evaluate-expression conditional-expr)
+      (doseq [stmt stmts]
+        (evaluate-statement stmt)))))
