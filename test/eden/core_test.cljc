@@ -78,4 +78,14 @@
   (testing "Reassigning Variable"
     (with-test-instance
       (teval x = 5 x = 10)
-      (is (= (eden/get-var 'x) 10)))))
+      (is (= (eden/get-var 'x) 10))))
+
+  (testing "Local Variable in if statement"
+    (with-test-instance
+      (teval x = 5
+             if true then
+               local x = 2
+               y = x
+             end)
+      (is (= (eden/get-var 'x) 5))
+      (is (= (eden/get-var 'y) 2)))))

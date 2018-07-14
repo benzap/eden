@@ -4,6 +4,14 @@
    [eden.reserved :refer [reserved?]]))
 
 
+(defmacro with-new-environment
+  [*sm & body]
+  `(do
+     (swap! ~*sm state/add-environment)
+     ~@body
+     (swap! ~*sm state/remove-environment)))
+
+
 (defn identifier? [sym]
   (and
    (symbol? sym)
@@ -356,41 +364,45 @@
       (swap! *sm state/set-local-var var value))))
 
 
-(defrecord IfConditionalStatement [conditional-expr truthy-stmts falsy-stmts]
+(defrecord IfConditionalStatement [*sm conditional-expr truthy-stmts falsy-stmts]
   TokenType
   (token-type [_] STATEMENT##)
 
   Statement
   (evaluate-statement [_]
     (let [value (evaluate-expression conditional-expr)]
-      (if value
-        (doseq [stmt truthy-stmts]
-          (evaluate-statement stmt))
+      (with-new-environment *sm
+        (if value
+          (doseq [stmt truthy-stmts]
+            (evaluate-statement stmt))
 
-        (doseq [stmt falsy-stmts]
-          (evaluate-statement stmt))))))
+          (doseq [stmt falsy-stmts]
+            (evaluate-statement stmt)))))))
 
 
-(defrecord WhileStatement [conditional-expr stmts]
+(defrecord WhileStatement [*sm conditional-expr stmts]
   TokenType
   (token-type [_] STATEMENT##)
 
   Statement
   (evaluate-statement [_]
     (while (evaluate-expression conditional-expr)
-      (doseq [stmt stmts]
-        (evaluate-statement stmt)))))
+      (with-new-environment *sm
+        (doseq [stmt stmts]
+          (evaluate-statement stmt))))))
 
 
-(defrecord RepeatStatement [conditional-expr stmts]
+(defrecord RepeatStatement [*sm conditional-expr stmts]
   TokenType
   (token-type [_] STATEMENT##)
 
   Statement
   (evaluate-statement [_]
-    (doseq [stmt stmts]
-      (evaluate-statement stmt))
+    (with-new-environment *sm
+      (doseq [stmt stmts]
+        (evaluate-statement stmt)))
 
     (while (not (evaluate-expression conditional-expr))
-      (doseq [stmt stmts]
-        (evaluate-statement stmt)))))
+      (with-new-environment *sm
+        (doseq [stmt stmts]
+          (evaluate-statement stmt))))))

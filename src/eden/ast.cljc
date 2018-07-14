@@ -145,13 +145,14 @@
       (let [[astm falsy-stmts] (parse-statements (advance-token astm))]
         ;; TODO: check if it's at the end
         [(advance-token astm)
-         (token/->IfConditionalStatement conditional-expr truthy-stmts falsy-stmts)])
+         (token/->IfConditionalStatement (:*sm astm) conditional-expr truthy-stmts falsy-stmts)])
 
       ;;(check-token astm 'elseif)
       ;;...
 
       (check-token astm 'end)
-      [(advance-token astm) (token/->IfConditionalStatement conditional-expr truthy-stmts [])]
+      [(advance-token astm) (token/->IfConditionalStatement
+                             (:*sm astm) conditional-expr truthy-stmts [])]
 
       :else (throw (Throwable. "Failed to find end of if conditional")))))
 
@@ -164,7 +165,7 @@
         [astm stmts] (parse-statements astm)]
     (cond
       (check-token astm 'end)
-      [(advance-token astm) (token/->WhileStatement conditional-expr stmts)]
+      [(advance-token astm) (token/->WhileStatement (:*sm astm) conditional-expr stmts)]
       
       :else (throw (Throwable. "Failed to find end of while conditional")))))
 
@@ -176,7 +177,7 @@
       (check-token astm 'until)
       (let [astm (advance-token astm)
             [astm conditional-expr] (call-rule astm ::expression)]
-        [astm (token/->RepeatStatement conditional-expr stmts)]))))
+        [astm (token/->RepeatStatement (:*sm astm) conditional-expr stmts)]))))
 
 
 (defn statement-rule
