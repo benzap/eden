@@ -12,9 +12,21 @@
    {:environments [(new-environment)]}))
 
 
+(defn add-environment
+  [sm]
+  (update-in sm [:environments] conj (new-environment)))
+
+
+(defn remove-environment
+  [sm]
+  (update-in sm [:environments] pop))
+
+
 (defn get-var
   [sm identifier]
-  (-> sm :environments first (environment/get-var identifier)))
+  (let [values (map :values (:environments sm))
+        mvalues (reduce merge values)]
+    (get mvalues identifier)))
 
 
 (defn last-env-index
@@ -24,7 +36,7 @@
 
 (defn set-global-var
   [sm identifier value]
-  (let [env (-> sm :environments last (environment/set-var identifier value))]
+  (let [env (-> sm :environments first (environment/set-var identifier value))]
     (assoc-in sm [:environments 0] env)))
 
 
@@ -35,4 +47,14 @@
 
 
 (defn set-var
-  [sm identifier])
+  [sm identifier value]
+  (let [values (map :values (:environments sm))
+        ivalues (map #(get % identifier ::miss) values)
+        ivalues (map-indexed (fn [idx itm] [idx itm]) ivalues)
+        ivalues (filter #(not= (second %) ::miss) ivalues)]
+    (if-let [ivalue (last ivalues)]
+      (let [env (-> sm :environments
+                    (nth (first ivalue))
+                    (environment/set-var identifier value))]
+        (assoc-in sm [:environments (first ivalue)] env))
+      (set-global-var sm identifier value))))

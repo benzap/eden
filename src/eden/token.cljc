@@ -336,14 +336,24 @@
     (evaluate-expression expr)))
 
 
-(defrecord DeclareGlobalVariableStatement [*sm var expr]
+(defrecord DeclareVariableStatement [*sm var expr]
   TokenType
   (token-type [_] STATEMENT##)
 
   Statement
   (evaluate-statement [_]
     (let [value (evaluate-expression expr)]
-      (swap! *sm state/set-global-var var value))))
+      (swap! *sm state/set-var var value))))
+
+
+(defrecord DeclareLocalVariableStatement [*sm var expr]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (let [value (evaluate-expression expr)]
+      (swap! *sm state/set-local-var var value))))
 
 
 (defrecord IfConditionalStatement [conditional-expr truthy-stmts falsy-stmts]
@@ -368,5 +378,19 @@
   Statement
   (evaluate-statement [_]
     (while (evaluate-expression conditional-expr)
+      (doseq [stmt stmts]
+        (evaluate-statement stmt)))))
+
+
+(defrecord RepeatStatement [conditional-expr stmts]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (doseq [stmt stmts]
+      (evaluate-statement stmt))
+
+    (while (not (evaluate-expression conditional-expr))
       (doseq [stmt stmts]
         (evaluate-statement stmt)))))

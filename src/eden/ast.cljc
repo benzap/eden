@@ -85,7 +85,8 @@
          statements []]
     (if-not (or (check-token astm 'end)
                 (check-token astm 'else)
-                (check-token astm 'elseif))
+                (check-token astm 'elseif)
+                (check-token astm 'until))
       (let [[astm stmt] (call-rule astm ::declaration)]
         (recur astm (conj statements stmt)))
       [astm statements])))
@@ -104,13 +105,31 @@
   "Also assignment."
   [astm]
   (cond
-    ;;TODO: local variable declaration
+
+    ;; Local Declaration with assignment, local x = value
+    (and (check-token astm 'local)
+         (check-token (advance-token astm) identifier?)
+         (check-token (advance-token (advance-token astm)) '=))
+    (let [astm (advance-token astm)
+          var (current-token astm)
+          astm (advance-token astm)
+          [astm expr] (call-rule (advance-token astm) ::expression)]
+      [astm (token/->DeclareLocalVariableStatement (:*sm astm) var expr)])
+
+    ;; Local Declaration, local x
+    (and (check-token astm 'local)
+         (check-token (advance-token astm) identifier?))
+    (let [astm (advance-token astm)
+          var (current-token astm)]
+      [(advance-token astm) (token/->DeclareLocalVariableStatement (:*sm astm) var nil)])
+
+    ;; Declare global, or general assignment
     (and (check-token astm identifier?)
          (check-token (advance-token astm) '=))
     (let [var (current-token astm)
           astm (advance-token astm)
           [astm expr] (call-rule (advance-token astm) ::expression)]
-      [astm (token/->DeclareGlobalVariableStatement (:*sm astm) var expr)])
+      [astm (token/->DeclareVariableStatement (:*sm astm) var expr)])
 
     :else (call-rule astm ::statement)))
 
@@ -150,6 +169,16 @@
       :else (throw (Throwable. "Failed to find end of while conditional")))))
 
 
+(defn repeat-statement-rule
+  [astm]
+  (let [[astm stmts] (parse-statements (advance-token astm))]
+    (cond
+      (check-token astm 'until)
+      (let [astm (advance-token astm)
+            [astm conditional-expr] (call-rule astm ::expression)]
+        [astm (token/->RepeatStatement conditional-expr stmts)]))))
+
+
 (defn statement-rule
   [astm]
   (cond
@@ -163,6 +192,9 @@
 
     (check-token astm 'while)
     (call-rule astm ::while-statement)
+
+    (check-token astm 'repeat)
+    (call-rule astm ::repeat-statement)
 
     ;;(check-token astm 'for)
     ;;(call-rule astm ::for-statement)
@@ -348,6 +380,7 @@
       (add-rule ::declaration declaration-rule)
       (add-rule ::if-statement if-statement-rule)
       (add-rule ::while-statement while-statement-rule)
+      (add-rule ::repeat-statement repeat-statement-rule)
       (add-rule ::statement statement-rule)
       (add-rule ::expression expression-rule)
       (add-rule ::logical logical-rule)

@@ -13,4 +13,4 @@
   (testing "Setting and Getting global environment"
     (let [sm (-> (new-state-machine)
                  (set-global-var 'test 123))]
-      (is (= (get-var sm 'test) 123)))))
+      (is (= 123 (get-var sm 'test))))))
