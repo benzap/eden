@@ -56,6 +56,14 @@
     astm))
 
 
+(defn consume-token
+  [astm chk-fn msg]
+  (let [token (current-token astm)]
+    (if (chk-fn token)
+      (advance-token astm)
+      (throw (Throwable. msg)))))
+
+
 (defn check-token
   [{:keys [] :as astm} token]
   (if-not (eot? astm)
@@ -90,6 +98,17 @@
       (let [[astm stmt] (call-rule astm ::declaration)]
         (recur astm (conj statements stmt)))
       [astm statements])))
+
+
+(defn parse-arguments
+  "Parses the collection as a set of expressions"
+  [oastm]
+  (loop [astm (set-tokens oastm (vec (current-token oastm)))
+         arg-exprs []]
+    (if-not (eot? astm)
+      (let [[astm expr] (call-rule astm ::expression)]
+        (recur astm (conj arg-exprs expr)))
+      [(advance-token oastm) arg-exprs])))
 
 
 (defn parse [astm tokens]
@@ -180,6 +199,45 @@
         [astm (token/->RepeatStatement (:*sm astm) conditional-expr stmts)]))))
 
 
+(defn for-statement-rule
+  [astm]
+  (let [astm (consume-token astm #(= % 'for) "Incorrect 'for' Statement Syntax. Expected 'for'")
+        iter-var (current-token astm)
+        astm (consume-token astm identifier? "Iterator Variable is invalid identifier.")]
+    (cond
+      (check-token astm '=)
+      (let [astm (consume-token astm #(= % '=) "Incorrect 'for' Statement Syntax. Expected '='")
+            start-idx (current-token astm)
+            astm (consume-token astm int? "Start of for loop must be an integer value.")
+            end-idx (current-token astm)
+            astm (consume-token astm int? "End of for loop must be an integer value.")
+            step (if (check-token astm int?)
+                   (current-token astm)
+                   1)
+            astm (if (check-token astm int?)
+                   (consume-token astm int? "Step of for loop must be an integer value.")
+                   astm)
+            astm (consume-token astm #(= % 'do) "Incorrect 'for' Statement Syntax. Expected 'do'")
+            [astm stmts] (parse-statements astm)
+            astm (consume-token astm #(= % 'end) "Incorrect 'for' Statement Syntax. Expected 'end'")]
+        [astm (token/->ForStatement (:*sm astm) iter-var start-idx end-idx step stmts)])
+
+      (check-token astm 'in)
+      (let [astm (consume-token astm #(= % 'in) "Incorrect 'for' Statement Syntax. Expected 'in'")
+            [astm coll-expr] (call-rule astm ::expression)
+            astm (consume-token astm #(= % 'do) "Incorrect 'for' Statement Syntax. Expected 'do'")
+            [astm stmts] (parse-statements astm)
+            astm (consume-token astm #(= % 'end) "Incorrect 'for' Statement Syntax. Expected 'end'")]
+        [astm (token/->ForEachStatement (:*sm astm) iter-var coll-expr stmts)])
+
+      :else (throw (Throwable. "Incorrect For Statement Syntax")))))
+
+
+(defn arguments-rule
+  [astm]
+  (parse-arguments astm))
+
+
 (defn statement-rule
   [astm]
   (cond
@@ -197,8 +255,8 @@
     (check-token astm 'repeat)
     (call-rule astm ::repeat-statement)
 
-    ;;(check-token astm 'for)
-    ;;(call-rule astm ::for-statement)
+    (check-token astm 'for)
+    (call-rule astm ::for-statement)
 
     :else
     (let [[astm expr] (call-rule astm ::expression)
@@ -323,7 +381,17 @@
           expr (token/->NegationExpression expr-right)]
       [astm expr])
 
-    :else (call-rule astm ::primary)))
+    :else
+    (let [[astm primary-expr] (call-rule astm ::primary)
+          _ (println "Primary" primary-expr)
+          _ (println "Next Token: " (current-token astm))]
+      ;; Determine whether it's a function call, which consists of an expression and an argument list
+      ;; <expression> ([arg expressions])
+      ;; ie. hello("world")
+      (if (check-token astm list?)
+        (let [[astm arg-exprs] (call-rule astm ::arguments)]
+          [astm (token/->CallFunctionExpression (:*sm astm) primary-expr arg-exprs)])
+        [astm primary-expr]))))
 
 
 (defn primary-rule [astm]
@@ -382,7 +450,9 @@
       (add-rule ::if-statement if-statement-rule)
       (add-rule ::while-statement while-statement-rule)
       (add-rule ::repeat-statement repeat-statement-rule)
+      (add-rule ::for-statement for-statement-rule)
       (add-rule ::statement statement-rule)
+      (add-rule ::arguments arguments-rule)
       (add-rule ::expression expression-rule)
       (add-rule ::logical logical-rule)
       (add-rule ::equality equality-rule)
@@ -402,46 +472,3 @@
   (let [statements (parse astm tokens)]
     (doseq [stmt statements]
       (token/evaluate-statement stmt))))
-
-
-(comment
-
-  ;; precedence and associativity
-
-  (defrule program [statement] ::eof)
-
-  (defrule statement expression ::or print)
-
-  (defrule expression equality)
-
-
-  (defrule equality
-    comparison [( != ::or == ) comparison])
-
-
-  (defrule comparison
-    addition [( > ::or >= ::or < ::or <= ) addition])
-
-
-  (defrule addition
-    multiplication [( - ::or + ) multiplication])
-
-
-  (defrule multiplication
-    unary [( not ::or - ) unary])
-
-
-  (defrule unary
-    ( ! ::or - ) unary ::or primary)
-
-
-  (defrule primary
-    number?
-    ::or string?
-    ::or keyword?
-    ::or true
-    ::or false
-    ::or nil
-    ::or ::list-of expression))
-  
-  

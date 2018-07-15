@@ -1,7 +1,8 @@
 (ns eden.token
   (:require
    [eden.state-machine :as state]
-   [eden.reserved :refer [reserved?]]))
+   [eden.reserved :refer [reserved?]]
+   [eden.meta]))
 
 
 (defmacro with-new-environment
@@ -406,3 +407,48 @@
       (with-new-environment *sm
         (doseq [stmt stmts]
           (evaluate-statement stmt))))))
+
+
+(defrecord ForStatement [*sm iter-var start end step stmts]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (loop [idx start]
+      (when (<= idx end)
+        (with-new-environment *sm
+          (swap! *sm state/set-local-var iter-var idx)
+          (doseq [stmt stmts]
+            (evaluate-statement stmt)))
+        (recur (+ idx step))))))
+
+
+(defrecord ForEachStatement [*sm iter-var coll-expr stmts]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (if-let [coll (evaluate-expression coll-expr)]
+      ;; TODO: check if a collection
+      (doseq [item coll]
+        (with-new-environment *sm
+          (swap! *sm state/set-local-var iter-var item)
+          (doseq [stmt stmts]
+            (evaluate-statement stmt))))
+      (throw (Throwable. "Invalid collection in for-each statement.")))))
+
+
+(defrecord CallFunctionExpression [*sm expr arg-exprs]
+  TokenType
+  (token-type [_] EXPRESSION##)
+
+  Expression
+  (evaluate-expression [_]
+    (let [fcn (evaluate-expression expr)
+          args (for [arg-expr arg-exprs]
+                 (evaluate-expression arg-expr))]
+      (if (eden.meta/eden-callable? fcn)
+        (eden.meta/__call fcn args)
+        (throw (Throwable. "Given expression value is not callable."))))))
