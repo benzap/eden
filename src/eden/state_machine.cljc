@@ -1,6 +1,6 @@
 (ns eden.state-machine
   (:require
-   [eden.environment :as environment :refer [new-environment]]))
+   [eden.std.environment :as environment :refer [new-environment]]))
 
 
 (defrecord EdenStateMachine

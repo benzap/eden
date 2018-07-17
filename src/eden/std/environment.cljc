@@ -1,4 +1,4 @@
-(ns eden.environment)
+(ns eden.std.environment)
 
 
 (defrecord EdenEnvironment [values])

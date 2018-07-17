@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [eval])
   (:require
    [eden.state-machine :refer [new-state-machine]]
-   [eden.ast :refer [astm]]))
+   [eden.std.ast :refer [astm]]))
 
 
 (defn eden []
@@ -34,7 +34,7 @@
 
 
 (defn eval-expression-fn [tokens]
-  (eden.ast/evaluate-expression (:astm *default-eden-instance*) tokens))
+  (eden.std.ast/evaluate-expression (:astm *default-eden-instance*) tokens))
 
 
 ;; (eval-expression-fn '[4 * 2])
@@ -49,7 +49,7 @@
 
 
 (defn parse-fn [tokens]
-  (eden.ast/parse (:astm *default-eden-instance*) tokens))
+  (eden.std.ast/parse (:astm *default-eden-instance*) tokens))
 
 
 (defmacro parse [& tokens]
@@ -60,7 +60,7 @@
 
 
 (defn eval-fn [tokens]
-  (eden.ast/evaluate (:astm *default-eden-instance*) tokens))
+  (eden.std.ast/evaluate (:astm *default-eden-instance*) tokens))
 
 
 (defmacro eval [& tokens]

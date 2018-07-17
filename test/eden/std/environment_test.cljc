@@ -1,7 +1,7 @@
-(ns eden.environment-test
+(ns eden.std.environment-test
   (:require
    [clojure.test :refer [deftest is testing]]
-   [eden.environment :refer [new-environment get-var set-var]]
+   [eden.std.environment :refer [new-environment get-var set-var]]
    [eden-test.utils :refer [are-eq*]]))
 
 

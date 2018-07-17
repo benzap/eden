@@ -1,7 +1,11 @@
-(ns eden.ast
+(ns eden.std.ast
   (:require
-   [eden.token :as token :refer [identifier?]]
-   [eden.reserved :refer [reserved?]]))
+   [eden.std.token :as token :refer [identifier?]]
+   [eden.std.expression :as std.expression]
+   [eden.std.impl.expression :as expression]
+   [eden.std.statement :refer [evaluate-statement]]
+   [eden.std.impl.statement :as statement]
+   [eden.std.reserved :refer [reserved?]]))
 
 
 (defn new-astm [*sm]
@@ -133,14 +137,14 @@
           var (current-token astm)
           astm (advance-token astm)
           [astm expr] (call-rule (advance-token astm) ::expression)]
-      [astm (token/->DeclareLocalVariableStatement (:*sm astm) var expr)])
+      [astm (statement/->DeclareLocalVariableStatement (:*sm astm) var expr)])
 
     ;; Local Declaration, local x
     (and (check-token astm 'local)
          (check-token (advance-token astm) identifier?))
     (let [astm (advance-token astm)
           var (current-token astm)]
-      [(advance-token astm) (token/->DeclareLocalVariableStatement (:*sm astm) var nil)])
+      [(advance-token astm) (statement/->DeclareLocalVariableStatement (:*sm astm) var nil)])
 
     ;; Declare global, or general assignment
     (and (check-token astm identifier?)
@@ -148,7 +152,7 @@
     (let [var (current-token astm)
           astm (advance-token astm)
           [astm expr] (call-rule (advance-token astm) ::expression)]
-      [astm (token/->DeclareVariableStatement (:*sm astm) var expr)])
+      [astm (statement/->DeclareVariableStatement (:*sm astm) var expr)])
 
     :else (call-rule astm ::statement)))
 
@@ -164,13 +168,13 @@
       (let [[astm falsy-stmts] (parse-statements (advance-token astm))]
         ;; TODO: check if it's at the end
         [(advance-token astm)
-         (token/->IfConditionalStatement (:*sm astm) conditional-expr truthy-stmts falsy-stmts)])
+         (statement/->IfConditionalStatement (:*sm astm) conditional-expr truthy-stmts falsy-stmts)])
 
       ;;(check-token astm 'elseif)
       ;;...
 
       (check-token astm 'end)
-      [(advance-token astm) (token/->IfConditionalStatement
+      [(advance-token astm) (statement/->IfConditionalStatement
                              (:*sm astm) conditional-expr truthy-stmts [])]
 
       :else (throw (Throwable. "Failed to find end of if conditional")))))
@@ -184,7 +188,7 @@
         [astm stmts] (parse-statements astm)]
     (cond
       (check-token astm 'end)
-      [(advance-token astm) (token/->WhileStatement (:*sm astm) conditional-expr stmts)]
+      [(advance-token astm) (statement/->WhileStatement (:*sm astm) conditional-expr stmts)]
       
       :else (throw (Throwable. "Failed to find end of while conditional")))))
 
@@ -196,7 +200,7 @@
       (check-token astm 'until)
       (let [astm (advance-token astm)
             [astm conditional-expr] (call-rule astm ::expression)]
-        [astm (token/->RepeatStatement (:*sm astm) conditional-expr stmts)]))))
+        [astm (statement/->RepeatStatement (:*sm astm) conditional-expr stmts)]))))
 
 
 (defn for-statement-rule
@@ -220,7 +224,7 @@
             astm (consume-token astm #(= % 'do) "Incorrect 'for' Statement Syntax. Expected 'do'")
             [astm stmts] (parse-statements astm)
             astm (consume-token astm #(= % 'end) "Incorrect 'for' Statement Syntax. Expected 'end'")]
-        [astm (token/->ForStatement (:*sm astm) iter-var start-idx end-idx step stmts)])
+        [astm (statement/->ForStatement (:*sm astm) iter-var start-idx end-idx step stmts)])
 
       (check-token astm 'in)
       (let [astm (consume-token astm #(= % 'in) "Incorrect 'for' Statement Syntax. Expected 'in'")
@@ -228,7 +232,7 @@
             astm (consume-token astm #(= % 'do) "Incorrect 'for' Statement Syntax. Expected 'do'")
             [astm stmts] (parse-statements astm)
             astm (consume-token astm #(= % 'end) "Incorrect 'for' Statement Syntax. Expected 'end'")]
-        [astm (token/->ForEachStatement (:*sm astm) iter-var coll-expr stmts)])
+        [astm (statement/->ForEachStatement (:*sm astm) iter-var coll-expr stmts)])
 
       :else (throw (Throwable. "Incorrect For Statement Syntax")))))
 
@@ -243,7 +247,7 @@
   (cond
     (check-token astm 'print)
     (let [[astm expr] (call-rule (advance-token astm) ::expression)
-          stmt (token/->PrintStatement expr)]
+          stmt (statement/->PrintStatement expr)]
       [astm stmt])
 
     (check-token astm 'if)
@@ -260,7 +264,7 @@
 
     :else
     (let [[astm expr] (call-rule astm ::expression)
-          stmt (token/->ExpressionStatement expr)]
+          stmt (statement/->ExpressionStatement expr)]
       [astm stmt])))
 
 
@@ -275,12 +279,12 @@
     (cond
       (check-token astm 'and)
       (let [[astm expr-right] (call-rule (advance-token astm) ::equality)
-            expr (token/->AndExpression expr-left expr-right)]
+            expr (expression/->AndExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm 'or)
       (let [[astm expr-right] (call-rule (advance-token astm) ::equality)
-            expr (token/->OrExpression expr-left expr-right)]
+            expr (expression/->OrExpression expr-left expr-right)]
         (recur [astm expr]))
 
       :else [astm expr-left])))
@@ -293,12 +297,12 @@
 
       (check-token astm '==)
       (let [[astm expr-right] (call-rule (advance-token astm) ::comparison)
-            expr (token/->EqualityExpression expr-left expr-right)]
+            expr (expression/->EqualityExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '!=)
       (let [[astm expr-right] (call-rule (advance-token astm) ::comparison)
-            expr (token/->NonEqualityExpression expr-left expr-right)]
+            expr (expression/->NonEqualityExpression expr-left expr-right)]
         (recur [astm expr]))
 
       :else [astm expr-left])))
@@ -311,22 +315,22 @@
 
       (check-token astm '>)
       (let [[astm expr-right] (call-rule (advance-token astm) ::addition)
-            expr (token/->GreaterThanExpression expr-left expr-right)]
+            expr (expression/->GreaterThanExpression expr-left expr-right)]
         (recur [astm expr]))
       
       (check-token astm '>=)
       (let [[astm expr-right] (call-rule (advance-token astm) ::addition)
-            expr (token/->GreaterThanOrEqualExpression expr-left expr-right)]
+            expr (expression/->GreaterThanOrEqualExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '<)
       (let [[astm expr-right] (call-rule (advance-token astm) ::addition)
-            expr (token/->LessThanExpression expr-left expr-right)]
+            expr (expression/->LessThanExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '<=)
       (let [[astm expr-right] (call-rule (advance-token astm) ::addition)
-            expr (token/->LessThanOrEqualExpression expr-left expr-right)]
+            expr (expression/->LessThanOrEqualExpression expr-left expr-right)]
         (recur [astm expr]))
 
       :else [astm expr-left])))
@@ -339,12 +343,12 @@
 
       (check-token astm '+)
       (let [[astm expr-right] (call-rule (advance-token astm) ::multiplication)
-            expr (token/->AdditionExpression expr-left expr-right)]
+            expr (expression/->AdditionExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '-)
       (let [[astm expr-right] (call-rule (advance-token astm) ::multiplication)
-            expr (token/->SubtractionExpression expr-left expr-right)]
+            expr (expression/->SubtractionExpression expr-left expr-right)]
         (recur [astm expr]))
 
       :else [astm expr-left])))
@@ -357,12 +361,12 @@
 
       (check-token astm '*)
       (let [[astm expr-right] (call-rule (advance-token astm) ::unary)
-            expr (token/->MultiplicationExpression expr-left expr-right)]
+            expr (expression/->MultiplicationExpression expr-left expr-right)]
         (recur [astm expr]))
 
       (check-token astm '/)
       (let [[astm expr-right] (call-rule (advance-token astm) ::unary)
-            expr (token/->DivisionExpression expr-left expr-right)]
+            expr (expression/->DivisionExpression expr-left expr-right)]
         (recur [astm expr]))
 
       :else [astm expr-left])))
@@ -373,73 +377,71 @@
 
     (check-token astm 'not)
     (let [[astm expr-right] (call-rule (advance-token astm) ::primary)
-          expr (token/->NotExpression expr-right)]
+          expr (expression/->NotExpression expr-right)]
       [astm expr])
 
     (check-token astm '-)
     (let [[astm expr-right] (call-rule (advance-token astm) ::primary)
-          expr (token/->NegationExpression expr-right)]
+          expr (expression/->NegationExpression expr-right)]
       [astm expr])
 
     :else
-    (let [[astm primary-expr] (call-rule astm ::primary)
-          _ (println "Primary" primary-expr)
-          _ (println "Next Token: " (current-token astm))]
+    (let [[astm primary-expr] (call-rule astm ::primary)]
       ;; Determine whether it's a function call, which consists of an expression and an argument list
       ;; <expression> ([arg expressions])
       ;; ie. hello("world")
       (if (check-token astm list?)
         (let [[astm arg-exprs] (call-rule astm ::arguments)]
-          [astm (token/->CallFunctionExpression (:*sm astm) primary-expr arg-exprs)])
+          [astm (expression/->CallFunctionExpression (:*sm astm) primary-expr arg-exprs)])
         [astm primary-expr]))))
 
 
 (defn primary-rule [astm]
   (cond
     (check-token astm true)
-    [(advance-token astm) (token/->BooleanExpression true)]
+    [(advance-token astm) (expression/->BooleanExpression true)]
 
     (check-token astm false)
-    [(advance-token astm) (token/->BooleanExpression false)]
+    [(advance-token astm) (expression/->BooleanExpression false)]
 
     (check-token astm string?)
-    [(advance-token astm) (token/->StringExpression (current-token astm))]
+    [(advance-token astm) (expression/->StringExpression (current-token astm))]
 
     (check-token astm keyword?)
-    [(advance-token astm) (token/->KeywordExpression (current-token astm))]
+    [(advance-token astm) (expression/->KeywordExpression (current-token astm))]
 
     (check-token astm float?)
-    [(advance-token astm) (token/->FloatExpression (current-token astm))]
+    [(advance-token astm) (expression/->FloatExpression (current-token astm))]
 
     (check-token astm integer?)
-    [(advance-token astm) (token/->IntegerExpression (current-token astm))]
+    [(advance-token astm) (expression/->IntegerExpression (current-token astm))]
 
     (check-token astm nil?)
-    [(advance-token astm) (token/->NullExpression)]
+    [(advance-token astm) (expression/->NullExpression)]
 
     (check-token astm list?)
     [(advance-token astm) (parse-expression astm (current-token astm))]
 
     (check-token astm vector?)
     [(advance-token astm)
-     (token/->VectorExpression
+     (expression/->VectorExpression
       (vec (for [val (current-token astm)]
              (parse-expression astm [val]))))]
 
     (check-token astm map?)
     [(advance-token astm)
-     (token/->HashMapExpression
+     (expression/->HashMapExpression
       (into {} (for [[k v] (current-token astm)]
                  [(parse-expression astm [k]) (parse-expression astm [v])])))]
 
     (check-token astm set?)
     [(advance-token astm)
-     (token/->HashSetExpression
+     (expression/->HashSetExpression
       (set (for [val (current-token astm)]
              (parse-expression astm [val]))))]
 
     (check-token astm identifier?)
-    [(advance-token astm) (token/->IdentifierExpression (:*sm astm) (current-token astm))]
+    [(advance-token astm) (expression/->IdentifierExpression (:*sm astm) (current-token astm))]
 
     :else (throw (Throwable. (str "Failed to parse expression token: " (current-token astm))))))
 
@@ -465,10 +467,10 @@
 
 (defn evaluate-expression [astm tokens]
   (let [syntax-tree (parse-expression astm tokens)]
-    (token/evaluate-expression syntax-tree)))
+    (std.expression/evaluate-expression syntax-tree)))
 
 
 (defn evaluate [astm tokens]
   (let [statements (parse astm tokens)]
     (doseq [stmt statements]
-      (token/evaluate-statement stmt))))
+      (evaluate-statement stmt))))

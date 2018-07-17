@@ -1,4 +1,4 @@
-(ns eden.meta)
+(ns eden.std.meta)
 
 
 (defprotocol EdenCallable

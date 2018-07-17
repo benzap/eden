@@ -1,4 +1,4 @@
-(ns eden.reserved)
+(ns eden.std.reserved)
 
 
 (def ^:dynamic *reserved-words*
