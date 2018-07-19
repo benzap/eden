@@ -5,7 +5,8 @@
    [eden.std.impl.expression :as expression]
    [eden.std.statement :refer [evaluate-statement]]
    [eden.std.impl.statement :as statement]
-   [eden.std.reserved :refer [reserved?]]))
+   [eden.std.reserved :refer [reserved?]]
+   [eden.std.function :as std.function]))
 
 
 (defn new-astm [*sm]
@@ -128,6 +129,17 @@
   "Also assignment."
   [astm]
   (cond
+
+    ;; function declaration
+    (and (check-token astm 'function))
+    (let [astm (advance-token astm)
+          var (current-token astm)
+          astm (consume-token astm identifier? "Function name must be a non-reserved word.")
+          params (current-token astm)
+          astm (consume-token astm list? "Parameters must be provided in the form of a list.")
+          [astm stmts] (parse-statements astm)
+          fcn (std.function/->EdenFunction (:*sm astm) params stmts)]
+      [(advance-token astm) (statement/->DeclareVariableStatement (:*sm astm) var fcn)])
 
     ;; Local Declaration with assignment, local x = value
     (and (check-token astm 'local)
@@ -446,7 +458,8 @@
     :else (throw (Throwable. (str "Failed to parse expression token: " (current-token astm))))))
 
 
-(defn astm [*sm]
+(defn astm
+  [*sm]
   (-> (new-astm *sm)
       (add-rule ::declaration declaration-rule)
       (add-rule ::if-statement if-statement-rule)
@@ -465,12 +478,16 @@
       (add-rule ::primary primary-rule)))
 
 
-(defn evaluate-expression [astm tokens]
+(defn evaluate-expression
+  "Evaluate the tokens as an eden expression, and return the result."
+  [astm tokens]
   (let [syntax-tree (parse-expression astm tokens)]
     (std.expression/evaluate-expression syntax-tree)))
 
 
-(defn evaluate [astm tokens]
+(defn evaluate
+  "Evaluate the tokens in the provided eden state machine."
+  [astm tokens]
   (let [statements (parse astm tokens)]
     (doseq [stmt statements]
       (evaluate-statement stmt))))
