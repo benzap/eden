@@ -398,7 +398,7 @@
       [astm expr])
 
     :else
-    (let [[astm primary-expr] (call-rule astm ::primary)]
+    (let [[astm primary-expr] (call-rule astm ::anonymous-function)]
       ;; Determine whether it's a function call, which consists of an expression and an argument list
       ;; <expression> ([arg expressions])
       ;; ie. hello("world")
@@ -406,6 +406,22 @@
         (let [[astm arg-exprs] (call-rule astm ::arguments)]
           [astm (expression/->CallFunctionExpression (:*sm astm) primary-expr arg-exprs)])
         [astm primary-expr]))))
+
+
+(defn anonymous-function-rule
+  [astm]
+  (cond
+
+    (check-token astm 'function)
+    (let [astm (advance-token astm)
+          params (current-token astm)
+          astm (consume-token astm list? "Parameters must be provided in the form of a list.")
+          [astm stmts] (parse-statements astm)
+          fcn (std.function/->EdenFunction (:*sm astm) params stmts)]
+      [(advance-token astm) fcn])
+
+    :else
+    (call-rule astm ::primary)))
 
 
 (defn primary-rule [astm]
@@ -467,6 +483,7 @@
       (add-rule ::repeat-statement repeat-statement-rule)
       (add-rule ::for-statement for-statement-rule)
       (add-rule ::statement statement-rule)
+      (add-rule ::anonymous-function anonymous-function-rule)
       (add-rule ::arguments arguments-rule)
       (add-rule ::expression expression-rule)
       (add-rule ::logical logical-rule)
