@@ -11,14 +11,20 @@
   meta/EdenCallable
   (__call [_ args]
    ;; Link the arguments to the parameters
-   (let []
+   (let [vparams (vec params)]
      (with-new-environment *sm
+       ;; All arguments appear in the '... var as a vector
+       (swap! *sm state/set-local-var '... (vec args))
+
+       ;; Iterate over each arg, and assign to a parameter
+       ;; TODO: check if params consists of identifiers
+       ;; TODO: support destructuring
+       (doseq [[i arg] (map-indexed vector args)]
+         (when-let [param (get vparams i)]
+           (swap! *sm state/set-local-var param arg)))
+       
        (doseq [stmt stmts]
          (evaluate-statement stmt)))))
 
   Expression
   (evaluate-expression [this] this))
-
-  
-
-
