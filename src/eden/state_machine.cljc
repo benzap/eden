@@ -9,12 +9,14 @@
 
 (defn new-state-machine []
   (map->EdenStateMachine
-   {:environments [(new-environment)]}))
-
+   {:environments
+    [(new-environment) ;; Global
+     (new-environment)]})) ;; Local
+     
 
 (defn add-environment
-  [sm]
-  (update-in sm [:environments] conj (new-environment)))
+  ([sm env] (update-in sm [:environments] conj env))
+  ([sm] (add-environment sm (new-environment))))
 
 
 (defn remove-environment

@@ -9,3 +9,17 @@
      (swap! ~*sm state/add-environment)
      ~@body
      (swap! ~*sm state/remove-environment)))
+
+
+(defn get-global-environment
+  [*sm]
+  (-> @*sm first))
+
+
+(defn get-closure-environment
+  [*sm]
+  (let [env (-> @*sm :environments last)]))
+
+
+(defn enter-closure-environment! [*sm closure])
+  

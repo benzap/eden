@@ -1,5 +1,6 @@
 (ns eden.std.ast
   (:require
+   [eden.state-machine.environment :as environment]
    [eden.std.token :as token :refer [identifier?]]
    [eden.std.expression :as std.expression]
    [eden.std.impl.expression :as expression]
@@ -131,14 +132,16 @@
   (cond
 
     ;; function declaration
-    (and (check-token astm 'function))
+    (and (check-token astm 'function)
+         (check-token (advance-token astm) identifier?))
     (let [astm (advance-token astm)
           var (current-token astm)
           astm (consume-token astm identifier? "Function name must be a non-reserved word.")
           params (current-token astm)
           astm (consume-token astm list? "Parameters must be provided in the form of a list.")
           [astm stmts] (parse-statements astm)
-          fcn (std.function/->EdenFunction (:*sm astm) params stmts)]
+          fcn (std.function/->EdenFunction (:*sm astm) params stmts
+                                           (environment/get-last-environment (:*sm astm)))]
       [(advance-token astm) (statement/->DeclareVariableStatement (:*sm astm) var fcn)])
 
     ;; Local Declaration with assignment, local x = value
@@ -249,6 +252,13 @@
       :else (throw (Throwable. "Incorrect For Statement Syntax")))))
 
 
+(defn return-statement-rule
+  [astm]
+  (let [astm (consume-token astm #(= % 'return) "Return statement must begin with 'return'.")
+        [astm expr] (call-rule astm ::expression)]
+    [astm (statement/->ReturnStatement expr)]))
+
+
 (defn arguments-rule
   [astm]
   (parse-arguments astm))
@@ -273,6 +283,9 @@
 
     (check-token astm 'for)
     (call-rule astm ::for-statement)
+
+    (check-token astm 'return)
+    (call-rule astm ::return-statement)
 
     :else
     (let [[astm expr] (call-rule astm ::expression)
@@ -417,7 +430,8 @@
           params (current-token astm)
           astm (consume-token astm list? "Parameters must be provided in the form of a list.")
           [astm stmts] (parse-statements astm)
-          fcn (std.function/->EdenFunction (:*sm astm) params stmts)]
+          fcn (std.function/->EdenFunction (:*sm astm) params stmts
+                                           (environment/get-last-environment (:*sm astm)))]
       [(advance-token astm) fcn])
 
     :else
@@ -482,6 +496,7 @@
       (add-rule ::while-statement while-statement-rule)
       (add-rule ::repeat-statement repeat-statement-rule)
       (add-rule ::for-statement for-statement-rule)
+      (add-rule ::return-statement return-statement-rule)
       (add-rule ::statement statement-rule)
       (add-rule ::anonymous-function anonymous-function-rule)
       (add-rule ::arguments arguments-rule)

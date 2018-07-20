@@ -6,7 +6,8 @@
                                evaluate-statement
                                STATEMENT##]]
    [eden.std.expression :refer [evaluate-expression]]
-   [eden.std.token :refer [TokenType token-type]]))
+   [eden.std.token :refer [TokenType token-type]]
+   [eden.std.return :as std.return]))
 
 
 (defrecord PrintStatement [expr]
@@ -120,3 +121,12 @@
           (doseq [stmt stmts]
             (evaluate-statement stmt))))
       (throw (Throwable. "Invalid collection in for-each statement.")))))
+
+
+(defrecord ReturnStatement [expr]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (std.return/throw-return-value (evaluate-expression expr))))
