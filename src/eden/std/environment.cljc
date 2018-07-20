@@ -4,8 +4,9 @@
 (defrecord EdenEnvironment [values])
 
 
-(defn new-environment []
-  (map->EdenEnvironment {:values {}}))
+(defn new-environment
+  ([values] (map->EdenEnvironment {:values values}))
+  ([] (new-environment {})))
   
 
 (defn get-var [env identifier]

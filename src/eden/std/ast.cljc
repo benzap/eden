@@ -140,8 +140,7 @@
           params (current-token astm)
           astm (consume-token astm list? "Parameters must be provided in the form of a list.")
           [astm stmts] (parse-statements astm)
-          fcn (std.function/->EdenFunction (:*sm astm) params stmts
-                                           (environment/get-last-environment (:*sm astm)))]
+          fcn (std.function/->EdenFunction (:*sm astm) params stmts (atom nil))]
       [(advance-token astm) (statement/->DeclareVariableStatement (:*sm astm) var fcn)])
 
     ;; Local Declaration with assignment, local x = value
@@ -430,8 +429,7 @@
           params (current-token astm)
           astm (consume-token astm list? "Parameters must be provided in the form of a list.")
           [astm stmts] (parse-statements astm)
-          fcn (std.function/->EdenFunction (:*sm astm) params stmts
-                                           (environment/get-last-environment (:*sm astm)))]
+          fcn (std.function/->EdenFunction (:*sm astm) params stmts (atom nil))]
       [(advance-token astm) fcn])
 
     :else

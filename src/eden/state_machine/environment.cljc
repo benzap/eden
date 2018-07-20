@@ -1,6 +1,7 @@
 (ns eden.state-machine.environment
   (:require
-   [eden.state-machine :as state]))
+   [eden.state-machine :as state]
+   [eden.std.environment :as std.environment]))
 
 
 (defmacro with-new-environment
@@ -13,13 +14,19 @@
 
 (defn get-global-environment
   [*sm]
-  (-> @*sm first))
+  (-> @*sm :environments first))
+
+
+(defn get-last-environment
+  [*sm]
+  (-> @*sm :environments last))
 
 
 (defn get-closure-environment
   [*sm]
-  (let [env (-> @*sm :environments last)]))
+  (let [;; Drop the global environment
+        envs (rest (-> @*sm :environments))
+        values (map :values envs)
+        mvalues (reduce merge values)]
+    (std.environment/new-environment mvalues)))
 
-
-(defn enter-closure-environment! [*sm closure])
-  
