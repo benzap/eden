@@ -23,6 +23,9 @@
 
 
 (defn get-closure-environment
+  "Retrieves the preceding environments and merges it into an
+  environment for use as a closure environment. Note that it does not
+  include the global environment."
   [*sm]
   (let [;; Drop the global environment
         envs (rest (-> @*sm :environments))

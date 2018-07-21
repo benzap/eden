@@ -83,3 +83,8 @@
 
 #_(eval-expression
    4 - 2 + 2)
+
+
+#_(eval
+   x = {:value 12}
+   print x.value) ;; 12
