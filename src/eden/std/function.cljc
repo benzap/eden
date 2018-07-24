@@ -65,3 +65,15 @@
     (reset! *closure (environment/get-closure-environment *sm))
 
     this))
+
+
+;; Include multi-methods for printing, since EdenFunction includes
+;; expressions with cyclic atom references.
+(defmethod print-method EdenFunction
+  [this out]
+  (.write out "#EdenFunction{}"))
+
+
+(defmethod print-dup EdenFunction
+  [this out]
+  (.write out "#EdenFunction{}"))

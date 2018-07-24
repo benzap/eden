@@ -3,6 +3,7 @@
 
 (def ^:dynamic *reserved-words*
   '[
+    = ..= .=
     and or
     == !=
     > >= < <=

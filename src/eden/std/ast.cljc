@@ -7,7 +7,8 @@
    [eden.std.statement :refer [evaluate-statement]]
    [eden.std.impl.statement :as statement]
    [eden.std.reserved :refer [reserved?]]
-   [eden.std.function :as std.function]))
+   [eden.std.function :as std.function]
+   [eden.utils.symbol :as symbol]))
 
 
 (defn new-astm [*sm]
@@ -93,6 +94,17 @@
     expr))
 
 
+(defn parse-expression-list
+  "Parses the collection as a set of expressions"
+  [astm tokens]
+  (loop [astm (set-tokens astm (vec tokens))
+         exprs []]
+    (if-not (eot? astm)
+      (let [[astm expr] (call-rule astm ::expression)]
+        (recur astm (conj exprs expr)))
+      exprs)))
+
+
 (defn parse-statements
   [astm]
   (loop [astm astm
@@ -124,6 +136,25 @@
       (let [[astm stmt] (call-rule astm ::declaration)]
         (recur astm (conj statements stmt)))
       statements)))
+
+
+(defn parse-assoc-chain [astm]
+  (let [var (current-token astm)
+        [var & assoc-list] (if (symbol/contains? var '.)
+                             (symbol/split var #"\.")
+                             [var])]
+    (loop [astm (advance-token astm)
+           assoc-list (mapv keyword assoc-list)]
+      (let [token (current-token astm)]
+        (if (token/identifier-assoc? token)
+          (cond
+            (vector? token)
+            (recur (advance-token astm) (concat assoc-list token))
+            (symbol/starts-with? token '.)
+            (recur (advance-token astm) (concat assoc-list
+                                                (token/dot-assoc->keyword-list token))))
+          (let [assoc-exprs (parse-expression-list astm assoc-list)]
+            [astm [var assoc-exprs]]))))))
 
 
 (defn declaration-rule
@@ -168,7 +199,23 @@
           [astm expr] (call-rule (advance-token astm) ::expression)]
       [astm (statement/->DeclareVariableStatement (:*sm astm) var expr)])
 
+    ;; Lookahead and determine if it's an association chain
+    (or
+     (and (check-token astm token/identifier?)
+          (check-token (advance-token astm) token/identifier-assoc?))
+     (check-token astm token/identifier-assoc?))
+    (call-rule astm ::associate-chain)
+
     :else (call-rule astm ::statement)))
+
+
+(defn associate-chain-rule
+  [astm]
+  (let [[nastm [var assoc-list]] (parse-assoc-chain astm)]
+    (if (check-token nastm '=)
+       (let [[nastm expr] (call-rule (advance-token nastm) ::expression)]
+         [nastm (statement/->AssociateChainStatement (:*sm nastm) var assoc-list expr)])
+       (call-rule astm ::statement))))
 
 
 (defn if-statement-rule
@@ -465,8 +512,7 @@
     (check-token astm vector?)
     [(advance-token astm)
      (expression/->VectorExpression
-      (vec (for [val (current-token astm)]
-             (parse-expression astm [val]))))]
+      (parse-expression-list astm (current-token astm)))]
 
     (check-token astm map?)
     [(advance-token astm)
@@ -490,6 +536,7 @@
   [*sm]
   (-> (new-astm *sm)
       (add-rule ::declaration declaration-rule)
+      (add-rule ::associate-chain associate-chain-rule)
       (add-rule ::if-statement if-statement-rule)
       (add-rule ::while-statement while-statement-rule)
       (add-rule ::repeat-statement repeat-statement-rule)

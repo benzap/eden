@@ -7,7 +7,8 @@
                                STATEMENT##]]
    [eden.std.expression :refer [evaluate-expression]]
    [eden.std.token :refer [TokenType token-type]]
-   [eden.std.return :as std.return]))
+   [eden.std.return :as std.return]
+   [eden.std.meta :as meta]))
 
 
 (defrecord PrintStatement [expr]
@@ -130,3 +131,15 @@
   Statement
   (evaluate-statement [_]
     (std.return/throw-return-value (evaluate-expression expr))))
+
+
+(defrecord AssociateChainStatement [*sm var expr-assoc-list expr]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (let [val (state/get-var @*sm var)
+          evaluated-assoc-list (vec (for [expr expr-assoc-list] (evaluate-expression expr)))
+          val (assoc-in val evaluated-assoc-list (evaluate-expression expr))]
+      (swap! *sm state/set-var var val))))
