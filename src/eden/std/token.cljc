@@ -39,6 +39,7 @@
 
 
 #_(dot-assoc->keyword-list 'hello.there)
+#_(dot-assoc->keyword-list '.there)
 
 
 (defn post-process-dot-notation

@@ -132,7 +132,18 @@
 
 (defn parse-get-property
   [astm expr]
-  (let []))
+  (let [token (current-token astm)]
+    (cond
+     (symbol? token)
+     (let [keyl (token/dot-assoc->keyword-list token)
+           key-expr (parse-expression astm keyl)
+           expr (expression/->GetPropertyExpression key-expr expr)]
+       [(advance-token astm) expr])
+
+     (vector? token)
+     (let [key-expr (parse-expression-list astm token)
+           expr (expression/->GetPropertyExpression key-expr expr)]
+       [(advance-token astm) expr]))))
 
 
 (defn parse [astm tokens]
@@ -475,8 +486,7 @@
          (let [[astm arg-exprs] (call-rule astm ::arguments)]
            (recur astm (expression/->CallFunctionExpression (:*sm astm) primary-expr arg-exprs)))
          
-         (and (check-token astm token/identifier-assoc?)
-              (check-token astm symbol?))
+         (and (check-token astm token/identifier-assoc?))
          (let [[astm primary-expr] (parse-get-property astm primary-expr)]
            (recur astm primary-expr))
 

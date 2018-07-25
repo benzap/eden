@@ -293,12 +293,13 @@
         (throw (Throwable. "Given expression value is not callable."))))))
 
 
-(defrecord GetPropertyExpression [key expr]
+(defrecord GetPropertyExpression [key-expr expr]
   TokenType
   (token-type [_] EXPRESSION##)
 
   Expression
   (evaluate-expression [_]
-    (let [val (evaluate-expression expr)]
+    (let [key (evaluate-expression key-expr)
+          val (evaluate-expression expr)]
       (get val key))))
     
