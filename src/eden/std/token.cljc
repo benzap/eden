@@ -47,7 +47,7 @@
          new-tokens '()]
     (if-not (empty? tokens)
      (let [token (first tokens)
-           vtokens (symbol/split-dot-notation token)]
+           vtokens (if (symbol? token) (symbol/split-dot-notation token) [token])]
        (recur (rest tokens) (concat new-tokens vtokens)))
      (vec new-tokens))))
 
@@ -55,3 +55,7 @@
 (defn post-process-tokens
   [tokens]
   (post-process-dot-notation tokens))
+
+
+
+#_(post-process-tokens '[test.this out 2 + 2 x = this..call(2)])
