@@ -292,3 +292,13 @@
         (std.meta/__call fcn args)
         (throw (Throwable. "Given expression value is not callable."))))))
 
+
+(defrecord GetPropertyExpression [key expr]
+  TokenType
+  (token-type [_] EXPRESSION##)
+
+  Expression
+  (evaluate-expression [_]
+    (let [val (evaluate-expression expr)]
+      (get val key))))
+    

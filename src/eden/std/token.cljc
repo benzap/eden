@@ -37,4 +37,21 @@
        (mapv keyword)))
 
 
+
 #_(dot-assoc->keyword-list 'hello.there)
+
+
+(defn post-process-dot-notation
+  [tokens]
+  (loop [tokens (vec tokens)
+         new-tokens '()]
+    (if-not (empty? tokens)
+     (let [token (first tokens)
+           vtokens (symbol/split-dot-notation token)]
+       (recur (rest tokens) (concat new-tokens vtokens)))
+     (vec new-tokens))))
+
+
+(defn post-process-tokens
+  [tokens]
+  (post-process-dot-notation tokens))

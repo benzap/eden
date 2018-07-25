@@ -82,9 +82,10 @@
 
 (defn set-tokens
   [astm tokens]
-  (assoc astm
-         :tokens (conj (vec tokens) ::eot)
-         :index 0))
+  (let [tokens (token/post-process-tokens tokens)]
+    (assoc astm
+           :tokens (conj (vec tokens) ::eot)
+           :index 0)))
 
 
 (defn parse-expression
@@ -127,6 +128,11 @@
       (let [[astm expr] (call-rule astm ::expression)]
         (recur astm (conj arg-exprs expr)))
       [(advance-token oastm) arg-exprs])))
+
+
+(defn parse-get-property
+  [astm expr]
+  (let []))
 
 
 (defn parse [astm tokens]
@@ -458,13 +464,22 @@
 
     :else
     (let [[astm primary-expr] (call-rule astm ::anonymous-function)]
-      ;; Determine whether it's a function call, which consists of an expression and an argument list
-      ;; <expression> ([arg expressions])
-      ;; ie. hello("world")
-      (if (check-token astm list?)
-        (let [[astm arg-exprs] (call-rule astm ::arguments)]
-          [astm (expression/->CallFunctionExpression (:*sm astm) primary-expr arg-exprs)])
-        [astm primary-expr]))))
+
+      ;; Determine if the expression has a chain of function calls, accessors, etc.
+      (loop [astm astm
+             primary-expr primary-expr]
+
+       (cond
+         (check-token astm list?)
+         (let [[astm arg-exprs] (call-rule astm ::arguments)]
+           (recur astm (expression/->CallFunctionExpression (:*sm astm) primary-expr arg-exprs)))
+         
+         (and (check-token astm token/identifier-assoc?)
+              (check-token astm symbol?))
+         (let [[astm primary-expr] (parse-get-property astm primary-expr)]
+           (recur astm primary-expr))
+
+         :else [astm primary-expr])))))
 
 
 (defn anonymous-function-rule
