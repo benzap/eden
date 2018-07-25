@@ -141,7 +141,7 @@
        [(advance-token astm) expr])
 
      (vector? token)
-     (let [key-expr (parse-expression-list astm token)
+     (let [key-expr (parse-expression astm token)
            expr (expression/->GetPropertyExpression key-expr expr)]
        [(advance-token astm) expr]))))
 
