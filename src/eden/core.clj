@@ -2,30 +2,47 @@
   (:refer-clojure :exclude [eval])
   (:require
    [eden.state-machine :refer [new-state-machine]]
-   [eden.std.ast :refer [astm]]))
+   [eden.std.ast :refer [astm]]
+   [eden.stdlib :refer [import-stdlib]]
+   [eden.def]))
 
 
-(defn eden []
+(declare set-var!)
+
+
+(defn new-eden-instance []
   (let [*sm (atom (new-state-machine))]
     {:*sm *sm
      :astm (astm *sm)}))
+
+
+(defn eden []
+  (let [eden-instance (new-eden-instance)]
+    (import-stdlib eden-instance)
+    eden-instance))
 
 
 (def ^:dynamic *default-eden-instance* (eden))
 
 
 (defn reset-instance! []
-  (reset! (:*sm *default-eden-instance*) (new-state-machine)))
+  (reset! (:*sm *default-eden-instance*) (new-state-machine))
+  (import-stdlib *default-eden-instance*))
 
 
 (defn set-var!
   [identifier value]
-  (swap! (:*sm eden) eden.state-machine/set-global-var identifier value))
+  (swap! (:*sm *default-eden-instance*) eden.state-machine/set-global-var identifier value))
+
+
+(def set-function! (partial eden.def/set-function! *default-eden-instance*))
+(def wrap-function eden.def/wrap-function)
 
 
 (defn get-var
   [identifier]
-  (eden.state-machine/get-var (-> *default-eden-instance* :*sm deref) identifier))
+  (eden.state-machine/get-var
+   (-> *default-eden-instance* :*sm deref) identifier))
 
 
 (defmacro with-eden-instance [instance & body]
@@ -88,64 +105,3 @@
 #_(eval
    x = {:value 12}
    print x.value) ;; 12
-
-
-;; #_(eval
-
-;;    pair = {:data [nil nil]}
-;;    setmeta(pair {:__index (function (this key)
-;;                              if key == 0 or key == :first then
-;;                                return this.data[0]
-
-;;                              elseif key == 1 or key == :second then
-;;                                return this.data[1]
-
-;;                              else
-;;                                error("failed to retrieve pair value for key " key)
-;;                              end
-;;                            end)
-
-;;                  :__assoc (function (this key value)
-;;                              if key == 0 or key == :first then
-;;                                this.data[0] = value
-;;                                return this
-
-;;                              elseif key == 0 or key == :second then
-;;                                this.data[1] = value
-;;                                return this
-
-;;                              else
-;;                                error("failed to assoc to key " key)
-;;                              end
-;;                            end)})
-                                  
-;;    pair.new = function(first second)
-;;      local p = pair
-;;      p.first = first
-;;      p.second = second
-;;      return p
-;;    end
-
-;;    function map(coll fn)
-;;      local ncoll = []
-;;      for val in coll do
-;;        ncoll = conj(ncoll fn(val))
-;;      end
-
-;;      return ncoll
-;;    end
-
-;;    coll = range(1, 4)
-;;    coll = map(coll, inc)
-
-
-;;    ;; Equivalent
-;;    coll ..= conj(2)
-;;    coll = coll.conj(ncoll 2)
-;;    coll = coll..conj(2)
-
-;;    point = {:x 2 :y 3}
-
-;;    point.x ..= inc()
-;;    point.x += 1
-;;    point.x = point.x..inc())
