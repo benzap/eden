@@ -6,6 +6,7 @@
                                evaluate-statement
                                STATEMENT##]]
    [eden.std.expression :refer [evaluate-expression]]
+   [eden.std.display :as display :refer [display-node]]
    [eden.std.token :refer [TokenType token-type]]
    [eden.std.return :as std.return]
    [eden.std.meta :as meta]))
@@ -17,7 +18,11 @@
 
   Statement
   (evaluate-statement [_]
-    (println (evaluate-expression expr))))
+    (println (evaluate-expression expr)))
+
+  display/Display
+  (display-node [_]
+    (str "(print " (display-node expr) ")")))
 
 
 (defrecord ExpressionStatement [expr]
@@ -26,7 +31,10 @@
 
   Statement
   (evaluate-statement [_]
-    (evaluate-expression expr)))
+    (evaluate-expression expr))
+
+  display/Display
+  (display-node [_] (display-node expr)))
 
 
 (defrecord DeclareVariableStatement [*sm var expr]
@@ -36,7 +44,11 @@
   Statement
   (evaluate-statement [_]
     (let [value (evaluate-expression expr)]
-      (swap! *sm state/set-var var value))))
+      (swap! *sm state/set-var var value)))
+
+  display/Display
+  (display-node [_]
+    (str "(setq " var " " (display-node expr) ")")))
 
 
 (defrecord DeclareLocalVariableStatement [*sm var expr]
@@ -46,7 +58,11 @@
   Statement
   (evaluate-statement [_]
     (let [value (evaluate-expression expr)]
-      (swap! *sm state/set-local-var var value))))
+      (swap! *sm state/set-local-var var value)))
+
+  display/Display
+  (display-node [_]
+    (str "(setl " var " " (display-node expr) ")")))
 
 
 (defrecord IfConditionalStatement [*sm conditional-expr truthy-stmts falsy-stmts]
@@ -62,7 +78,11 @@
             (evaluate-statement stmt))
 
           (doseq [stmt falsy-stmts]
-            (evaluate-statement stmt)))))))
+            (evaluate-statement stmt))))))
+
+  display/Display
+  (display-node [_]
+    (str "(if " (display-node conditional-expr) " <truthy-stmts> <falsy-stmts>)")))
 
 
 (defrecord WhileStatement [*sm conditional-expr stmts]

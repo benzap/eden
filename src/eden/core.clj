@@ -3,6 +3,7 @@
   (:require
    [eden.state-machine :refer [new-state-machine]]
    [eden.std.ast :refer [astm]]
+   [eden.std.display :refer [display-node]]
    [eden.stdlib :refer [import-stdlib]]
    [eden.def]))
 
@@ -66,7 +67,8 @@
 
 
 (defn parse-fn [tokens]
-  (eden.std.ast/parse (:astm *default-eden-instance*) tokens))
+  (let [stmts (eden.std.ast/parse (:astm *default-eden-instance*) tokens)]
+    (mapv display-node stmts)))
 
 
 (defmacro parse [& tokens]
