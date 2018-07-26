@@ -99,6 +99,7 @@
       (set-function! 'long long)
       
       ;; TODO: map
+      (set-function! 'map map)
       ;; TODO: map-indexed
       (set-function! 'map? map?)
       ;; TODO: mapcat
