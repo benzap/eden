@@ -7,9 +7,7 @@
 
 (defrecord EdenFFI [func]
   meta/EdenCallable
-  (__call [_ args]
-    (println "args" args)
-    (apply func args))
+  (__call [_ args] (apply func args))
 
   Expression
   (evaluate-expression [this] this)

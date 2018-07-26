@@ -393,9 +393,9 @@
 
   display/Display
   (display-node [_]
-    (loop [s (str "(call " (display-node expr) " ") arg-exprs arg-exprs]
+    (loop [s (str "(call " (display-node expr)) arg-exprs arg-exprs]
       (if-not (empty? arg-exprs)
-        (recur (str s (display-node (first arg-exprs)) " ") (rest arg-exprs))
+        (recur (str s " " (display-node (first arg-exprs))) (rest arg-exprs))
         (str s ")")))))
 
 
@@ -411,4 +411,4 @@
 
   display/Display
   (display-node [_]
-    (str "(dot-get " (display-node expr) " " (display-node key-expr) ")")))
+    (str "(get " (display-node expr) " " (display-node key-expr) ")")))
