@@ -1,5 +1,4 @@
-(ns eden.std.return
-  (:import clojure.lang.ExceptionInfo))
+(ns eden.std.return)
 
 
 (defn throw-return-value

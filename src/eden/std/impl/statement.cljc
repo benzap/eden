@@ -6,6 +6,7 @@
                                evaluate-statement
                                STATEMENT##]]
    [eden.std.expression :refer [evaluate-expression]]
+   [eden.std.exceptions :refer [parser-error]]
    [eden.std.display :as display :refer [display-node]]
    [eden.std.token :refer [TokenType token-type]]
    [eden.std.return :as std.return]
@@ -141,7 +142,7 @@
           (swap! *sm state/set-local-var iter-var item)
           (doseq [stmt stmts]
             (evaluate-statement stmt))))
-      (throw (Throwable. "Invalid collection in for-each statement.")))))
+      (parser-error "Invalid collection in for-each statement."))))
 
 
 (defrecord ReturnStatement [expr]

@@ -2,6 +2,7 @@
   (:require
    [eden.state-machine.environment :as environment]
    [eden.std.token :as token :refer [identifier?]]
+   [eden.std.exceptions :refer [parser-error]]
    [eden.std.expression :as std.expression]
    [eden.std.impl.expression :as expression]
    [eden.std.statement :refer [evaluate-statement]]
@@ -27,7 +28,7 @@
   [astm head]
   (if-let [rule-fn (get (:rules astm) head)]
     (rule-fn astm)
-    (throw (Throwable. (str "Failed to find rule function: " head)))))
+    (parser-error (str "Failed to find rule function: " head))))
 
 
 (defn eot?
@@ -46,14 +47,14 @@
   [{:keys [tokens index]}]
   (if-not (= index 0)
     (nth tokens (dec index))
-    (throw (Throwable. "Attempted to retrieve previous token while on the first token."))))
+    (parser-error "Attempted to retrieve previous token while on the first token.")))
 
 
 (defn next-token
   [{:keys [tokens index] :as astm}]
   (if-not (eot? (assoc astm :index (inc index)))
     (nth tokens (inc index))
-    (throw (Throwable. "Attempted to retrieve the next token while on the last token."))))
+    (parser-error "Attempted to retrieve the next token while on the last token.")))
 
 
 (defn advance-token
@@ -68,7 +69,7 @@
   (let [token (current-token astm)]
     (if (chk-fn token)
       (advance-token astm)
-      (throw (Throwable. msg)))))
+      (parser-error msg))))
 
 
 (defn check-token
@@ -256,7 +257,7 @@
       [(advance-token astm) (statement/->IfConditionalStatement
                              (:*sm astm) conditional-expr truthy-stmts [])]
 
-      :else (throw (Throwable. "Failed to find end of if conditional")))))
+      :else (parser-error "Failed to find end of if conditional"))))
 
 
 (defn while-statement-rule
@@ -269,7 +270,7 @@
       (check-token astm 'end)
       [(advance-token astm) (statement/->WhileStatement (:*sm astm) conditional-expr stmts)]
       
-      :else (throw (Throwable. "Failed to find end of while conditional")))))
+      :else (parser-error "Failed to find end of while conditional"))))
 
 
 (defn repeat-statement-rule
@@ -313,7 +314,7 @@
             astm (consume-token astm #(= % 'end) "Incorrect 'for' Statement Syntax. Expected 'end'")]
         [astm (statement/->ForEachStatement (:*sm astm) iter-var coll-expr stmts)])
 
-      :else (throw (Throwable. "Incorrect For Statement Syntax")))))
+      :else (parser-error "Incorrect For Statement Syntax"))))
 
 
 (defn return-statement-rule
@@ -555,7 +556,7 @@
     (check-token astm identifier?)
     [(advance-token astm) (expression/->IdentifierExpression (:*sm astm) (current-token astm))]
 
-    :else (throw (Throwable. (str "Failed to parse expression token: " (current-token astm))))))
+    :else (parser-error (str "Failed to parse expression token: " (current-token astm)))))
 
 
 (defn astm

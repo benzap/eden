@@ -58,9 +58,3 @@
   (__concat [this obj]))
 
 
-(extend-protocol EdenCallable
-  String
-  (__call [this args]
-    (prn this args)))
-
-

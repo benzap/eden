@@ -9,4 +9,45 @@
                  [org.clojure/tools.cli "0.3.7"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-ancient "0.6.15"]
-            [lein-doo "0.1.10"]])
+            [lein-doo "0.1.10"]]
+
+  :repositories [["clojars" {:sign-releases false}]]
+
+  :cljsbuild {:builds {:dev
+                       {:source-paths ["src"]
+                        :compiler {:output-dir "resources/public/js/compiled/out"
+                                   :output-to "resources/public/js/compiled/eden.js"
+                                   :optimizations :whitespace
+                                   :pretty-print true
+                                   :source-map "resources/public/js/compiled/eden.js.map"}}
+                       :prod
+                       {:source-paths ["src"]
+                        :compiler {:output-to "resources/public/js/compiled/eden.min.js"
+                                   :optimizations :advanced
+                                   :pretty-print false}}
+                       :test
+                       {:id "test"
+                        :source-paths ["src" "test"]
+                        :compiler {:output-to "resources/public/js/compiled/test/test-runner.js"
+                                   :output-dir "resources/public/js/compiled/test/out"
+                                   :main eden.test-runner
+                                   :target :nodejs
+                                   :optimizations :none}}}}
+
+  :doo {:build "test"
+        :alias {:default [:node]}}
+
+  :profiles
+  {:dev
+   {:main eden.commandline
+    :source-paths ["src" "dev" "test"]
+    :dependencies [[org.clojure/tools.namespace "0.2.11"]]
+    :repl-options {:init-ns eden.dev.user
+                   ;;:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
+                   :port 9005
+                   }}
+   :uberjar
+   {:jvm-opts ["-Dclojure.compiler.direct-linking=true"]
+    :main eden.commandline
+    :aot [eden.core eden.commandline]
+    }})
