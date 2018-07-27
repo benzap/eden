@@ -27,6 +27,7 @@
 (defmacro with-test-instance
   [& body]
   `(eden/with-eden-instance (eden/eden)
+     (eden/reset-instance!)
      ~@body
      (eden/reset-instance!)
      nil))
