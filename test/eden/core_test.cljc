@@ -1,8 +1,9 @@
 (ns eden.core-test
   (:require
    [clojure.test :refer [deftest is testing]]
-   [eden.core :as eden]
-   [eden-test.utils :refer [teval-expression teval are-eq* with-test-instance]]))
+   [eden.core :as eden :include-macros true]
+   [eden-test.utils :refer [teval-expression teval are-eq* with-test-instance]
+    :include-macros true]))
 
 
 (deftest basic-arithmetic-addition-subtraction
@@ -20,6 +21,7 @@
      
      => 4)))
 
+
 (deftest basic-arithmetic-multiplication-division
   (testing "Multiplication / Division"
     (are-eq*
@@ -30,6 +32,7 @@
      (teval-expression 2 / 4.)
      
      => 0.5)))
+
 
 (deftest basic-arithmetic-equality
   (testing "Equality / Non-equality"
@@ -50,6 +53,7 @@
      
      => true)))
 
+
 (deftest logical-comparators
   (testing "Logical And / Or"
     (are-eq*
@@ -60,6 +64,7 @@
      (teval-expression 2 != 2 and "true" or "false")
      
      => "false")))
+
 
 (deftest group-expressions
   (testing "Grouping Expressions"
@@ -89,12 +94,35 @@
 
 (deftest local-variable-1
   (testing "Local Variable in if statement"
-    (with-test-instance
-      (teval
-       x = 5
-       if true then
-         local x = 2
-         y = x
-       end)
-      (is (= (eden/get-var 'x) 5))
-      (is (= (eden/get-var 'y) 2)))))
+    (eden/reset-instance!)
+    (eden/eval
+     x = 5
+     if true then
+       println(x)
+       local x = 2
+       y = x
+     end
+     println(x))
+    
+    (is (= (eden/get-var 'x) 5))
+    (is (= (eden/get-var 'y) 2))
+    (eden/reset-instance!)))
+
+
+(deftest create-function-1
+  (eden/reset-instance!)
+  (eden/eval
+   local add2 = function(x) return x + 2 end
+   local result = add2(2))
+  (is (= (eden/get-var 'result) 4))
+  (eden/reset-instance!))
+
+
+(deftest create-function-2
+  (eden/reset-instance!)
+  (eden/eval
+   function add2(x) return x + 2 end
+   local result = add2(2))
+  (is (= (eden/get-var 'result) 4))
+  (eden/reset-instance!))
+  

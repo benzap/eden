@@ -2,7 +2,7 @@
   (:require
    [clojure.test :refer [deftest is testing]]
    [eden.std.environment :refer [new-environment get-var set-var]]
-   [eden-test.utils :refer [are-eq*]]))
+   [eden-test.utils :refer [are-eq*] :include-macros true]))
 
 
 (deftest main-test

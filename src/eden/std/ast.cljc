@@ -66,7 +66,8 @@
 
 (defn consume-token
   [astm chk-fn msg]
-  (let [token (current-token astm)]
+  (let [chk-fn (if-not (fn? chk-fn) #(= chk-fn %) chk-fn)
+        token (current-token astm)]
     (if (chk-fn token)
       (advance-token astm)
       (parser-error msg))))
@@ -241,13 +242,13 @@
   [astm]
   (let [[astm conditional-expr] (call-rule (advance-token astm) ::expression)
         ;; TODO: expect 'then
-        astm (advance-token astm)
+        astm (consume-token astm 'then "Missing 'then' within if conditional.")
         [astm truthy-stmts] (parse-statements astm)]
     (cond
       (check-token astm 'else)
       (let [[astm falsy-stmts] (parse-statements (advance-token astm))]
         ;; TODO: check if it's at the end
-        [(advance-token astm)
+        [(consume-token astm 'end "Missing 'end' within if conditional")
          (statement/->IfConditionalStatement (:*sm astm) conditional-expr truthy-stmts falsy-stmts)])
 
       ;;(check-token astm 'elseif)

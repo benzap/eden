@@ -13,6 +13,13 @@
    [eden.std.meta :as meta]))
 
 
+(defn display-do-statement [stmts]
+  (loop [s (str "(do") stmts stmts]
+    (if-not (empty? stmts)
+      (recur (str s " " (display-node (first stmts))) (rest stmts))
+      (str s ")"))))
+
+
 (defrecord PrintStatement [expr]
   TokenType
   (token-type [_] STATEMENT##)
@@ -73,17 +80,19 @@
   Statement
   (evaluate-statement [_]
     (let [value (evaluate-expression conditional-expr)]
-      (with-new-environment *sm
-        (if value
+      (if value
+        (with-new-environment *sm
           (doseq [stmt truthy-stmts]
-            (evaluate-statement stmt))
-
+            (evaluate-statement stmt)))
+        (with-new-environment *sm
           (doseq [stmt falsy-stmts]
             (evaluate-statement stmt))))))
 
   display/Display
   (display-node [_]
-    (str "(if " (display-node conditional-expr) " <truthy-stmts> <falsy-stmts>)")))
+    (str "(if " (display-node conditional-expr) " "
+         (display-do-statement truthy-stmts) " "
+         (display-do-statement falsy-stmts) ")")))
 
 
 (defrecord WhileStatement [*sm conditional-expr stmts]
@@ -95,7 +104,12 @@
     (while (evaluate-expression conditional-expr)
       (with-new-environment *sm
         (doseq [stmt stmts]
-          (evaluate-statement stmt))))))
+          (evaluate-statement stmt)))))
+
+  display/Display
+  (display-node [_]
+    (str "(while " (display-node conditional-expr) " "
+         (display-do-statement stmts) ")")))
 
 
 (defrecord RepeatStatement [*sm conditional-expr stmts]
@@ -111,7 +125,12 @@
     (while (not (evaluate-expression conditional-expr))
       (with-new-environment *sm
         (doseq [stmt stmts]
-          (evaluate-statement stmt))))))
+          (evaluate-statement stmt)))))
+
+  display/Display
+  (display-node [_]
+    (str "(repeat " (display-do-statement stmts)
+         " (until " (display-node conditional-expr) "))")))
 
 
 (defrecord ForStatement [*sm iter-var start end step stmts]
@@ -126,7 +145,12 @@
           (swap! *sm state/set-local-var iter-var idx)
           (doseq [stmt stmts]
             (evaluate-statement stmt)))
-        (recur (+ idx step))))))
+        (recur (+ idx step)))))
+
+  display/Display
+  (display-node [_]
+    (str "(for [" iter-var "(range " start " " end " " step ")]"
+         (display-do-statement stmts) ")")))
 
 
 (defrecord ForEachStatement [*sm iter-var coll-expr stmts]
@@ -142,7 +166,12 @@
           (swap! *sm state/set-local-var iter-var item)
           (doseq [stmt stmts]
             (evaluate-statement stmt))))
-      (parser-error "Invalid collection in for-each statement."))))
+      (parser-error "Invalid collection in for-each statement.")))
+
+  display/Display
+  (display-node [_]
+    (str "(for [" iter-var " " (display-node coll-expr) "]"
+         (display-do-statement stmts) ")")))
 
 
 (defrecord ReturnStatement [expr]
@@ -151,7 +180,11 @@
 
   Statement
   (evaluate-statement [_]
-    (std.return/throw-return-value (evaluate-expression expr))))
+    (std.return/throw-return-value (evaluate-expression expr)))
+
+  display/Display
+  (display-node [_]
+    (str "(return " (display-node expr) ")")))
 
 
 (defrecord AssociateChainStatement [*sm var expr-assoc-list expr]
@@ -163,4 +196,8 @@
     (let [val (state/get-var @*sm var)
           evaluated-assoc-list (vec (for [expr expr-assoc-list] (evaluate-expression expr)))
           val (assoc-in val evaluated-assoc-list (evaluate-expression expr))]
-      (swap! *sm state/set-var var val))))
+      (swap! *sm state/set-var var val)))
+
+  display/Display
+  (display-node [_]
+    (str "(get-in " (display-node expr) " <expr>)")))
