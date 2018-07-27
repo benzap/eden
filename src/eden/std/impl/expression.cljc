@@ -387,8 +387,14 @@
     (let [fcn (evaluate-expression expr)
           args (for [arg-expr arg-exprs]
                  (evaluate-expression arg-expr))]
-      (if (std.meta/eden-callable? fcn)
+      (cond
+        (std.meta/eden-callable? fcn)
         (std.meta/__call fcn args)
+
+        (or (fn? fcn) (ifn? fcn))
+        (apply fcn args)
+
+        :else
         (throw (Throwable. "Given expression value is not callable.")))))
 
   display/Display

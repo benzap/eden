@@ -28,15 +28,21 @@
 
 (defn reset-instance! []
   (reset! (:*sm *default-eden-instance*) (new-state-machine))
-  (import-stdlib *default-eden-instance*))
+  (import-stdlib *default-eden-instance*)
+  nil)
 
 
 (defn set-var!
   [identifier value]
-  (swap! (:*sm *default-eden-instance*) eden.state-machine/set-global-var identifier value))
+  (swap! (:*sm *default-eden-instance*) eden.state-machine/set-global-var identifier value)
+  nil)
 
 
-(def set-function! (partial eden.def/set-function! *default-eden-instance*))
+(defn set-function! [identifier value]
+  (eden.def/set-function! *default-eden-instance* identifier value)
+  nil)
+
+
 (def wrap-function eden.def/wrap-function)
 
 
