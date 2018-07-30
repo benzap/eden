@@ -22,7 +22,7 @@ clojure interoperability.
 /eden is still in beta development, so things are going to be broken,
 undocumented, and error messages are close to non-existent./
 
-#+BEGIN_SRC clojure
+#+BEGIN_SRC
   (require '[eden.core :as eden])
 
   (eden/eval println("Hello World!"))
