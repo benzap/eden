@@ -313,6 +313,59 @@ Notes:
 
   #+END_SRC
 
+
+* Dark-corners of Eden
+
+  Since *eden* uses EDN data values directly, it does mean some funky
+  things can happen unexpectedly.
+
+** Vectors get confused as indexes
+   
+   #+BEGIN_SRC
+
+   map(inc [1 2 3])
+
+   #+END_SRC
+   
+   This says /get the index [1 2 3] of inc/. The equivalent in clojure
+   would be ~(get-in inc [1 2 3])~, which is not what we want. The
+   solution is to use the ~vector~ function.
+   
+   #+BEGIN_SRC
+   
+   map(inc vector(1 2 3))
+
+   #+END_SRC
+
+** The EDN parser gets confused with complex map hashes
+
+   #+BEGIN_SRC
+
+   local x = {
+   :x 2 + 2
+   :y 3 - 2
+   }
+
+   #+END_SRC
+
+   The parser will fail, since the resulting map within eden appears
+   as ~{:x 2, '+ 2, :y 3, '- 2}~. The solution is to group each
+   expression in round brackets:
+
+   #+BEGIN_SRC
+
+   local x = {
+   :x (2 + 2)
+   :y (3 - 2)
+   }
+
+   ;; similarly for functions
+   local y = {
+   :hello (function(name) return str("Hello " name "!") end)
+   }
+
+   #+END_SRC
+
 * Features for Version 1.0.0 Stable Release
 
   - Test Coverage for the entire standard language
