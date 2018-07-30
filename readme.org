@@ -49,6 +49,9 @@ Almost all of clojures core libraries work out-of-the-box within eden
 #+BEGIN_SRC
 
   (eden/eval println(rest([1 2 3 4]))) ;; (2 3 4)
+
+  (eden/eval println(conj([1 2 3] 4))) ;; [1 2 3 4]
+
   (eden/eval
    local x = list(1 2 3 4)
    for i in x do
