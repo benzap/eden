@@ -123,3 +123,136 @@ undocumented, and error messages are close to non-existent./
    ;; Ben - Z
 #+END_SRC
 
+* Requirements
+  
+  *eden* requires clojure 1.9+
+
+* Installation
+
+For the latest version, please visit [[https://clojars.org/eden][clojars.org]]
+
+  *Leiningen/Boot*
+  
+  #+BEGIN_SRC clojure
+
+  [eden "0.0.2-SNAPSHOT"]
+
+  #+END_SRC
+
+  *Clojure CLI/deps.edn*
+
+  #+BEGIN_SRC clojure
+
+  eden {:mvn/version "0.1.0-SNAPSHOT"}
+
+  #+END_SRC
+
+  *Gradle*
+
+  #+BEGIN_SRC groovy
+
+  compile 'eden:eden:0.1.0-SNAPSHOT'
+
+  #+END_SRC
+
+  *Maven*
+
+  #+BEGIN_SRC xml
+
+  <dependency>
+    <groupId>eden</groupId>
+    <artifactId>eden</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </dependency>
+
+  #+END_SRC
+
+* Introduction
+
+  *eden* is an imperative language, so it embraces the idea of mutable
+  values being passed around. However, *eden* re-uses the persistant
+  data collections that make up clojure, which makes eden
+  copy-on-write when performing operations on collections.
+
+  #+BEGIN_SRC
+
+  function people-eq?(p1 p2)
+    if p1 == p2 then
+      println("Are Equal!")
+    else
+      println("Not Equal!")
+    end
+  end
+
+  local person1 = {:first-name 12 :age 12}
+  local person2 = person1
+
+  people-eq?(person1 person2) ;; Are Equal!
+
+  person2.age = 13
+
+  people-eq?(person1 person2) ;; Not Equal!
+
+  #+END_SRC
+
+  In a more traditional language like lua, ~person2~ would hold a
+  reference to the same data structure as ~person1~. However, *eden*
+  uses copy-on-write semantics. They never share a reference. If you
+  want to share a reference between variables, use a clojure atom.
+
+  #+BEGIN_SRC
+
+  local age = atom(12)
+  person1 = atom({:first-name "Ben" :age 12})
+  person2 = person1
+                
+  swap!(person2 function(p) p.age = 13 return p end)
+  println(deref(person1)) ;; {:first-name Ben, :age 13}
+
+  #+END_SRC
+
+* Commandline Execution
+
+  *eden* can be run from the commandline. It currently does not have a
+  repl, but this is something i'm hoping to include in the future
+  when the parser is more mature.
+
+  #+BEGIN_SRC
+
+eden Language Commandline eval
+Usage:
+  eden <options>
+  eden <filename> [arguments..] [options]
+  
+Options:
+  -h, --help    Show this screen.
+  -e            Evaluate Commandline Arguments
+Website:
+  github.com/benzap/eden
+Notes:
+  * Commandline Arguments are placed in the variable sys.args
+
+  #+END_SRC
+
+* Native Executable
+  
+  A native executable is planned for linux as debian and rpm packages
+  by generating a native image using GraalVM. In the future, GraalVM
+  should support windows, which would lead to an eden executable being
+  generated as a cross-platform scripting tool.
+
+
+* Features for Version 1.0.0 Stable Release
+
+  - Test Coverage for the entire standard language
+  - Better parser errors (might require a parser rewrite)
+  - support 'elseif clause in if conditionals
+  - additional language syntax for simplifying collection transformations
+    ie. person.age += 1, instead of person.age = person.age + 1
+    ie. x = [1 2]
+        x .= conj(3), instead of x = conj(x 3)
+  - Additional standard libraries.
+   - clojure.string (or use funcool.cuerdas, can it native compile?)
+   - json parse and stringify libs
+  - Implementation in clojurescript (currently compiles, but has bugs)
+  - Working repl
