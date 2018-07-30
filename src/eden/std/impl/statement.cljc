@@ -211,16 +211,17 @@
 
   Statement
   (evaluate-statement [_]
-    (try
-      (swap! *sm state/add-environment)
-      (doseq [stmt stmts]
-        (evaluate-statement stmt))
+    (binding [std.export/*enable-export?* true]
+      (try
+        (swap! *sm state/add-environment)
+        (doseq [stmt stmts]
+          (evaluate-statement stmt))
 
-      (catch #?(:clj ExceptionInfo :cljs js/Object) ex
-        (reset! *export-value (std.export/catch-export-value ex)))
+        (catch #?(:clj ExceptionInfo :cljs js/Object) ex
+          (reset! *export-value (std.export/catch-export-value ex)))
 
-      (finally
-        (swap! *sm state/remove-environment))))
+        (finally
+          (swap! *sm state/remove-environment)))))
 
   Expression
   (evaluate-expression [this]
@@ -238,7 +239,8 @@
 
   Statement
   (evaluate-statement [_]
-    (std.export/throw-export-value (evaluate-expression expr)))
+    (when std.export/*enable-export?*
+      (std.export/throw-export-value (evaluate-expression expr))))
 
   display/Display
   (display-node [_]
