@@ -40,10 +40,13 @@ undocumented, and error messages are close to non-existent./
   ;; The value of x plus 2 equals 6
   ;;
 
-  ;;
-  ;; Almost all of clojure's core libraries work out-of-the-box within
-  ;; eden
-  ;;
+#+END_SRC
+
+
+Almost all of clojures core libraries work out-of-the-box within eden
+
+
+#+BEGIN_SRC
 
   (eden/eval println(rest([1 2 3 4]))) ;; (2 3 4)
   (eden/eval
@@ -56,11 +59,13 @@ undocumented, and error messages are close to non-existent./
    ;; 3
    ;; 4
 
+#+END_SRC
 
-  ;;
-  ;; Even higher-level clojure functions work in eden
-  ;;
 
+Even higher-level clojure functions work in eden
+
+
+#+BEGIN_SRC
 
   (eden/eval
    local result = map(inc vector(1 2 3 4))
@@ -72,11 +77,11 @@ undocumented, and error messages are close to non-existent./
    println(sum))
   ;; 10
 
+#+END_SRC
 
-  ;;
-  ;; Functions written in eden can be used within clojure
-  ;;
+Functions written in *eden* can be used within clojure
 
+#+BEGIN_SRC
 
   (eden/eval
    function addfirst2(xs)
@@ -87,11 +92,11 @@ undocumented, and error messages are close to non-existent./
   (println (addfirst2 [1 2 3 4]))
   ;; 3
 
+#+END_SRC
 
-  ;;
-  ;; Functions written in clojure can be used within eden
-  ;; 
-
+Functions written in clojure can be used within *eden*
+ 
+#+BEGIN_SRC
 
   (defn hello [name]
     (str "Hello " name "!"))
@@ -99,12 +104,12 @@ undocumented, and error messages are close to non-existent./
   (eden/set-var! 'hello hello)
   (eden/eval hello("Ben")) ;; "Hello Ben!"
 
+#+END_SRC
 
-  ;;
-  ;; eden uses dot notation for retrieving and assigning to edn hash
-  ;; maps
-  ;;
+*eden* uses dot notation for retrieving and assigning to EDN
+collections, like vectors and hash maps.
 
+#+BEGIN_SRC
 
   (eden/eval
    local person = {}
@@ -122,10 +127,13 @@ undocumented, and error messages are close to non-existent./
    local list-of-letters = ["a" "b" "c"]
    println(list-of-letters[1])) ;; b
 
-  ;;
-  ;; The getter syntax makes it much easier to manipulate more complex
-  ;; collections.
-  ;;
+#+END_SRC
+
+
+The getter syntax makes it much easier to manipulate more complex
+collections.
+
+#+BEGIN_SRC
 
   (eden/eval
    local default-person = {}
