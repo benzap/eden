@@ -5,12 +5,14 @@
    [eden.std.statement :refer [Statement
                                evaluate-statement
                                STATEMENT##]]
-   [eden.std.expression :refer [evaluate-expression]]
+   [eden.std.expression :refer [Expression evaluate-expression]]
    [eden.std.exceptions :refer [parser-error]]
    [eden.std.display :as display :refer [display-node]]
    [eden.std.token :refer [TokenType token-type]]
    [eden.std.return :as std.return]
-   [eden.std.meta :as meta]))
+   [eden.std.export :as std.export]
+   [eden.std.meta :as meta])
+  #?(:clj (:import clojure.lang.ExceptionInfo)))
 
 
 (defn display-do-statement [stmts]
@@ -201,3 +203,43 @@
   display/Display
   (display-node [_]
     (str "(get-in " (display-node expr) " <expr>)")))
+
+
+(defrecord RequireModuleStatement [*sm spath stmts *export-value]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (try
+      (swap! *sm state/add-environment)
+      (doseq [stmt stmts]
+        (evaluate-statement stmt))
+
+      (catch #?(:clj ExceptionInfo :cljs js/Object) ex
+        (reset! *export-value (std.export/catch-export-value ex)))
+
+      (finally
+        (swap! *sm state/remove-environment))))
+
+  Expression
+  (evaluate-expression [this]
+    (evaluate-statement this)
+    @*export-value)
+
+  display/Display
+  (display-node [_]
+    (str "(require " spath ")")))
+
+
+(defrecord ExportModuleStatement [expr]
+  TokenType
+  (token-type [_] STATEMENT##)
+
+  Statement
+  (evaluate-statement [_]
+    (std.export/throw-export-value (evaluate-expression expr)))
+
+  display/Display
+  (display-node [_]
+    (str "(export " (display-node expr) ")")))

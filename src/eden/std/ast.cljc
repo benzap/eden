@@ -9,7 +9,9 @@
    [eden.std.impl.statement :as statement]
    [eden.std.reserved :refer [reserved?]]
    [eden.std.function :as std.function]
-   [eden.utils.symbol :as symbol]))
+   [eden.utils.symbol :as symbol]
+   [eden.std.module :as std.module]
+   [eden.std.evaluator :refer [read-file]]))
 
 
 (defn new-astm [*sm]
@@ -225,6 +227,10 @@
           (check-token (advance-token astm) token/identifier-assoc?))
      (check-token astm token/identifier-assoc?))
     (call-rule astm ::associate-chain)
+
+    (check-token astm 'export)
+    (let [[astm expr] (call-rule (advance-token astm) ::expression)]
+      [astm (statement/->ExportModuleStatement expr)])
 
     :else (call-rule astm ::statement)))
 
@@ -475,6 +481,18 @@
     (let [[astm expr-right] (call-rule (advance-token astm) ::primary)
           expr (expression/->NegationExpression expr-right)]
       [astm expr])
+
+    (check-token astm 'require)
+    (let [astm (advance-token astm)
+          smodule (current-token astm)
+          astm (consume-token astm string? "Module name must be a string")
+          spath (std.module/resolve-module-file-path smodule)]
+      (if (string? spath)
+        (let [tokens (read-file spath)
+              stmts (parse astm tokens)]
+          
+          [astm (statement/->RequireModuleStatement (:*sm astm) spath stmts (atom nil))])
+        (parser-error "Given module path needs to be a string.")))
 
     :else
     (let [[astm primary-expr] (call-rule astm ::anonymous-function)]
