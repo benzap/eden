@@ -243,9 +243,8 @@ For the latest version, please visit [[https://clojars.org/eden][clojars.org]]
 
   #+BEGIN_SRC
 
-  local age = atom(12)
-  person1 = atom({:first-name "Ben" :age 12})
-  person2 = person1
+  local person1 = atom({:first-name "Ben" :age 12})
+  local person2 = person1
                 
   swap!(person2 function(p) p.age = 13 return p end)
   println(deref(person1)) ;; {:first-name Ben, :age 13}
