@@ -377,6 +377,6 @@ Notes:
         x .= conj(3), instead of x = conj(x 3)
   - Additional standard libraries.
    - clojure.string (or use funcool.cuerdas, can it native compile?)
-   - json parse and stringify libs
+   - json parse and stringify libs (one that native compiles)
   - Implementation in clojurescript (currently compiles, but has bugs)
-  - Working repl
+  - Working repl (requires a better parser)
