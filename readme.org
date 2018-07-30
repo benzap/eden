@@ -5,247 +5,121 @@
 #+LANGUAGE: en
 #+OPTIONS: H:2 num:t toc:t \n:nil ::t |:t ^:t f:t tex:t
 
-/under development/
+[[https://travis-ci.org/benzap/fif][https://travis-ci.org/benzap/eden.svg?branch=master]]
 
-*eden* is an embedded scripting language in clojure for manipulating
- EDN data.
+[[https://clojars.org/fif][https://img.shields.io/clojars/v/eden.svg]]
 
-* Examples
+[[./doc/logo.svg]]
 
-Note that this is valid EDN data
+*eden* is a language akin to traditional scripting languages like lua,
+python or ruby. It is embeddable, extensible, sandboxed, and
+familiarly simple.
+
+*eden* is unique, in that it uses only valid EDN data values for data
+representation. This has the added benefit of ridiculously easy
+clojure interoperability.
+
+/eden is still in beta development, so things are going to be broken,
+undocumented, and error messages are close to non-existent./
 
 #+BEGIN_SRC clojure
-
-;; infix operators
-
-2 + 2 == 4 ;; true
-
-(2 + 2) * 4 == 9 ;; false
-
-;; variables are global
-
-num = 42
-
-s = "string"
-
-y = {:x 123}
-
-local x = 5 ;; local variables
-
-;; while loops
-
-while num < 50 do
-  num = num + 1
-end
-
-;; if clauses
-
-if num > 40 then
-  println ("over 40")
-elseif s != "walternate" then
-  print ("not over 40\n") 
-else
-  print ("Winter is coming")
-end
-
-
-;; comparator logic
-aBool = true
-
-if not aBool then print ("twas false") end
-
-ans = aBoolValue and "yes" or "no"
-
-;; for loops
-
-karlSum = 0
-for i = 1 , 100 do
-  karlSum = karlSum + i
-end
-
-
-;; no ipairs/pairs, but a typical foreach syntax for vectors
-x = [1 2 3 4]
-for i in x do
-  print (i " ") ;; 1 2 3 4
-end
-
-;; pairs are returned, which can be broken down with destructuring
-y = {:a "123" :b "456"}
-for obj in y do
-  print (obj " ") ;; [:a "123"] [:b "456"]
-end
-
-for [k v] in y do
-  println(k " - " v)
-  ;; :a - 123
-  ;; :b - 456
-end
-
-;; repeat until
-
-repeat
-  num = num - 1
-until num == 0
-
-;; functions
-
-function fib (n)
-  if n < 2 then return n end
-  return fib (n - 2) + fib (n - 1)
-end
-
-
-;; closures
-
-function adder (x)
-  return function (y) return x + y end
-end
-
-a1 = adder (2)
-a2 = adder (3)
-
-print (a1 (1))
-
-
-;; adopt destructuring over lua multiple return arguments
-
-;; interop? likely not.
-
-;; Lambda functions?
-
-local y = (x y) -> (x + y)
-
-
-;; multi-line statements are separated out using parenthesis
-
-function foo (y)
-  y = y + 1 ;; placing in brackets invokes a newline
-  y = y * 2
-end
-
-;; destructuring
-
-function pair (x y)
-  return [x y]
-end
-
-
-z = pair (1 2) ;; [1 2]
-[x y] = pair (2 3) ;; x = 2, y = 3
-
-
-function print-context(ctx)
-  {:keys [first-name last-name]} = ctx
-  println(first-name " " last-name)
-end
-
-
-;; map gets passed in as first argument
-print-context {:first-name "Ben" :last-name "Zaporzan"}
-
-
-;; maps are special objects, similar to lua tables
-
-x = {:first-name "Benjamin"}
-x.last-name = "Zaporzan"
-x.printName = (self) -> (println (self.first-name " " self.last-name)) 
-
-x.printName (x) ;; Benjamin Zaporzan
-x..printName () ;; Benjamin Zaporzan
-
-;; nested gets
-
-m = {:x {:y {:z 123}}}
-println (m.x.y.z) ;; 123
-println (m.x.y.z or 12) ;; 123
-println (m.x.y.w) ;; nil
-println (m.x.y.w or 13) ;; 13
-
-
-;; ISSUE: vectors don't have the same level of control as maps for representing lua tables
-;; implement vector functionality in map? (-) Complexity (+) Flexibility
-;; Solution: consider it a non-issue, wrap a vector in a map? (++)
-
-
-v = []
-push (v 1)
-push (v 2)
-push (v 3)
-
-println(v) ;; [1 2 3]
-println(v [0]) ;; 1 (0-indexed?!?!!)
-println(v.0) ;; 1
-
-
-;; different from lua, no weak referencing.
-
-x = {:a 123 :b "456"}
-y = {:x x :value 789}
-
-x.c = "Hello"
-println(x.c) ;; Hello
-println(y.x.c) ;; nil
-
-
-;; Functional Programming
-;; Note: functions are denoted with an asterisk to negate function calling
-
-inc = (x) -> (x + 1)
-print (
-  map(*inc [1 2 3 4]) ;;
-) ;; [2 3 4 5]
-
-
-;; Concatenation
-
-println ("Hello " .. "World!") ;; Hello World!
-
-
-;; metatables
-favs-proto = {
-  :animal "gru"
-  :food "donuts"
-}
-favs = {
-  :food "pizza"
-}
-setmeta (favs {:--index favs-proto})
-println (favs.animal) ;; gru
-println (favs.food) ;; donuts
-
-
-;; class-based programming
-
-Dog = {}
-
-Dog.new = (self) -> (
-  local obj = {:sound "woof"}
-  self.--index = self
-  return setmeta(obj, Dog)
-)
-
-Dog.make-sound = (self) -> (
-  print ("I say " .. self.sound)
-)
-
-dog = Dog..new ()
-dog..make-sound () ;; I say woof
-
-
-LoudDog = Dog..new()
-
-LoudDog.make-sound = (self) -> (
-  print ("I SAY!!! " self.sound)
-)
-
-seymour = LoudDog..new ()
-saymour.sound = "YIP!"
-seymour..make-sound () ;; I SAY YIP!
-
-
-;; This also works (magic)
-x = 2 + 2 * 4 println(x) ;; 10
-
-
+  (require '[eden.core :as eden])
+
+  (eden/eval println("Hello World!"))
+  ;; Hello World!
+  ;;
+
+  (eden/eval
+   local x = 2 + 2
+
+   function add2(x)
+     return x + 2
+   end
+
+   println("The value of x plus 2 equals" add2(x)))
+  ;; The value of x plus 2 equals 6
+  ;;
+
+  ;;
+  ;; Almost all of clojure's core libraries work out-of-the-box within
+  ;; eden
+  ;;
+
+  (eden/eval println(rest([1 2 3 4]))) ;; (2 3 4)
+  (eden/eval
+   local x = list(1 2 3 4)
+   for i in x do
+     println(i)
+   end)
+   ;; 1
+   ;; 2
+   ;; 3
+   ;; 4
+
+  ;;
+  ;; Even higher-level clojure functions work in eden
+  ;;
+  (eden/eval
+   local result = map(inc vector(1 2 3 4))
+   println(result))
+  ;; (2 3 4 5)
+
+  (eden/eval
+   local sum = reduce(function(a b) return a + b end list(1 2 3 4))
+   println(sum))
+  ;; 10
+   
+  ;; Functions written in eden can be used within clojure
+  (eden/eval
+   function addfirst2(xs)
+     return first(xs) + second(xs)
+   end)
+
+  (def addfirst2 (eden/get-var 'addfirst2))
+  (println (addfirst2 [1 2 3 4]))
+  ;; 3
+
+  ;;
+  ;; More advanced stuff
+  ;;
+
+  ;; eden uses dot notation for retrieving and assigning to edn hash maps
+  (eden/eval
+   local person = {}
+   person.first-name = "John"
+   person.last-name = "Doe"
+   person.age = 12
+   println(person))
+  ;; {:first-name John, :last-name Doe, :age 12}
+
+  ;; similarly, vectors can be accessed using square bracket notation
+  (eden/eval
+   local list-of-letters = ["a" "b" "c"]
+   println(list-of-letters[1])) ;; b
+
+  ;; These can be mixed together to manipulate more elaborate structures
+  (eden/eval
+   local default-person = {}
+   default-person.first-name = "John"
+   default-person.last-name = "Doe"
+
+   local display = function(p)
+     println(p.first-name "-" p.last-name)
+   end
+
+   local person-list = [
+     default-person
+     default-person
+   ]
+
+   person-list[0].first-name = "Ben"
+   person-list[0].last-name = "Z"
+   person-list[1].first-name = "Jane"
+   person-list[1].last-name "M"
+
+   println(person-list)
+   display(person-list[0]))
+   ;; [{:first-name Ben, :last-name Z} {:first-name Jane, :last-name Doe}]
+   ;; Ben - Z
 #+END_SRC
+

@@ -1,11 +1,12 @@
 (ns eden.core
-  (:refer-clojure :exclude [eval])
+  (:refer-clojure :exclude [eval read-string])
   (:require
    [eden.state-machine :refer [new-state-machine]]
    [eden.std.ast :refer [astm]]
    [eden.std.display :refer [display-node]]
    [eden.stdlib :refer [import-stdlib]]
-   [eden.def]))
+   [eden.def]
+   [eden.std.evaluator :refer [read-string read-file]]))
 
 
 (declare set-var!)
@@ -69,6 +70,12 @@
   `(eval-expression-fn (vec (quote ~tokens))))
 
 
+(defn eval-expression-string
+  [s]
+  (let [tokens (read-string s)]
+    (eval-expression-fn tokens)))
+
+
 ;; (eval-expression 2 + 2 * 4)
 
 
@@ -92,24 +99,11 @@
   `(eval-fn (vec (quote ~tokens))))
 
 
-;;(eval print "Hello World!")
+(defn eval-string [s]
+  (let [tokens (read-string s)]
+    (eval-fn tokens)))
 
 
-#_(eval-expression
-   10 != 12 and "Yes" or "No")
-
-#_(eval
-   print("Test")
-   x = 2 + 2 * 4
-   print(x))
-
-#_(get-var 'x)
-
-
-#_(eval-expression
-   4 - 2 + 2)
-
-
-#_(eval
-   x = {:value 12}
-   print x.value) ;; 12
+(defn eval-file [spath]
+  (let [tokens (read-file spath)]
+    (eval-fn tokens)))

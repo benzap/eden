@@ -271,13 +271,10 @@
   [astm]
   (let [[astm conditional-expr] (call-rule (advance-token astm) ::expression)
         ;; TODO: expect 'do
-        astm (advance-token astm)
-        [astm stmts] (parse-statements astm)]
-    (cond
-      (check-token astm 'end)
-      [(advance-token astm) (statement/->WhileStatement (:*sm astm) conditional-expr stmts)]
-      
-      :else (parser-error "Failed to find end of while conditional"))))
+        astm (consume-token astm 'do "Expected 'do' token after while conditional.")
+        [astm stmts] (parse-statements astm)
+        astm (consume-token astm 'end "Expected 'end' token after while statements.")]
+    [astm (statement/->WhileStatement (:*sm astm) conditional-expr stmts)]))
 
 
 (defn repeat-statement-rule
@@ -473,12 +470,12 @@
   (cond
 
     (check-token astm 'not)
-    (let [[astm expr-right] (call-rule (advance-token astm) ::primary)
+    (let [[astm expr-right] (call-rule (advance-token astm) ::expression)
           expr (expression/->NotExpression expr-right)]
       [astm expr])
 
     (check-token astm '-)
-    (let [[astm expr-right] (call-rule (advance-token astm) ::primary)
+    (let [[astm expr-right] (call-rule (advance-token astm) ::expression)
           expr (expression/->NegationExpression expr-right)]
       [astm expr])
 

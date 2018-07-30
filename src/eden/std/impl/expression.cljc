@@ -396,7 +396,7 @@
         (apply fcn args)
 
         :else
-        (parser-error "Given expression value is not callable."))))
+        (parser-error (str "Given expression value is not callable. '" fcn "'")))))
 
   display/Display
   (display-node [_]

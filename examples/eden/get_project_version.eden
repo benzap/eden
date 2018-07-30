@@ -1,0 +1,9 @@
+;; Get the version for the current project
+
+function get-project-version()
+  local s = slurp("project.clj")
+  local data = edn.parse(s)
+  return nth(data 2)
+end
+
+print get-project-version()
