@@ -5,9 +5,9 @@
 #+LANGUAGE: en
 #+OPTIONS: H:2 num:t toc:t \n:nil ::t |:t ^:t f:t tex:t
 
-[[https://travis-ci.org/benzap/fif][https://travis-ci.org/benzap/eden.svg?branch=master]]
+[[https://travis-ci.org/benzap/eden][https://travis-ci.org/benzap/eden.svg?branch=master]]
 
-[[https://clojars.org/fif][https://img.shields.io/clojars/v/eden.svg]]
+[[https://clojars.org/eden][https://img.shields.io/clojars/v/eden.svg]]
 
 [[./doc/logo.svg]]
 
