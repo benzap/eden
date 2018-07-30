@@ -9,7 +9,7 @@
 
 [[https://clojars.org/eden][https://img.shields.io/clojars/v/eden.svg]]
 
-[[./doc/logo.svg]]
+[[./doc/logo.png]]
 
 *eden* is a language akin to traditional scripting languages like lua,
 python or ruby. It is embeddable, extensible, sandboxed, and
