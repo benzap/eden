@@ -60,6 +60,8 @@ undocumented, and error messages are close to non-existent./
   ;;
   ;; Even higher-level clojure functions work in eden
   ;;
+
+
   (eden/eval
    local result = map(inc vector(1 2 3 4))
    println(result))
@@ -74,6 +76,8 @@ undocumented, and error messages are close to non-existent./
   ;;
   ;; Functions written in eden can be used within clojure
   ;;
+
+
   (eden/eval
    function addfirst2(xs)
      return first(xs) + second(xs)
@@ -85,10 +89,23 @@ undocumented, and error messages are close to non-existent./
 
 
   ;;
-  ;; More advanced stuff
+  ;; Functions written in clojure can be used within eden
+  ;; 
+
+
+  (defn hello [name]
+    (str "Hello " name "!"))
+
+  (eden/set-var! 'hello hello)
+  (eden/eval hello("Ben")) ;; "Hello Ben!"
+
+
+  ;;
+  ;; eden uses dot notation for retrieving and assigning to edn hash
+  ;; maps
   ;;
 
-  ;; eden uses dot notation for retrieving and assigning to edn hash maps
+
   (eden/eval
    local person = {}
    person.first-name = "John"
@@ -97,7 +114,10 @@ undocumented, and error messages are close to non-existent./
    println(person))
   ;; {:first-name John, :last-name Doe, :age 12}
 
+  ;;
   ;; similarly, vectors can be accessed using square bracket notation
+  ;;
+
   (eden/eval
    local list-of-letters = ["a" "b" "c"]
    println(list-of-letters[1])) ;; b
@@ -251,6 +271,36 @@ Notes:
   should support windows, which would lead to an eden executable being
   generated as a cross-platform scripting tool.
 
+* Module System
+
+  *eden* has a simple module system. eden will look for files based on
+  the current working directory, and any paths in the Environment
+  Variable EDEN_MODULE_PATH, which should contain comma-separated
+  directory paths.
+
+  As an example, assuming I have a file named test.eden in the current
+  working directory:
+
+  #+BEGIN_SRC
+  ;; test.eden
+
+  local print-hello = function(name)
+    return println(str("Hello " name "!"))
+  end
+
+  export {:hello print-hello}
+
+  #+END_SRC
+
+  importing the module is simple:
+
+  #+BEGIN_SRC
+  
+  test = require "test"
+
+  test.hello("Ben") ;; "Hello Ben!"
+
+  #+END_SRC
 
 * Features for Version 1.0.0 Stable Release
 
