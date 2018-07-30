@@ -379,3 +379,7 @@ Notes:
    - json parse and stringify libs (one that native compiles)
   - Implementation in clojurescript (currently compiles, but has bugs)
   - Working repl (requires a better parser)
+  - Something similar to lua tables ie. (defrecord EdenTable)
+  - Metafunctions, similar to lua metatable functions for
+    metaprogramming. Implement as clojure protocol, or as eden
+    functions in a metatable. (might be later version)
