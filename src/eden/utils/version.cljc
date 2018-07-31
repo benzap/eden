@@ -1,8 +1,9 @@
-(ns eden.utils.version)
+(ns eden.utils.version
+  (:import java.lang.System))
 
 
 (defn get-project-version []
-  (System/getProperty "eden.version"))
+  (java.lang.System/getProperty "eden.version"))
 
 
 (defn print-project-version []

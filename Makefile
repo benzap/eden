@@ -32,11 +32,11 @@ PROJ_EDEN_EXE := bin/$(EDEN_EXE_NAME)
 
 
 # default
-all: clean build-native
+all: clean build_native
 
 
 # Generate eden native executable
-build-native: $(PROF_EDEN_EXE)
+build_native: $(PROJ_EDEN_EXE)
 
 
 # Generate deb Package for native executable
@@ -68,6 +68,7 @@ install: $(PROJ_EDEN_EXE)
 clean:
 	rm -f $(PROJ_EDEN_EXE)
 	rm -rf dist
+	rm -rf bin
 
 
 distclean:
