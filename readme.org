@@ -337,8 +337,8 @@ collections.
    #+BEGIN_SRC
 
    local x = {
-   :x 2 + 2
-   :y 3 - 2
+     :x 2 + 2
+     :y 3 - 2
    }
 
    #+END_SRC
@@ -350,13 +350,13 @@ collections.
    #+BEGIN_SRC
 
    local x = {
-   :x (2 + 2)
-   :y (3 - 2)
+     :x (2 + 2)
+     :y (3 - 2)
    }
 
    ;; similarly for functions
    local y = {
-   :hello (function(name) return str("Hello " name "!") end)
+     :hello (function(name) return str("Hello " name "!") end)
    }
 
    #+END_SRC
