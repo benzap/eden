@@ -183,7 +183,7 @@ collections.
    can be run as follows with ~java~
 
    #+BEGIN_SRC sh
-   java -jar eden-standalone.jar <filename>
+   java -jar eden-<version>-standalone.jar <filename>
    #+END_SRC
 
 ** Clojure Installation
