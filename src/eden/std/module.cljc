@@ -4,7 +4,7 @@
   (:import java.io.File))
 
 
-(defn join-path* [p1 p2]
+(defn join-path* [^String p1 ^String p2]
   (let [f1 (File. p1)
         f2 (File. f1 p2)]
     (.getPath f2)))
@@ -14,7 +14,7 @@
   (reduce join-path* p))
 
 
-(defn is-file? [p]
+(defn is-file? [^String p]
   (let [f (File. p)]
     (.isFile f)))
 
@@ -23,7 +23,7 @@
 ;;(join-path "test/foo")
 
 
-(defn module-path->file-path [s]
+(defn module-path->file-path [^String s]
   (apply join-path (str/split s #"/")))
 
 
@@ -42,7 +42,7 @@
    ["."]))
 
 
-(defn resolve-module-file-path [s]
+(defn resolve-module-file-path [^String s]
   (loop [paths (reverse *eden-module-path-list*)]
     (if-not (empty? paths)
       (let [path (join-path (first paths) (module-path->file-path s))]

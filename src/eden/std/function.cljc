@@ -6,7 +6,8 @@
    [eden.std.statement :refer [evaluate-statement]]
    [eden.std.expression :refer [Expression evaluate-expression]]
    [eden.state-machine :as state])
-  #?(:clj (:import clojure.lang.ExceptionInfo)))
+  #?(:clj (:import clojure.lang.ExceptionInfo
+                   java.io.Writer)))
 
 
 (defn add-function-environment
@@ -145,12 +146,12 @@
 ;; Include multi-methods for printing, since EdenFunction includes
 ;; expressions with cyclic atom references.
 #?(:clj (defmethod print-method EdenFunction
-          [this out]
+          [this ^java.io.Writer out]
           (.write out "#EdenFunction{}")))
 
 
 #?(:clj (defmethod print-dup EdenFunction
-          [this out]
+          [this ^java.io.Writer out]
           (.write out "#EdenFunction{}")))
 
 ;; Extend EdenFunction in clojurescript for cyclic atom references
