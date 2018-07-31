@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+chmod 755 /usr/bin/EDEN_EXE_NAME
+rm -f /usr/bin/eden
+ln -s /usr/bin/EDEN_EXE_NAME /usr/bin/eden

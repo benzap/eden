@@ -1,0 +1,14 @@
+#+TITLE: Changelog for the Eden Scripting Language
+#+AUTHOR: Benjamin Zaporzan
+#+DATE: 2018-07-31
+#+EMAIL: benzaporzan@gmail.com
+#+LANGUAGE: en
+#+OPTIONS: H:2 num:t toc:t \n:nil ::t |:t ^:t f:t tex:t
+
+* 0.1.0 (BETA SNAPSHOT)
+  - First Beta Version of Eden
+
+* 0.2.0 (BETA SNAPSHOT)
+  - Added native build scripts for GraalVM, along with scripts for
+    building .deb packages and .rpm packages
+  - Tested on Ubuntu 17.10, with debian package created.

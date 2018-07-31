@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+rm -f /usr/bin/EDEN_EXE_NAME
+rm -f /usr/bin/eden
+

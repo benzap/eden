@@ -52,7 +52,7 @@ Notes:
      (let [[filename & args] arguments
            sform (slurp filename)]
        (eden/eval sys = sys or {})
-       (eden/eval (form sys.args = %clj args))
+       (eden/eval-fn (form sys.args = %clj (vec args)))
        (eden/eval-string sform)
        (flush))
 

@@ -1,4 +1,4 @@
-(defproject eden "0.1.0-SNAPSHOT"
+(defproject eden "0.2.0-SNAPSHOT"
   :description "lua-based scripting language in Clojure(script)"
   :url "http://github.com/benzap/eden"
   :license {:name "Eclipse Public License"
@@ -37,6 +37,8 @@
   :doo {:build "test"
         :alias {:default [:node]}}
 
+  :aliases {"project-version" ["run" "-m" "eden.utils.version/print-project-version"]}
+
   :profiles
   {:dev
    {:main eden.commandline
@@ -44,7 +46,7 @@
     :dependencies [[org.clojure/tools.namespace "0.2.11"]]
     :repl-options {:init-ns eden.dev.user
                    ;;:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
-                   :port 9005
+                   :port 9006
                    }}
    :uberjar
    {:jvm-opts ["-Dclojure.compiler.direct-linking=true"]

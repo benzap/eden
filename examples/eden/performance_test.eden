@@ -1,0 +1,8 @@
+;; Try running a few things that are likely slow
+
+println("Args: " sys)
+
+local x = range(10000)
+local y = map(inc x)
+
+println("Result: " count(y))

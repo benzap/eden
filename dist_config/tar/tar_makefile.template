@@ -1,0 +1,36 @@
+# Installation Script for fif binary executable on linux systems
+# To Install:
+#
+# make install
+#
+# To Remove:
+#
+# make distclean
+
+
+all: help
+
+
+help:
+	@echo "To Install:"
+	@echo "  $ make install"
+	@echo ""
+	@echo "To Remove:"
+	@echo "  $ make distclean"
+	@echo ""
+	@echo "Requires Root Privileges"
+
+
+install:
+	cp ./usr/bin/FIF_EXE_NAME /usr/bin/FIF_EXE_NAME
+	chmod 755 /usr/bin/FIF_EXE_NAME
+	rm -f /usr/bin/fif
+	ln -s /usr/bin/FIF_EXE_NAME /usr/bin/fif
+
+
+clean: help
+
+
+distclean:
+	rm -f /usr/bin/FIF_EXE_NAME
+	rm -f /usr/bin/fif
