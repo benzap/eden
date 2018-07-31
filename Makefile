@@ -24,6 +24,8 @@
 # Requires: GraalVM with GRAAL_HOME environment variable set to the
 # root of the graal folder (might work if you just have native-image on the path)
 
+
+PREFIX := /usr/bin
 EDEN_VERSION := $(shell lein project-version)
 EDEN_EXE_NAME := eden-$(EDEN_VERSION)
 PROJ_EDEN_EXE := bin/$(EDEN_EXE_NAME)
@@ -57,10 +59,10 @@ rpm: $(PROJ_EDEN_EXE)
 # Install Native Executable
 # Note: Tested in linux
 install: $(PROJ_EDEN_EXE)
-	cp $(PROJ_EDEN_EXE) /usr/bin/$(EDEN_EXE_NAME)
-	chmod 755 /usr/bin/$(EDEN_EXE_NAME)
-	rm -f /usr/bin/eden
-	ln -s /usr/bin/$(EDEN_EXE_NAME) /usr/bin/eden
+	cp $(PROJ_EDEN_EXE) $(PREFIX)/$(EDEN_EXE_NAME)
+	chmod 755 $(PREFIX)/$(EDEN_EXE_NAME)
+	rm -f $(PREFIX)/eden
+	ln -s $(PREFIX)/$(EDEN_EXE_NAME) $(PREFIX)/eden
 
 
 clean:
@@ -69,8 +71,8 @@ clean:
 
 
 distclean:
-	rm -f /usr/bin/$(EDEN_EXE_NAME)
-	rm -f /usr/bin/eden
+	rm -f $(PREFIX)/$(EDEN_EXE_NAME)
+	rm -f $(PREFIX)/eden
 
 
 $(PROJ_EDEN_EXE):
