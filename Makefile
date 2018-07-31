@@ -17,12 +17,16 @@
 #
 # $ make install
 #
+# or include a custom PREFIX to install elsewhere:
+#
+# $ PREFIX=~/.bin make install
+#
 # Configuration:
 #
 # Requires: leiningen
 #
 # Requires: GraalVM with GRAAL_HOME environment variable set to the
-# root of the graal folder (might work if you just have native-image on the path)
+# root of the graal folder (might work if you just have the command native-image on the path)
 
 
 PREFIX := /usr/bin

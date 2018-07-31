@@ -169,10 +169,28 @@ collections.
   *eden* requires clojure 1.9+
 
 * Installation
+** Native Executable
+   Native Executables can be found on the [[https://github.com/benzap/eden/releases][releases page]]
+   
+   There are currently native executables generated for debian-based
+   linux systems, and for rpm-based systems in the future.
 
-For the latest version, please visit [[https://clojars.org/eden][clojars.org]]
+   If you would like to generate your own native executable, please
+   follow the configuration instructions included in the Makefile.
 
-  *Leiningen/Boot*
+** Uberjar
+   Alternatively, the uberjar can be found on the [[https://github.com/benzap/eden/releases][releases page]], which
+   can be run as follows with ~java~
+
+   #+BEGIN_SRC sh
+   java -jar eden-standalone.jar <filename>
+   #+END_SRC
+
+** Clojure Installation
+
+   For the latest version, please visit [[https://clojars.org/eden][clojars.org]]
+
+   *Leiningen/Boot*
   
   #+BEGIN_SRC clojure
 
@@ -180,7 +198,7 @@ For the latest version, please visit [[https://clojars.org/eden][clojars.org]]
 
   #+END_SRC
 
-  *Clojure CLI/deps.edn*
+   *Clojure CLI/deps.edn*
 
   #+BEGIN_SRC clojure
 
@@ -188,7 +206,7 @@ For the latest version, please visit [[https://clojars.org/eden][clojars.org]]
 
   #+END_SRC
 
-  *Gradle*
+   *Gradle*
 
   #+BEGIN_SRC groovy
 
@@ -196,7 +214,7 @@ For the latest version, please visit [[https://clojars.org/eden][clojars.org]]
 
   #+END_SRC
 
-  *Maven*
+   *Maven*
 
   #+BEGIN_SRC xml
 
@@ -257,36 +275,14 @@ For the latest version, please visit [[https://clojars.org/eden][clojars.org]]
   repl, but this is something i'm hoping to include in the future
   when the parser is more mature.
 
-  #+BEGIN_SRC
-
-eden Language Commandline eval
-Usage:
-  eden <options>
-  eden <filename> [arguments..] [options]
-  
-Options:
-  -h, --help    Show this screen.
-  -e            Evaluate Commandline Arguments
-Website:
-  github.com/benzap/eden
-Notes:
-  * Commandline Arguments are placed in the variable sys.args
-
-  #+END_SRC
-
-* Native Executable
-  
-  A native executable is planned for linux as debian and rpm packages
-  by generating a native image using GraalVM. In the future, GraalVM
-  should support windows, which would lead to an eden executable being
-  generated as a cross-platform scripting tool.
-
 * Module System
 
   *eden* has a simple module system. eden will look for files based on
   the current working directory, and any paths in the Environment
   Variable EDEN_MODULE_PATH, which should contain comma-separated
   directory paths.
+
+  /Currently broken, only works in current working directory/
 
   As an example, assuming I have a file named test.eden in the current
   working directory:
@@ -365,6 +361,63 @@ Notes:
 
    #+END_SRC
 
+
+* Differences between Lua and Eden
+** Array Indexing
+   eden uses zero-indexing for array types, whereas lua uses
+   one-indexing for array types.
+   
+   #+BEGIN_SRC lua
+    -- Lua
+    x = {"A", "B", "C"}
+    print(x[1]) -- A
+   #+END_SRC
+
+   #+BEGIN_SRC clojure
+    ;; eden
+    x = ["A" "B" "C"]
+    println(x[1]) ;; B
+   #+END_SRC
+** Module Systems
+   *eden* adopts a module system with the special keyword ~export~ for
+   exporting, whereas Lua reuses ~return~ to represent the module
+   export.
+
+   #+BEGIN_SRC lua
+     -- Lua
+     local x = {}
+     x.test = function()
+       print("test!")
+     end
+
+     return x
+   #+END_SRC
+
+   #+BEGIN_SRC clojure
+     ;; eden
+     local x = {}
+     x.test = function()
+       println("test!")
+     end
+
+     export x
+   #+END_SRC
+
+
+* Development
+** Uberjar
+   Run ~lein uberjar~
+** Native Executable Distribution
+   Please read the Makefile for instructions on how to native compile
+   *eden* using GraalVM.
+*** Debian DPKG
+    ~make dpkg~
+*** Redhat RPM
+    ~make rpm~
+*** Tar Archive
+    ~make tar~
+** Testing
+   Tests can be run with ~lein test~
 * Features for Version 1.0.0 Stable Release
 
   - Test Coverage for the entire standard language
