@@ -99,4 +99,5 @@
 
 (defn set-variable!
   [eden name value]
-  (swap! (:*sm eden) state/set-global-var name value))
+  (swap! (:*sm eden) state/set-global-var name value)
+  eden)
