@@ -164,6 +164,25 @@ collections.
 
 #+END_SRC
 
+* Rationale
+
+  *eden* was developed to be a embedded language within a natively
+  compiled clojure application (GraalVM'a native-image). It can be
+  used to expose the application API so that a userbase can create
+  plugins in a sandboxed environment. The applications of *eden*
+  within clojure are very similar to the applications of lua within
+  c/c++.
+
+  *eden* can also be used as a standalone scripting language. A
+  natively compiled commandline tool has been developed, and can be
+  used to manipulate EDN files similar to how you would implement JSON
+  files in javascript. Everything is still in its early stages, so I
+  would not recommend using it in a production setting.
+
+  I also plan on compiling *eden* to clojurescript, although the
+  applications of eden within clojurescript are not of interest to me
+  at the moment.
+
 * Requirements
   
   *eden* requires clojure 1.9+
@@ -173,10 +192,32 @@ collections.
    Native Executables can be found on the [[https://github.com/benzap/eden/releases][releases page]]
    
    There are currently native executables generated for debian-based
-   linux systems, and for rpm-based systems in the future.
+   linux systems, and for rpm-based systems.
 
    If you would like to generate your own native executable, please
    follow the configuration instructions included in the Makefile.
+
+   An example use:
+
+   #+BEGIN_SRC sh
+   $ eden -e "println(\"Hello World!\")"
+   #+END_SRC
+
+   #+BEGIN_SRC clojure
+   ;; hello.eden
+
+   function hello(name)
+     return str("Hello " name "!")
+   end
+
+   local name = sys.args[0] or "there"
+   println(hello(name))
+   #+END_SRC
+
+   #+BEGIN_SRC sh
+   $ eden hello.eden ben
+   Hello ben!
+   #+END_SRC
 
 ** Uberjar
    Alternatively, the uberjar can be found on the [[https://github.com/benzap/eden/releases][releases page]], which
