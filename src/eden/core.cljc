@@ -9,9 +9,6 @@
    [eden.std.evaluator :refer [read-string read-file]]))
 
 
-(declare set-var!)
-
-
 (defn new-eden-instance []
   (let [*sm (atom (new-state-machine))]
     {:*sm *sm

@@ -258,3 +258,52 @@
      local result = add2(2))
 
     (is (= (eden/get-var 'result) 4))))
+
+
+(deftest indexed-association
+  (testing "Main Test"
+    (with-test-instance
+      (teval
+       local x = {}
+       x.test = :test
+       x.a.b = 123)
+      (is (= {:test :test :a {:b 123}} (eden/get-var 'x))))
+
+    (with-test-instance
+      (teval
+       local x = [:test :test :test]
+       local y = [1 2 3]
+       x[0] = y[0]
+       x[1] = y[1]
+       x[2] = y[2])
+      (is (= [1 2 3] (eden/get-var 'x))))
+
+    (with-test-instance
+      (teval
+       local x = [{:a [{} {:b 123}]}]
+       local y = x[0].a[1].b)
+      (is (= 123 (eden/get-var 'y))))
+
+    (with-test-instance
+      (teval
+       local x = [{:a [{} {:b 123}]}]
+       x.[0].a[0].c = 124
+       local y = x[0].a[0].c)
+      (is (= 124 (eden/get-var 'y))))))
+
+(deftest primary-expressions
+  (testing "Main Test"
+    (with-test-instance
+      (teval
+       local xmap = true
+       local ymap = not xmap)
+      (is (= true (eden/get-var 'xmap)))
+      (is (= false (eden/get-var 'ymap))))
+
+    (with-test-instance
+      (teval
+       local x = "some-string"
+       print(string)
+       local y = string.upper-case(x))
+      (is (= "some-string" (eden/get-var 'x)))
+      (is (= "SOME-STRING" (eden/get-var 'y))))))

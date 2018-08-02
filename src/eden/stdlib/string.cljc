@@ -3,6 +3,7 @@
    [clojure.string :as str]
    [eden.def :refer [set-variable! set-function!]]))
 
+
 (def string
   {:blank? str/blank?
    :capitalize str/capitalize
@@ -29,4 +30,5 @@
 
 (defn import-stdlib-string
   [eden]
-  (set-variable! eden 'string string))
+  (-> eden
+      (set-variable! 'string string)))

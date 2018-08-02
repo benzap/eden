@@ -5,7 +5,7 @@
 
 
 (def edn {:parse edn/read-string
-          :stringify pr})
+          :stringify pr-str})
 
 
 (defn import-stdlib-edn
