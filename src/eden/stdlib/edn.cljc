@@ -1,7 +1,7 @@
 (ns eden.stdlib.edn
   (:require
    [clojure.tools.reader.edn :as edn]
-   [eden.def :refer [set-variable! set-function!]]))
+   [eden.def :refer [set-var!]]))
 
 
 (def edn {:parse edn/read-string
@@ -10,5 +10,5 @@
 
 (defn import-stdlib-edn
   [eden]
-  (set-variable! eden 'edn edn))
+  (set-var! eden 'edn edn))
 

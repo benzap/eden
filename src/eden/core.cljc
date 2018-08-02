@@ -32,16 +32,8 @@
 
 (defn set-var!
   [identifier value]
-  (swap! (:*sm *default-eden-instance*) eden.state-machine/set-global-var identifier value)
+  (eden.def/set-var! *default-eden-instance* identifier value)
   nil)
-
-
-(defn set-function! [identifier value]
-  (eden.def/set-function! *default-eden-instance* identifier value)
-  nil)
-
-
-(def wrap-function eden.def/wrap-function)
 
 
 (defn get-var

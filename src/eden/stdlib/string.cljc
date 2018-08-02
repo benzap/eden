@@ -1,7 +1,7 @@
 (ns eden.stdlib.string
   (:require
    [clojure.string :as str]
-   [eden.def :refer [set-variable! set-function!]]))
+   [eden.def :refer [set-var!]]))
 
 
 (def string
@@ -31,4 +31,4 @@
 (defn import-stdlib-string
   [eden]
   (-> eden
-      (set-variable! 'string string)))
+      (set-var! 'string string)))
