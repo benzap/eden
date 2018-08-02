@@ -183,6 +183,21 @@
   [astm]
   (cond
 
+    ;; local function declaration
+    (and (check-token astm 'local)
+         (check-token (advance-token astm) 'function)
+         (check-token (advance-token (advance-token astm)) identifier?))
+    (let [astm (advance-token astm)
+          astm (advance-token astm)
+          var (current-token astm)
+          astm (consume-token astm identifier? "Function name must be a non-reserved word.")
+          params (current-token astm)
+          astm (consume-token astm list?
+                              (str "Parameters must be provided in the form of a list." params))
+          [astm stmts] (parse-statements astm)
+          fcn (std.function/->EdenFunction (:*sm astm) params stmts (atom nil))]
+      [(advance-token astm) (statement/->DeclareLocalVariableStatement (:*sm astm) var fcn)])
+
     ;; function declaration
     (and (check-token astm 'function)
          (check-token (advance-token astm) identifier?))
@@ -336,11 +351,6 @@
 (defn statement-rule
   [astm]
   (cond
-    (check-token astm 'print)
-    (let [[astm expr] (call-rule (advance-token astm) ::expression)
-          stmt (statement/->PrintStatement expr)]
-      [astm stmt])
-
     (check-token astm 'if)
     (call-rule astm ::if-statement)
 
@@ -470,12 +480,12 @@
   (cond
 
     (check-token astm 'not)
-    (let [[astm expr-right] (call-rule (advance-token astm) ::expression)
+    (let [[astm expr-right] (call-rule (advance-token astm) ::primary)
           expr (expression/->NotExpression expr-right)]
       [astm expr])
 
     (check-token astm '-)
-    (let [[astm expr-right] (call-rule (advance-token astm) ::expression)
+    (let [[astm expr-right] (call-rule (advance-token astm) ::primary)
           expr (expression/->NegationExpression expr-right)]
       [astm expr])
 

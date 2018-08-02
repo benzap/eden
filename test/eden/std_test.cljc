@@ -1,0 +1,260 @@
+(ns eden.std-test
+  (:require
+   [clojure.test :refer [deftest is testing]]
+   [eden.core :as eden :include-macros true]
+   [eden-test.utils :refer [teval-expression teval are-eq* with-test-instance]
+    :include-macros true]))
+
+(deftest basic-arithmetic-addition-subtraction
+  (testing "Addition / Subtraction"
+    (are-eq*
+     (teval-expression 2 + 2)
+     
+     => 4
+
+     (teval-expression 2 + 2 - 4)
+     
+     => 0
+
+     (teval-expression 4 - 2 + 2)
+     
+     => 4)))
+
+
+(deftest basic-arithmetic-multiplication-division
+  (testing "Multiplication / Division"
+    (are-eq*
+     (teval-expression 2 * 4)
+     
+     => 8
+
+     (teval-expression 2 / 4.)
+     
+     => 0.5)))
+
+
+(deftest basic-arithmetic-equality
+  (testing "Equality / Non-equality"
+    (are-eq*
+     (teval-expression 2 == 2)
+     
+     => true
+
+     (teval-expression 2 != 2)
+     
+     => false
+
+     (teval-expression 2 + 2 == 2 * 2)
+     
+     => true
+
+     (teval-expression 2 - 2 != 2 / 2)
+     
+     => true)))
+
+
+(deftest logical-comparators
+  (testing "Logical And / Or"
+    (are-eq*
+     (teval-expression 2 == 2 and "true" or "false")
+     
+     => "true"
+
+     (teval-expression 2 != 2 and "true" or "false")
+     
+     => "false"))
+
+  (testing "Logical Not"
+    (with-test-instance
+      (teval
+       x = 5
+       y = not (x == 5) and :yes or :no)
+      (is (= :no (eden/get-var 'y))))
+
+    (with-test-instance
+      (teval
+       x = 5
+       y = not (x != 5 and true or false))
+      (is (= true (eden/get-var 'y))))
+    
+    (with-test-instance
+      (teval
+       x = 5
+       y = not (x != 5))
+      (is (= true (eden/get-var 'y))))
+
+    (with-test-instance
+      (teval
+       x = 5
+       y = not (not (x != 5)))
+      (is (= false (eden/get-var 'y))))))
+
+
+(deftest group-expressions
+  (testing "Grouping Expressions"
+    (are-eq*
+     (teval-expression (2 + 2) * 4)
+     
+     => 16
+
+     (teval-expression (2 * 2 + 4) and "t" or "f")
+     
+     => "t"
+
+     (teval-expression (2 + 3) * (2 + 4))
+     
+     => 30)))
+
+
+(deftest negation
+  (testing "Main Test"
+    (are-eq*
+     (teval-expression - 2 + 2)
+     
+     => 0)))
+
+
+(deftest declaration-and-assignment
+  (testing "Declaring Variable"
+    (with-test-instance
+      (teval x = 5)
+      (is (= (eden/get-var 'x) 5)))))
+
+
+(deftest reassigning-variable
+  (testing "Reassigning Variable"
+    (with-test-instance
+      (teval x = 5 x = 10)
+      (is (= (eden/get-var 'x) 10)))
+
+    (with-test-instance
+      (teval local x = 5 x = 10)
+      (is (= (eden/get-var 'x) 10)))
+
+    (with-test-instance
+      (teval local x = 5 local x = 10)
+      (is (= (eden/get-var 'x) 10)))
+
+    (with-test-instance
+      (teval x = 5 local x = 10)
+      (is (= (eden/get-var 'x) 10)))))
+
+
+(deftest if-conditional
+  (testing "Main Test"
+    (with-test-instance
+      (teval
+       x = 5
+       local chk? = nil
+       if x < 2 and x > 5 then
+         chk? = :first
+       else
+         chk? = :second
+       end)
+      (is (= :second (eden/get-var 'chk?))))
+
+    (with-test-instance
+      (teval
+       x = -1
+       local chk? = nil
+       if x < 2 or x > 5 then
+         chk? = :first
+       else
+         chk? = :second
+       end)
+      (is (= :first (eden/get-var 'chk?))))))
+
+
+(deftest while-conditional
+  (testing "Main Test"
+    (with-test-instance
+      (teval
+       local i = 0
+       while i < 5 do
+         i = i + 1
+       end)
+      (is (= 5 (eden/get-var 'i))))
+
+    (with-test-instance
+      (teval
+       local i = 0
+       while not (i > 5) do
+         i = i + 1
+       end)
+      (is (= 6 (eden/get-var 'i))))))
+
+
+(deftest until-conditional
+  (testing "Main Test"
+    (with-test-instance
+      (teval
+       local i = 0
+       repeat
+         i = i + 1
+       until i >= 5)
+      (is (= 5 (eden/get-var 'i))))))
+
+
+(deftest local-variable-1
+  (testing "Local Variable in if statement"
+    (with-test-instance
+      (teval
+       x = 5
+       if true then
+         local x = 2
+         y = x
+       end)
+    
+      (is (= (eden/get-var 'x) 5))
+      (is (= (eden/get-var 'y) 2)))))
+
+
+(deftest create-function
+  (with-test-instance
+    (teval
+     local add2 = function(x) return x + 2 end
+     local result = add2(2))
+
+    (is (= (eden/get-var 'result) 4)))
+
+  (with-test-instance
+    (teval
+     local x = {}
+     x.test1 = function() return 5 end
+     x.test2 = function() return 3 end
+     
+     y = x.test1() + x.test2())
+    (is (= 8 (eden/get-var 'y))))
+
+  ;; closure
+  (with-test-instance
+    (teval
+     function make-counter()
+       local count = 0
+       return function()
+         count = count + 1
+         return count
+       end
+     end
+     
+     local counter = make-counter()
+     counter()
+     y = counter())
+    (is (= 2 (eden/get-var 'y))))
+
+  ;; local function
+  (with-test-instance
+    (teval
+     local function add(x y)
+       return x + y
+     end
+     
+     local add = add(2 2))
+    (is (= 4 (eden/get-var 'add))))
+
+  (with-test-instance
+    (teval
+     function add2(x) return x + 2 end
+     local result = add2(2))
+
+    (is (= (eden/get-var 'result) 4))))

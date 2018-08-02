@@ -1,4 +1,4 @@
 (ns eden.dev.user)
 
-
-(def test 123)
+(println "*warn-on-reflection* enabled!")
+(set! *warn-on-reflection* true)

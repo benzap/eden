@@ -1,5 +1,5 @@
 (defproject eden "0.3.0-SNAPSHOT"
-  :global-vars {*warn-on-reflection* true}
+  ;;:global-vars {*warn-on-reflection* true}
   :description "lua-based scripting language in Clojure(script)"
   :url "http://github.com/benzap/eden"
   :license {:name "Eclipse Public License"
