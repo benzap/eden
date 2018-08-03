@@ -7,19 +7,12 @@
                                STATEMENT##]]
    [eden.std.expression :refer [Expression evaluate-expression]]
    [eden.std.exceptions :refer [parser-error]]
-   [eden.std.display :as display :refer [display-node]]
+   [eden.std.display :as display :refer [display-node display-do-statement]]
    [eden.std.token :refer [TokenType token-type]]
    [eden.std.return :as std.return]
    [eden.std.export :as std.export]
    [eden.std.meta :as meta])
   #?(:clj (:import clojure.lang.ExceptionInfo)))
-
-
-(defn display-do-statement [stmts]
-  (loop [s (str "(do") stmts stmts]
-    (if-not (empty? stmts)
-      (recur (str s " " (display-node (first stmts))) (rest stmts))
-      (str s ")"))))
 
 
 (defrecord PrintStatement [expr]
@@ -151,7 +144,7 @@
 
   display/Display
   (display-node [_]
-    (str "(for [" iter-var "(range " start " " end " " step ")]"
+    (str "(for [" iter-var "(range " start " " end " " step ")] "
          (display-do-statement stmts) ")")))
 
 
@@ -172,7 +165,7 @@
 
   display/Display
   (display-node [_]
-    (str "(for [" iter-var " " (display-node coll-expr) "]"
+    (str "(for [" iter-var " " (display-node coll-expr) "] "
          (display-do-statement stmts) ")")))
 
 

@@ -5,6 +5,7 @@
    [eden.state-machine.environment :as environment :refer [with-new-environment]]
    [eden.std.statement :refer [evaluate-statement]]
    [eden.std.expression :refer [Expression evaluate-expression]]
+   [eden.std.display :as display :refer [display-node display-do-statement]]
    [eden.state-machine :as state])
   #?(:clj (:import clojure.lang.ExceptionInfo
                    java.io.Writer)))
@@ -66,6 +67,13 @@
     (reset! *closure (environment/get-closure-environment *sm))
 
     this)
+
+  display/Display
+  (display-node [_]
+    (str "(fn " (vec params) " "
+         (display-do-statement stmts)))
+  
+  
 
   ;; Support calling the eden function from within clojure
   ;; the original interface goes to arg20, so...

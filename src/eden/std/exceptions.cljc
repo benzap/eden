@@ -29,3 +29,18 @@
   ([msg]
    (throw (ex-info (str "Not Implemented " msg) {:type ::not-implemented})))
   ([] (not-implemented "No Message")))
+
+
+(defn default-error-handler [ex]
+  (cond
+    (parser-error? ex)
+    (do
+      (println "Parser Error Caught")
+      (throw ex))
+
+    (runtime-error? ex)
+    (do
+      (println "Runtime Error Caught")
+      (throw ex))
+
+    :else (throw ex)))

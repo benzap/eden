@@ -215,7 +215,7 @@
 
 
 ;;
-;; Unary/Not/Negation
+;; Unary / Not / Negation
 ;;
 
 
@@ -400,7 +400,7 @@
 
   display/Display
   (display-node [_]
-    (loop [s (str "(call " (display-node expr)) arg-exprs arg-exprs]
+    (loop [s (str "(" (display-node expr)) arg-exprs arg-exprs]
       (if-not (empty? arg-exprs)
         (recur (str s " " (display-node (first arg-exprs))) (rest arg-exprs))
         (str s ")")))))
