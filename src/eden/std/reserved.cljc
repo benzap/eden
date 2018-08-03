@@ -13,6 +13,7 @@
 
     end
     if then else elseif
+    for in
     while do
     until repeat
     function ->
