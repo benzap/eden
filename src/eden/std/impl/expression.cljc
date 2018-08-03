@@ -2,7 +2,7 @@
   (:require
    [eden.state-machine :as state]
    [eden.std.display :as display :refer [display-node]]
-   [eden.std.exceptions :refer [parser-error]]
+   [eden.std.exceptions :refer [runtime-error]]
    [eden.std.expression :refer [Expression
                                 evaluate-expression
                                 EXPRESSION##]]
@@ -396,7 +396,7 @@
         (apply fcn args)
 
         :else
-        (parser-error (str "Given expression value is not callable. '" fcn "'")))))
+        (runtime-error (str "Given expression value is not callable. '" fcn "'")))))
 
   display/Display
   (display-node [_]

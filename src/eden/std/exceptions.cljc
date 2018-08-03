@@ -1,11 +1,27 @@
 (ns eden.std.exceptions)
 
 
+(defn generate-parser-data
+  [{:keys [tokens index] :as astm}]
+  {:index index
+   :window
+   (str 
+    (if (> index 1) "... " "")
+    (nth tokens (dec index)) " "
+    "<" (nth tokens index) "> "
+    (nth tokens (inc index))
+    (if (< index (- (count tokens) 3)) " ..." ""))})
+
+
 (defn parser-error
-  ([msg data]
-   (throw (ex-info (str "Eden Parser Error: " msg) {:type ::parser-error :data data})))
-  ([msg] (parser-error msg {}))
-  ([] (parser-error "No Message")))
+  ([astm msg extra]
+   (throw (ex-info (str "Eden Parser Error: " msg)
+                   {:type ::parser-error
+                    :msg msg
+                    :data (generate-parser-data astm)
+                    :extra extra})))
+  ([astm msg] (parser-error astm msg {}))
+  ([astm] (parser-error astm "No Message")))
 
 
 (defn parser-error? [ex]

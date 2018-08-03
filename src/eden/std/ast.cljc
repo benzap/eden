@@ -2,7 +2,7 @@
   (:require
    [eden.state-machine.environment :as environment]
    [eden.std.token :as token :refer [identifier?]]
-   [eden.std.exceptions :refer [parser-error]]
+   [eden.std.exceptions :as exceptions :refer [parser-error]]
    [eden.std.expression :as std.expression]
    [eden.std.impl.expression :as expression]
    [eden.std.statement :refer [evaluate-statement]]
@@ -30,7 +30,7 @@
   [astm head]
   (if-let [rule-fn (get (:rules astm) head)]
     (rule-fn astm)
-    (parser-error (str "Failed to find rule function: " head))))
+    (parser-error astm (str "Failed to find rule function: " head))))
 
 
 (defn eot?
@@ -46,17 +46,17 @@
 
 
 (defn previous-token
-  [{:keys [tokens index]}]
+  [{:keys [tokens index] :as astm}]
   (if-not (= index 0)
     (nth tokens (dec index))
-    (parser-error "Attempted to retrieve previous token while on the first token.")))
+    (parser-error astm "Attempted to retrieve previous token while on the first token.")))
 
 
 (defn next-token
   [{:keys [tokens index] :as astm}]
   (if-not (eot? (assoc astm :index (inc index)))
     (nth tokens (inc index))
-    (parser-error "Attempted to retrieve the next token while on the last token.")))
+    (parser-error astm "Attempted to retrieve the next token while on the last token.")))
 
 
 (defn advance-token
@@ -72,7 +72,7 @@
         token (current-token astm)]
     (if (chk-fn token)
       (advance-token astm)
-      (parser-error msg))))
+      (parser-error astm msg))))
 
 
 (defn check-token
@@ -279,7 +279,7 @@
       [(advance-token astm) (statement/->IfConditionalStatement
                              (:*sm astm) conditional-expr truthy-stmts [])]
 
-      :else (parser-error "Failed to find end of if conditional"))))
+      :else (parser-error astm "Failed to find end of if conditional"))))
 
 
 (defn while-statement-rule
@@ -333,7 +333,7 @@
             astm (consume-token astm #(= % 'end) "Incorrect 'for' Statement Syntax. Expected 'end'")]
         [astm (statement/->ForEachStatement (:*sm astm) iter-var coll-expr stmts)])
 
-      :else (parser-error "Incorrect For Statement Syntax"))))
+      :else (parser-error astm "Incorrect For Statement Syntax"))))
 
 
 (defn return-statement-rule
@@ -494,12 +494,18 @@
           smodule (current-token astm)
           astm (consume-token astm string? "Module name must be a string")
           spath (std.module/resolve-module-file-path smodule)]
-      (if (string? spath)
+      (cond
+        (string? spath)
         (let [tokens (read-file spath)
               stmts (parse astm tokens)]
           
           [astm (statement/->RequireModuleStatement (:*sm astm) spath stmts (atom nil))])
-        (parser-error "Given module path needs to be a string.")))
+
+        (nil? spath)
+        (parser-error astm (str "Given module '" smodule "' could not be found"))
+
+        :else
+        (parser-error astm "Given module path needs to be a string.")))
 
     :else
     (let [[astm primary-expr] (call-rule astm ::anonymous-function)]
@@ -582,7 +588,7 @@
     (check-token astm identifier?)
     [(advance-token astm) (expression/->IdentifierExpression (:*sm astm) (current-token astm))]
 
-    :else (parser-error (str "Failed to parse expression token: " (current-token astm)))))
+    :else (parser-error astm (str "Failed to parse expression token: " (current-token astm)))))
 
 
 (defn astm

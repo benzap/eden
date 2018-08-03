@@ -303,7 +303,6 @@
     (with-test-instance
       (teval
        local x = "some-string"
-       print(string)
        local y = string.upper-case(x))
       (is (= "some-string" (eden/get-var 'x)))
       (is (= "SOME-STRING" (eden/get-var 'y))))))

@@ -6,7 +6,7 @@
                                evaluate-statement
                                STATEMENT##]]
    [eden.std.expression :refer [Expression evaluate-expression]]
-   [eden.std.exceptions :refer [parser-error]]
+   [eden.std.exceptions :refer [runtime-error]]
    [eden.std.display :as display :refer [display-node display-do-statement]]
    [eden.std.token :refer [TokenType token-type]]
    [eden.std.return :as std.return]
@@ -161,7 +161,7 @@
           (swap! *sm state/set-local-var iter-var item)
           (doseq [stmt stmts]
             (evaluate-statement stmt))))
-      (parser-error "Invalid collection in for-each statement.")))
+      (runtime-error "Invalid collection in for-each statement.")))
 
   display/Display
   (display-node [_]
@@ -223,7 +223,7 @@
 
   display/Display
   (display-node [_]
-    (str "(require " spath ")")))
+    (str "(require " (pr-str spath) ")")))
 
 
 (defrecord ExportModuleStatement [expr]
