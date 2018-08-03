@@ -12,3 +12,8 @@
   - Added native build scripts for GraalVM, along with scripts for
     building .deb packages and .rpm packages
   - Tested on Ubuntu 17.10, with debian package created.
+* 0.3.0 (BETA SNAPSHOT)
+  - Added several more unit tests for the language standard
+  - Added string module, which is a direct of clojure.string
+  - Fixed edn module, which includes the functions edn.parse and edn.stringify
+  - Improved Parser Error Messages, still requires work
