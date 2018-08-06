@@ -465,7 +465,7 @@ collections.
 
   - Test Coverage for the entire standard language
   - Better parser errors (might require a parser rewrite)
-  - -support 'elseif clause in if conditionals-
+  - +support 'elseif clause in if conditionals+ (added in 0.4.0-SNAPSHOT)
   - additional language syntax for simplifying collection transformations
     ie. person.age += 1, instead of person.age = person.age + 1
     ie. x = [1 2]
