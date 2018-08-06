@@ -201,9 +201,11 @@ collections.
 
    #+BEGIN_SRC sh
    $ eden -e "println(\"Hello World!\")"
+   Hello World!
+   $
    #+END_SRC
 
-   #+BEGIN_SRC clojure
+   #+BEGIN_SRC
    ;; hello.eden
 
    function hello(name)
@@ -235,7 +237,7 @@ collections.
   
   #+BEGIN_SRC clojure
 
-  [eden "0.3.0-SNAPSHOT"]
+  [eden "0.4.0-SNAPSHOT"]
 
   #+END_SRC
 
@@ -243,7 +245,7 @@ collections.
 
   #+BEGIN_SRC clojure
 
-  eden {:mvn/version "0.3.0-SNAPSHOT"}
+  eden {:mvn/version "0.4.0-SNAPSHOT"}
 
   #+END_SRC
 
@@ -251,7 +253,7 @@ collections.
 
   #+BEGIN_SRC groovy
 
-  compile 'eden:eden:0.3.0-SNAPSHOT'
+  compile 'eden:eden:0.4.0-SNAPSHOT'
 
   #+END_SRC
 
@@ -262,7 +264,7 @@ collections.
   <dependency>
     <groupId>eden</groupId>
     <artifactId>eden</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.4.0-SNAPSHOT</version>
   </dependency>
 
   #+END_SRC
@@ -463,7 +465,7 @@ collections.
 
   - Test Coverage for the entire standard language
   - Better parser errors (might require a parser rewrite)
-  - support 'elseif clause in if conditionals
+  - -support 'elseif clause in if conditionals-
   - additional language syntax for simplifying collection transformations
     ie. person.age += 1, instead of person.age = person.age + 1
     ie. x = [1 2]
