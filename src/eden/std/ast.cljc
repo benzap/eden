@@ -595,7 +595,7 @@
     [(advance-token astm)
      (expression/->HashSetExpression
       (set (for [val (current-token astm)]
-             (parse-expression astm [val]))))]
+             (parse-expression astm [val]))))] 
 
     (check-token astm identifier?)
     [(advance-token astm) (expression/->IdentifierExpression (:*sm astm) (current-token astm))]

@@ -4,7 +4,8 @@
    [eden.stdlib.collection :refer [import-stdlib-collection]]
    [eden.stdlib.edn :refer [import-stdlib-edn]]
    [eden.stdlib.string :refer [import-stdlib-string]]
-   [eden.stdlib.operator :refer [import-stdlib-operator]]))
+   [eden.stdlib.operator :refer [import-stdlib-operator]]
+   [eden.stdlib.system :refer [import-stdlib-system]]))
 
 
 (defn import-stdlib [eden]
@@ -13,4 +14,5 @@
       import-stdlib-collection
       import-stdlib-edn
       import-stdlib-string
-      import-stdlib-operator))
+      import-stdlib-operator
+      import-stdlib-system))

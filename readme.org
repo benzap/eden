@@ -212,7 +212,7 @@ collections.
      return str("Hello " name "!")
    end
 
-   local name = sys.args[0] or "there"
+   local name = system.args[0] or "there"
    println(hello(name))
    #+END_SRC
 
