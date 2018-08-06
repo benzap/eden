@@ -389,7 +389,7 @@
           args (for [arg-expr arg-exprs]
                  (evaluate-expression arg-expr))]
       (cond
-        (std.meta/eden-callable? fcn)
+        (satisfies? std.meta/EdenCallable fcn)
         (std.meta/__call fcn args)
 
         (or (fn? fcn) (ifn? fcn))

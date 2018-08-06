@@ -5,14 +5,6 @@
   (__call [this args]))
 
 
-(defn eden-callable? [obj]
-  (satisfies? EdenCallable obj))
-
-
-(defprotocol EdenIndexable
-  (__index [this index]))
-
-
 ;; Similar to lua's __newindex
 (defprotocol EdenAssociative
   (__assoc [this index value]))
