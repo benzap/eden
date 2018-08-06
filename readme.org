@@ -471,8 +471,9 @@ collections.
     ie. x = [1 2]
         x .= conj(3), instead of x = conj(x 3)
   - Additional standard libraries.
-   - clojure.string (or use funcool.cuerdas, can it native compile?)
-   - json parse and stringify libs (one that native compiles)
+  - +clojure.string (or use funcool.cuerdas, can it native compile?)+
+    (added in 0.3.0-SNAPSHOT)
+  - +json parse and stringify libs (one that native compiles)+ (added in 0.3.0-SNAPSHOT)
   - Implementation in clojurescript (currently compiles, but has bugs)
   - Working repl (requires a better parser)
   - Something similar to lua tables ie. (defrecord EdenTable)
