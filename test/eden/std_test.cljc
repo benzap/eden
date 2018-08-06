@@ -162,7 +162,72 @@
        else
          chk? = :second
        end)
-      (is (= :first (eden/get-var 'chk?))))))
+      (is (= :first (eden/get-var 'chk?))))
+
+    (with-test-instance
+      (teval
+       chk? = false
+       local age = 24
+       if age < 18 then
+         chk? = 1
+       elseif age >= 18 and age < 50 then
+         chk? = 2
+       else
+         chk? = 3
+       end)
+      (is (= 2 (eden/get-var 'chk?))))
+
+    (with-test-instance
+      (teval
+       function check-age(age)
+         if age < 18 then
+           return 1
+         elseif age >= 18 and age < 50 then
+           return 2
+         else
+           return 3
+         end
+       end
+
+       chk1 = check-age(12)
+       chk2 = check-age(19)
+       chk3 = check-age(50))
+      (is (= 1 (eden/get-var 'chk1)))
+      (is (= 2 (eden/get-var 'chk2)))
+      (is (= 3 (eden/get-var 'chk3))))))
+
+
+(deftest for-each-loop
+  (testing "Main Test"
+    (with-test-instance
+      (teval
+       local x = [1 2 3]
+       local y = []
+       for i in x do
+         y = conj(y i * i)
+       end)
+      (is (= [1 4 9] (eden/get-var 'y))))))
+
+
+(deftest for-loop
+  (testing "Main Test"
+    (with-test-instance
+      (teval
+       local x = []
+       for i = 1 5 1 do
+         x = conj(x i)
+       end)
+      
+      (is (= [1 2 3 4 5] (eden/get-var 'x))))
+
+    (with-test-instance
+      (teval
+       local x = []
+       for i = 0 4 2 do
+         x = conj(x i)
+       end)
+      
+      (is (= [0 2 4] (eden/get-var 'x))))))
 
 
 (deftest while-conditional
