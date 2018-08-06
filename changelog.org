@@ -17,3 +17,26 @@
   - Added string module, which is a direct of clojure.string
   - Fixed edn module, which includes the functions edn.parse and edn.stringify
   - Improved Parser Error Messages, still requires work
+* 0.4.0 (BETA SNAPSHOT)
+  - Added support for 'elseif' keyword
+
+    ex.
+
+    #+BEGIN_SRC
+
+    function check-age(age)
+      if age < 18 then
+        println("Under-age")
+      elseif age >= 18 and age < 50 then
+        println("Average-age")
+      else
+        println("Senior-age")
+      end
+    end
+
+    check-age(16)
+    check-age(19)
+    check-age(55)
+
+    #+END_SRC
+    

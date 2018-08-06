@@ -5,11 +5,12 @@
    [eden.std.exceptions :as exceptions :refer [parser-error]]
    [eden.std.expression :as std.expression]
    [eden.std.impl.expression :as expression]
-   [eden.std.statement :refer [evaluate-statement]]
+   [eden.std.statement :refer [evaluate-statement isa-statement?]]
    [eden.std.impl.statement :as statement]
    [eden.std.reserved :refer [reserved?]]
    [eden.std.function :as std.function]
    [eden.utils.symbol :as symbol]
+   [eden.std.display :refer [display-node]]
    [eden.std.module :as std.module]
    [eden.std.evaluator :refer [read-file]]))
 
@@ -261,31 +262,43 @@
 
 (defn if-statement-rule
   [astm]
-  (let [[astm conditional-expr] (call-rule (advance-token astm) ::expression)
-        ;; TODO: expect 'then
-        astm (consume-token astm 'then "Missing 'then' within if conditional.")
-        [astm truthy-stmts] (parse-statements astm)]
+  (loop [astm astm if-stmts [] else-stmt []]
     (cond
+      (check-token astm 'if)
+      ;; TODO: make sure there's only one if statement
+      (let [[astm if-conditional-expr] (call-rule (advance-token astm) ::expression)
+            astm (consume-token astm 'then "Missing 'then' within if conditional.")
+            [astm truthy-stmts] (parse-statements astm)]
+        (recur astm (conj if-stmts [if-conditional-expr truthy-stmts]) else-stmt))
+
+      (check-token astm 'elseif)
+      (let [[astm else-if-conditional-expr] (call-rule (advance-token astm) ::expression)
+            astm (consume-token astm 'then "Missing 'then' within elseif conditional.")
+            [astm truthy-stmts] (parse-statements astm)]
+        (recur astm (conj if-stmts [else-if-conditional-expr truthy-stmts]) else-stmt))
+
       (check-token astm 'else)
       (let [[astm falsy-stmts] (parse-statements (advance-token astm))]
-        ;; TODO: check if it's at the end
-        [(consume-token astm 'end "Missing 'end' within if conditional")
-         (statement/->IfConditionalStatement (:*sm astm) conditional-expr truthy-stmts falsy-stmts)])
+        (recur astm if-stmts falsy-stmts))
 
-      ;;(check-token astm 'elseif)
-      ;;...
-
+      ;; Construct our if-conditional chain
       (check-token astm 'end)
-      [(advance-token astm) (statement/->IfConditionalStatement
-                             (:*sm astm) conditional-expr truthy-stmts [])]
-
+      (let [expr
+            (reduce
+             (fn [main-stmt [cond-stmt truthy-stmt]]
+               (if (nil? main-stmt)
+                 (statement/->IfConditionalStatement (:*sm astm) cond-stmt truthy-stmt else-stmt)
+                 (statement/->IfConditionalStatement (:*sm astm) cond-stmt truthy-stmt [main-stmt])))
+             nil (reverse if-stmts))]
+        (println (display-node expr))
+        [(advance-token astm) expr])
+      
       :else (parser-error astm "Failed to find end of if conditional"))))
 
 
 (defn while-statement-rule
   [astm]
   (let [[astm conditional-expr] (call-rule (advance-token astm) ::expression)
-        ;; TODO: expect 'do
         astm (consume-token astm 'do "Expected 'do' token after while conditional.")
         [astm stmts] (parse-statements astm)
         astm (consume-token astm 'end "Expected 'end' token after while statements.")]
