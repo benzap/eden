@@ -135,9 +135,9 @@
 
   Expression
   (evaluate-expression [_]
-    (<=
-     (evaluate-expression left)
-     (evaluate-expression right)))
+    (let [lvalue (evaluate-expression left)
+          rvalue (evaluate-expression right)]
+      (<= lvalue rvalue)))
 
   display/Display
   (display-node [_]
@@ -155,9 +155,17 @@
 
   Expression
   (evaluate-expression [_]
-    (+
-     (evaluate-expression left)
-     (evaluate-expression right)))
+    (let [lvalue (evaluate-expression left)
+          rvalue (evaluate-expression right)]
+      (when-not (number? lvalue)
+        (runtime-error "Given lvalue for '+' operation is not a number"
+                       {:display (display-node left) :value lvalue}))
+
+      (when-not (number? rvalue)
+        (runtime-error "Given rvalue for '+' operation is not a number"
+                       {:display (display-node right) :value rvalue}))
+
+      (+ lvalue rvalue)))
 
   display/Display
   (display-node [_]
@@ -170,9 +178,17 @@
 
   Expression
   (evaluate-expression [_]
-    (-
-     (evaluate-expression left)
-     (evaluate-expression right)))
+    (let [lvalue (evaluate-expression left)
+          rvalue (evaluate-expression right)]
+      (when-not (number? lvalue)
+        (runtime-error "Given lvalue for '-' operation is not a number"
+                       {:display (display-node left) :value lvalue}))
+
+      (when-not (number? rvalue)
+        (runtime-error "Given rvalue for '-' operation is not a number"
+                       {:display (display-node right) :value rvalue}))
+
+    (- lvalue rvalue)))
 
   display/Display
   (display-node [_]
@@ -190,9 +206,17 @@
 
   Expression
   (evaluate-expression [_]
-    (*
-     (evaluate-expression left)
-     (evaluate-expression right)))
+    (let [lvalue (evaluate-expression left)
+          rvalue (evaluate-expression right)]
+      (when-not (number? lvalue)
+        (runtime-error "Given lvalue for '*' operation is not a number"
+                       {:display (display-node left) :value lvalue}))
+
+      (when-not (number? rvalue)
+        (runtime-error "Given rvalue for '*' operation is not a number"
+                       {:display (display-node right) :value rvalue}))
+
+    (* lvalue rvalue)))
 
   display/Display
   (display-node [_]
@@ -205,9 +229,17 @@
 
   Expression
   (evaluate-expression [_]
-    (/
-     (evaluate-expression left)
-     (evaluate-expression right)))
+    (let [lvalue (evaluate-expression left)
+          rvalue (evaluate-expression right)]
+      (when-not (number? lvalue)
+        (runtime-error "Given lvalue for '/' operation is not a number"
+                       {:display (display-node left) :value lvalue}))
+
+      (when-not (number? rvalue)
+        (runtime-error "Given rvalue for '/' operation is not a number"
+                       {:display (display-node right) :value rvalue}))
+
+    (/ lvalue rvalue)))
 
   display/Display
   (display-node [_]
@@ -238,7 +270,11 @@
 
   Expression
   (evaluate-expression [_]
-    (- (evaluate-expression value)))
+    (let [evalue (evaluate-expression value)]
+      (when-not (number? evalue)
+        (runtime-error "Given single value for '-' operation is not a number"
+                       {:display (display-node value) :value evalue}))
+      (- evalue)))
 
   display/Display
   (display-node [_]

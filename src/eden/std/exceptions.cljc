@@ -1,16 +1,22 @@
 (ns eden.std.exceptions)
 
 
+(defn generate-window
+  "TODO: write this function, with bigger window."
+  [{:keys [tokens index] :as astm}]
+  (let []))
+
+
 (defn generate-parser-data
   [{:keys [tokens index] :as astm}]
-  {:index index
+  {:position index
    :window
    (str 
-    (if (> index 1) "... " "")
-    (nth tokens (dec index)) " "
-    "<" (nth tokens index) "> "
-    (nth tokens (inc index))
-    (if (< index (- (count tokens) 3)) " ..." ""))})
+    (if (> index 1) "... " "|BEGINNING| ")
+    (get tokens (dec index) "") " "
+    "'" (get tokens index) "' "
+    (get tokens (inc index) "")
+    (if (< index (- (count tokens) 3)) " ..." " |END|"))})
 
 
 (defn parser-error
@@ -51,12 +57,10 @@
   (cond
     (parser-error? ex)
     (do
-      (println "Parser Error Caught")
       (throw ex))
 
     (runtime-error? ex)
     (do
-      (println "Runtime Error Caught")
       (throw ex))
 
     :else (throw ex)))
