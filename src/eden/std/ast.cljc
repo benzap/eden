@@ -290,7 +290,6 @@
                  (statement/->IfConditionalStatement (:*sm astm) cond-stmt truthy-stmt else-stmt)
                  (statement/->IfConditionalStatement (:*sm astm) cond-stmt truthy-stmt [main-stmt])))
              nil (reverse if-stmts))]
-        (println (display-node expr))
         [(advance-token astm) expr])
       
       :else (parser-error astm "Failed to find end of if conditional"))))
