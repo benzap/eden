@@ -13,6 +13,8 @@
                  [cheshire "5.8.0"] ;; JSON Library
                  [funcool/cuerdas "2.0.5"] ;; String Library
                  [com.rpl/specter "1.1.1"] ;; Code Navigation
+                 [hiccup "1.0.5"] ;; HTML Generation
+                 [hickory "0.7.1"] ;; HTML Parsing
                  ]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-ancient "0.6.15"]

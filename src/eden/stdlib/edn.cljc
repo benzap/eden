@@ -4,8 +4,9 @@
    [eden.def :refer [set-var!]]))
 
 
-(def edn {:parse edn/read-string
-          :stringify pr-str})
+(def edn
+  {:parse edn/read-string
+   :stringify pr-str})
 
 
 (defn import-stdlib-edn
