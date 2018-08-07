@@ -45,6 +45,13 @@
   - Added json library, which is a wrapped
     [[https://github.com/dakrone/cheshire][popular json library]]
 
+  - Added [[https://github.com/nathanmarz/specter][specter]] library for data manipulation under the global $
+    ie. ~$.setval(vector(:a $.END) vector(4 5) {:a [1 2 3]})~
+
+  - Added [[https://github.com/weavejester/hiccup][hiccup]] and [[https://github.com/davidsantiago/hickory][hickory]] libraries for html parsing and generation
+    ie. ~html.stringify([:a "test"])~
+    ie. ~html.parse("<a>test</a>")~
+
   - Added ~iterate~, ~add-watch~, ~remove-watch~
 
   - Added ~system.env(name)~ to get Environment Variables
