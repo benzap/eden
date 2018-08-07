@@ -1,19 +1,29 @@
 (ns eden.stdlib.system
   (:require
-   [eden.def :refer [set-var!]]
-   [eden.state-machine.environment :as environment]))
+   [clojure.pprint :refer [pprint]]
+   [eden.def :refer [set-var!]]))
 
 
-;; TODO: add get-globals command
+(defn get-globals
+  [{:keys [*sm] :as eden}]
+  (-> @*sm
+      :environments
+      first
+      :values))
 
 
-(def system
+(defn set-global [eden identifier value]
+  (set-var! eden identifier value))
+
+
+(defn system [eden]
   {:env #(System/getenv %)
    :exit #(System/exit %)
-   :get-globals (fn [] {})})
+   :get-globals #(get-globals eden)
+   :set-global #(set-global eden %1 %2)})
 
 
 (defn import-stdlib-system
   [eden]
   (-> eden
-      (set-var! 'system system)))
+      (set-var! 'system (system eden))))
