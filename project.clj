@@ -1,4 +1,4 @@
-(defproject eden "0.4.0-SNAPSHOT"
+(defproject eden "0.5.0-SNAPSHOT"
   ;;:global-vars {*warn-on-reflection* true}
   :description "lua-based scripting language in Clojure(script)"
   :url "http://github.com/benzap/eden"
@@ -7,7 +7,12 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.339"]
                  [org.clojure/tools.reader "1.3.0"]
-                 [org.clojure/tools.cli "0.3.7"]]
+                 [org.clojure/tools.cli "0.3.7"]
+                 
+                 ;; Eden Contrib Standard Libraries
+                 [cheshire "5.8.0"] ;; JSON Library
+                 [funcool/cuerdas "2.0.5"] ;; String Library
+                 ]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-ancient "0.6.15"]
             [lein-doo "0.1.10"]]
