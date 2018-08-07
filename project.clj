@@ -12,6 +12,7 @@
                  ;; Eden Contrib Standard Libraries
                  [cheshire "5.8.0"] ;; JSON Library
                  [funcool/cuerdas "2.0.5"] ;; String Library
+                 [com.rpl/specter "1.1.1"] ;; Code Navigation
                  ]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-ancient "0.6.15"]

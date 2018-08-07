@@ -1,31 +1,72 @@
 (ns eden.stdlib.string
   (:require
-   [clojure.string :as str]
+   [cuerdas.core :as str]
+   [eden.std.exceptions :refer [not-implemented]]
    [eden.def :refer [set-var!]]))
 
 
 (def string
-  {:blank? str/blank?
-   :capitalize str/capitalize
+  {:<<- str/<<-
+   :istr #(not-implemented "istr is not implemented (macro with dynamic invokation)")
+   :alnum? str/alnum?
+   :alpha? str/alpha?
+   :blank? str/blank?
+   :camel str/camel
+   :capital str/capital
+   :caseless= str/caseless=
+   :chars str/chars
+   :clean str/clean
+   :collapse-whitespace str/collapse-whitespace
+   :css-selector str/css-selector
+   :digits? str/digits?
+   :empty? str/empty?
+   :empty-or-nil? str/empty-or-nil?
    :ends-with? str/ends-with?
-   :escape str/escape
+   :format str/format
+   :human str/human
    :includes? str/includes?
-   :index-of str/index-of
    :join str/join
-   :last-index-of str/last-index-of
-   :lower-case str/lower-case
-   :re-quote-replacement str/re-quote-replacement
+   :js-selector str/js-selector
+   :kebab str/kebab
+   :keyword str/keyword
+   :letters? str/letters?
+   :lines str/lines
+   :lower str/lower
+   :ltrim str/ltrim
+   :numeric? str/numeric?
+   :pad str/pad
+   :parse-double str/parse-double
+   :parse-int str/parse-int
+   :parse-number str/parse-number
+   :pascal str/pascal
+   :phrase str/phrase
+   :prune str/prune
+   :quote str/quote
+   :repeat str/repeat
    :replace str/replace
    :replace-first str/replace-first
    :reverse str/reverse
+   :rtrim str/rtrim
+   :slice str/slice
+   :slug str/slug
+   :snake str/snake
    :split str/split
-   :split-lines str/split-lines
    :starts-with? str/starts-with?
+   :strip-newlines str/strip-newlines
+   :strip-prefix str/strip-prefix
+   :strip-suffix str/strip-suffix
+   :strip-tags str/strip-tags
+   :surround str/surround
+   :title str/title
+   :to-bool str/to-bool
    :trim str/trim
-   :trim-newline str/trim-newline
-   :triml str/triml
-   :trimr str/trimr
-   :upper-case str/upper-case})
+   :unlines str/unlines
+   :unquote str/unquote
+   :unsurround str/unsurround
+   :upper str/upper
+   :word? str/word?
+   :words str/words
+   })
 
 
 (defn import-stdlib-string
