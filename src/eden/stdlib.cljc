@@ -6,6 +6,7 @@
    [eden.stdlib.json :refer [import-stdlib-json]]
    [eden.stdlib.string :refer [import-stdlib-string]]
    [eden.stdlib.operator :refer [import-stdlib-operator]]
+   [eden.stdlib.specter :refer [import-stdlib-specter]]
    [eden.stdlib.system :refer [import-stdlib-system]]))
 
 
@@ -17,4 +18,5 @@
       import-stdlib-json
       import-stdlib-string
       import-stdlib-operator
+      import-stdlib-specter
       import-stdlib-system))

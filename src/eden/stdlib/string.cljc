@@ -8,7 +8,7 @@
 
 (def string
   {:<<- str/<<-
-   :istr #(not-implemented "istr is not implemented (macro with dynamic invokation)")
+   :istr #(not-implemented "'istr' is not implemented (macro with dynamic invokation)")
    :alnum? str/alnum?
    :alpha? str/alpha?
    :blank? str/blank?
