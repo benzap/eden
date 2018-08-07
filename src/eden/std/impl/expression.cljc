@@ -349,7 +349,7 @@
   (evaluate-expression [_] nil)
 
   display/Display
-  (display-node [_] (str nil)))
+  (display-node [_] (str "nil")))
 
 
 (defrecord VectorExpression [value]
@@ -432,7 +432,9 @@
         (apply fcn args)
 
         :else
-        (runtime-error (str "Given expression value is not callable. '" fcn "'")))))
+        (runtime-error (str "Given expression value is not callable. '" fcn "'")
+                       {:display (display-node expr)
+                        :value fcn}))))
 
   display/Display
   (display-node [_]

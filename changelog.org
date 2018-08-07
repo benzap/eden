@@ -53,3 +53,5 @@
     programmatically
 
   - Added ~system.set-global(name value)~ to set global variables
+
+  - Improved Runtime Errors
