@@ -55,3 +55,6 @@
   - Added ~system.set-global(name value)~ to set global variables
 
   - Improved Runtime Errors
+
+  - Replaced clojure.string library with
+    [[https://funcool.github.io/cuerdas/latest][a popular string library]]

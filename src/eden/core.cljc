@@ -1,7 +1,7 @@
 (ns eden.core
   (:refer-clojure :exclude [eval read-string])
   (:require
-   [clojure.string :as str]
+   [cuerdas.core :as str]
    [eden.state :refer [*default-eden-instance*]]
    [eden.std.display :refer [display-node]]
    [eden.std.ast]
