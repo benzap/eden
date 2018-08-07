@@ -41,3 +41,15 @@
     #+END_SRC
     
   - Improved Error Handling
+* 0.5.0 (BETA SNAPSHOT)
+  - Added json library, which is a wrapped
+    [[https://github.com/dakrone/cheshire][popular json library]]
+
+  - Added ~iterate~, ~add-watch~, ~remove-watch~
+
+  - Added ~system.env(name)~ to get Environment Variables
+
+  - Added ~system.get-globals~ to get global variables
+    programmatically
+
+  - Added ~system.set-global(name value)~ to set global variables

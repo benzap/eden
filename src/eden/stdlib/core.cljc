@@ -6,6 +6,7 @@
 (defn import-stdlib-core [eden]
   (-> eden
       ;; TODO: apply
+      (set-var! 'add-watch add-watch)
       (set-var! 'assoc assoc)
       (set-var! 'assoc-in assoc-in)
       (set-var! 'associative? associative?)
@@ -86,6 +87,7 @@
       (set-var! 'interleave interleave)
       (set-var! 'interpose interpose)
       (set-var! 'into into)
+      (set-var! 'iterate iterate)
       (set-var! 'juxt juxt)
       (set-var! 'keep keep)
       (set-var! 'keep-indexed keep-indexed)
@@ -166,6 +168,7 @@
       (set-var! 'repeat repeat)
       (set-var! 'rem rem)
       (set-var! 'remove remove)
+      (set-var! 'remove-watch remove-watch)
       (set-var! 'repeatedly repeatedly)
       (set-var! 'replace replace)
       (set-var! 'reset! reset!)
