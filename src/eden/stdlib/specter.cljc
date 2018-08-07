@@ -21,19 +21,19 @@
    :collector #(not-implemented "Macro 'collector' without equivalent function")
    :comp-paths specter/comp-paths
    :compact specter/compact
-   :compiled-multi-transform specter/compiled-multi-transform
-   :compiled-replace-in specter/compiled-replace-in
-   :compiled-select specter/compiled-select
-   :compiled-select-any specter/compiled-select-any
-   :compiled-select-first specter/compiled-select-first
-   :compiled-select-one specter/compiled-select-one
-   :compiled-select-one! specter/compiled-select-one!
-   :compiled-selected-any? specter/compiled-selected-any?
-   :compiled-setval specter/compiled-setval
-   :compiled-transform specter/compiled-transform
-   :compiled-traverse specter/compiled-traverse
-   :compiled-traverse-all specter/compiled-traverse-all
-   :compiled-vtransform specter/compiled-vtransform
+   ;;:compiled-multi-transform specter/compiled-multi-transform
+   ;;:compiled-replace-in specter/compiled-replace-in
+   ;;:compiled-select specter/compiled-select
+   ;;:compiled-select-any specter/compiled-select-any
+   ;;:compiled-select-first specter/compiled-select-first
+   ;;:compiled-select-one specter/compiled-select-one
+   ;;:compiled-select-one! specter/compiled-select-one!
+   ;;:compiled-selected-any? specter/compiled-selected-any?
+   ;;:compiled-setval specter/compiled-setval
+   ;;:compiled-transform specter/compiled-transform
+   ;;:compiled-traverse specter/compiled-traverse
+   ;;:compiled-traverse-all specter/compiled-traverse-all
+   ;;:compiled-vtransform specter/compiled-vtransform
    :cond-path specter/cond-path
    :continue-then-stay specter/continue-then-stay
    :continuous-subseqs specter/continuous-subseqs
