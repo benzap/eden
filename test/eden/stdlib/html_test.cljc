@@ -12,6 +12,8 @@
       (teval
        local x = html.parse("<a href=\"test.html\"></a>")
        local y = html.stringify(x))
-      (is (= {:x 123} (eden/get-var 'x)))
-      (is (= "{:x 123}" (eden/get-var 'y))))))
+      (is (= '([:html {} [:head {}] [:body {} [:a {:href "test.html"}]]])
+             (eden/get-var 'x)))
+      (is (= "<html><head></head><body><a href=\"test.html\"></a></body></html>"
+             (eden/get-var 'y))))))
 
