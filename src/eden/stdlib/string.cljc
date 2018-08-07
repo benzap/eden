@@ -2,7 +2,8 @@
   (:require
    [cuerdas.core :as str]
    [eden.std.exceptions :refer [not-implemented]]
-   [eden.def :refer [set-var!]]))
+   [eden.def :refer [set-var!]]
+   #?(:clj (gen-class))))
 
 
 (def string
