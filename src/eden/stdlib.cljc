@@ -8,7 +8,8 @@
    [eden.stdlib.string :refer [import-stdlib-string]]
    [eden.stdlib.operator :refer [import-stdlib-operator]]
    [eden.stdlib.specter :refer [import-stdlib-specter]]
-   [eden.stdlib.system :refer [import-stdlib-system]]))
+   [eden.stdlib.system :refer [import-stdlib-system]]
+   [eden.stdlib.shell :refer [import-stdlib-shell]]))
 
 
 (defn import-stdlib [eden]
@@ -21,4 +22,5 @@
       import-stdlib-string
       import-stdlib-operator
       import-stdlib-specter
-      import-stdlib-system))
+      import-stdlib-system
+      import-stdlib-shell))

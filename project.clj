@@ -15,6 +15,8 @@
                  [com.rpl/specter "1.1.1"] ;; Code Navigation
                  [hiccup "1.0.5"] ;; HTML Generation
                  [hickory "0.7.1"] ;; HTML Parsing
+                 [me.raynes/conch "0.8.0"] ;; Shell Program Execution
+                 [me.raynes/fs "1.4.6"] ;; More sane file system functions in clojure
                  ]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-ancient "0.6.15"]
