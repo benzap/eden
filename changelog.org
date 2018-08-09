@@ -65,3 +65,8 @@
 
   - Replaced clojure.string library with
     [[https://funcool.github.io/cuerdas/latest][a popular string library]]
+* 0.6.0 (BETA SNAPSHOT)
+  - Added css library under html.css, which is wrapped [[http://github.com/noprompt/hiccup][hiccup]] library
+  - Added http client and server, which is [[http://http-kit.org]]
+  - Added routing library, which is [[http://github.com/juxt/bidi][bidi]]
+  - Example of http server in ./examples/bidi/http_server.eden
