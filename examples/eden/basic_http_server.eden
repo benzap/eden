@@ -1,0 +1,11 @@
+local app = function(req)
+  return {
+    :status 200
+    :headers {"Content-Type" "text/html"}
+    :body "hello HTTP!"
+  }
+end
+
+local server = http.server.run-server(app {:port 8000})
+
+println("Started server on port 8000")

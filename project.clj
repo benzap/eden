@@ -17,6 +17,9 @@
                  [hickory "0.7.1"] ;; HTML Parsing
                  [me.raynes/conch "0.8.0"] ;; Shell Program Execution
                  [me.raynes/fs "1.4.6"] ;; More sane file system functions in clojure
+                 [http-kit "2.3.0-beta2"] ;; HTTP Client/Server Library
+                 [bidi "2.1.3"] ;; HTTP Routing Library
+                 [garden "1.3.5"]
                  ]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-ancient "0.6.15"]

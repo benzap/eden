@@ -42,8 +42,8 @@
         ;; We apply the function's outer scope for the environment
         (add-function-environment *sm *closure)
 
-        ;; All arguments appear in the '... var as a vector
-        (swap! *sm state/set-local-var '... (vec args))
+        ;; All arguments appear in the '*arguments* var as a vector
+        (swap! *sm state/set-local-var '*arguments* (vec args))
 
         ;; Iterate over each arg, and assign to a parameter
         ;; TODO: check if params consists of identifiers

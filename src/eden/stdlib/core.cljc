@@ -1,5 +1,6 @@
 (ns eden.stdlib.core
   (:require
+   [clojure.pprint :as pprint]
    [eden.def :refer [set-var!]]))
 
 
@@ -139,10 +140,13 @@
       (set-var! 'pop pop)
       (set-var! 'pos-int? pos-int?)
       (set-var! 'pos? pos?)
+      (set-var! 'pprint pprint/pprint)
+      (set-var! 'pprint-str #(with-out-str (pprint/pprint %)))
       (set-var! 'pr pr)
       (set-var! 'pr-str pr-str)
       (set-var! 'print print)
       (set-var! 'print-str print-str)
+      (set-var! 'print-table pprint/print-table)
       #?(:clj (set-var! 'printf printf))
       (set-var! 'println println)
       (set-var! 'println-str println-str)
