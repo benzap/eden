@@ -15,7 +15,7 @@
    :copy+ fs/copy+
    :copy-dir fs/copy-dir
    :create fs/create
-   :cwd (fn [] *cwd*)
+   :cwd (fn [] fs/*cwd*)
    :delete fs/delete
    :delete-dir fs/delete-dir
    :directory? fs/directory?
