@@ -25,7 +25,7 @@ lein uberjar
 echo ""
 
 echo "Building Native Image..."
-native-image -jar target/eden-$EDEN_VERSION-standalone.jar -H:Name="eden-${EDEN_VERSION}" -H:+ReportUnsupportedElementsAtRuntime
+native-image -jar target/eden-$EDEN_VERSION-standalone.jar -H:Name="eden-${EDEN_VERSION}" -H:+ReportUnsupportedElementsAtRuntime -H:EnableURLProtocols=http
 echo ""
 
 echo "Post Configuration..."

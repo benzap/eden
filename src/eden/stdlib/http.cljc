@@ -9,6 +9,18 @@
    [eden.def :refer [set-var!]]))
 
 
+;; Needs to be extended to support EdenFunction
+(extend-protocol bidi/Matched
+  clojure.lang.IFn
+  (resolve-handler [this m] (bidi/succeed this m))
+  (unresolve-handler [this m] (when (= this (:handler m)) "")))
+
+
+(extend-protocol bidi.ring/Ring
+  clojure.lang.IFn
+  (request [f req _] (f req)))
+
+
 (defn with-channel-fn [req f]
   (server/with-channel req channel
     (f req channel)))
