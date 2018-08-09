@@ -9,6 +9,7 @@
    [eden.stdlib.operator :refer [import-stdlib-operator]]
    [eden.stdlib.specter :refer [import-stdlib-specter]]
    [eden.stdlib.system :refer [import-stdlib-system]]
+   [eden.stdlib.filesystem :refer [import-stdlib-filesystem]]
    [eden.stdlib.shell :refer [import-stdlib-shell]]))
 
 
@@ -23,4 +24,5 @@
       import-stdlib-operator
       import-stdlib-specter
       import-stdlib-system
+      import-stdlib-filesystem
       import-stdlib-shell))
