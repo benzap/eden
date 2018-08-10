@@ -8,11 +8,14 @@
 (defn join-path* [^String p1 ^String p2]
   (let [f1 (File. p1)
         f2 (File. f1 p2)]
-    (-> f2 fs/expand-home .getAbsolutePath)))
+    (.getPath f2)))
 
 
 (defn join-path [& p]
   (reduce join-path* p))
+
+
+;;(join-path "~/" ".bin")
 
 
 (defn is-file? [^String p]
@@ -30,7 +33,8 @@
 
 ;;(join-path "../" "test" "test2" "test3")
 ;;(join-path "test/foo")
-
+(defn home []
+  (System/getProperty "user.home"))
 
 (defn module-path->file-path [^String s]
   (apply join-path (str/split s #"/")))
@@ -58,7 +62,7 @@
      ["/usr/share/eden/libs"]
      [])
    (get-environment-paths)
-   ["~/.eden/libs"]))
+   [(join-path (home) "/.eden/libs")]))
 
 
 (fs/absolute (fs/expand-home "/.eden/libs"))
