@@ -6,4 +6,4 @@ function get-project-version()
   return nth(data 2)
 end
 
-print get-project-version()
+println(get-project-version())

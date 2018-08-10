@@ -237,7 +237,7 @@ collections.
   
   #+BEGIN_SRC clojure
 
-  [eden "0.5.0-SNAPSHOT"]
+  [eden "0.7.0-SNAPSHOT"]
 
   #+END_SRC
 
@@ -245,7 +245,7 @@ collections.
 
   #+BEGIN_SRC clojure
 
-  eden {:mvn/version "0.5.0-SNAPSHOT"}
+  eden {:mvn/version "0.7.0-SNAPSHOT"}
 
   #+END_SRC
 
@@ -253,7 +253,7 @@ collections.
 
   #+BEGIN_SRC groovy
 
-  compile 'eden:eden:0.5.0-SNAPSHOT'
+  compile 'eden:eden:0.7.0-SNAPSHOT'
 
   #+END_SRC
 
@@ -264,7 +264,7 @@ collections.
   <dependency>
     <groupId>eden</groupId>
     <artifactId>eden</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.7.0-SNAPSHOT</version>
   </dependency>
 
   #+END_SRC
@@ -314,9 +314,32 @@ collections.
 
 * Commandline Execution
 
-  *eden* can be run from the commandline. It currently does not have a
-  repl, but this is something i'm hoping to include in the future
-  when the parser is more mature.
+  *eden* can be run from the commandline. It can evaluate-expressions
+  with the -e commandline flag, or can evaluate files, which are
+  usually designated with the suffix *.eden.
+
+  From the leiningen cloned project, you can run the examples provided
+  in the ./examples folder
+
+  #+BEGIN_SRC sh
+
+  $ lein run ./examples/eden/get_project_version.eden
+  0.7.0-SNAPSHOT
+
+  #+END_SRC
+
+  Alternatively, you can use the provided standalone *.jar file
+  provided on the releases page
+
+  #+BEGIN_SRC
+
+  $ java -jar eden-0.7.0-SNAPSHOT.jar ./examples/eden/basic_http_server.eden
+
+  #+END_SRC
+
+  The best use of *eden* as a standalone tool is to either build your
+  own native executable, or grab one of the pre-compiled ones provided
+  on the [[https://github.com/benzap/eden/releases][releases page]]
 
 * Module System
 
@@ -404,7 +427,6 @@ collections.
 
    #+END_SRC
 
-
 * Differences between Lua and Eden
 ** Array Indexing
    eden uses zero-indexing for array types, whereas lua uses
@@ -446,10 +468,12 @@ collections.
      export x
    #+END_SRC
 
-
 * Development
 ** Uberjar
    Run ~lein uberjar~
+   
+   This generates a jar file in ./target/*.jar
+
 ** Native Executable Distribution
    Please read the Makefile for instructions on how to native compile
    *eden* using GraalVM.
@@ -463,20 +487,11 @@ collections.
    Tests can be run with ~lein test~
 * Features for Version 1.0.0 Stable Release
 
-  - Test Coverage for the entire standard language
-  - Better parser errors (might require a parser rewrite)
+  - +Test Coverage for the entire standard language+
+  - +Better parser errors (might require a parser rewrite)+
   - +support 'elseif clause in if conditionals+ (added in 0.4.0-SNAPSHOT)
-  - additional language syntax for simplifying collection transformations
-    ie. person.age += 1, instead of person.age = person.age + 1
-    ie. x = [1 2]
-        x .= conj(3), instead of x = conj(x 3)
-  - Additional standard libraries.
+  - +Additional standard libraries.+ (Several libraries have been
+    added since 0.5.0-SNAPSHOT)
   - +clojure.string (or use funcool.cuerdas, can it native compile?)+
     (added in 0.3.0-SNAPSHOT)
   - +json parse and stringify libs (one that native compiles)+ (added in 0.3.0-SNAPSHOT)
-  - Implementation in clojurescript (currently compiles, but has bugs)
-  - Working repl (requires a better parser)
-  - Something similar to lua tables ie. (defrecord EdenTable)
-  - Metafunctions, similar to lua metatable functions for
-    metaprogramming. Implement as clojure protocol, or as eden
-    functions in a metatable. (might be later version)

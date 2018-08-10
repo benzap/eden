@@ -27,6 +27,10 @@
 #
 # Requires: GraalVM with GRAAL_HOME environment variable set to the
 # root of the graal folder (might work if you just have the command native-image on the path)
+#
+# Hardware Requirements: 64-bit Linux-based OS. Tested on Ubuntu 17.10
+# and Fedora 28. 8Gb+ of Memory. Latest Builds were made in a Virtual
+# Machine with 12Gb of memory.
 
 
 PREFIX := /usr/bin
