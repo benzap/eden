@@ -12,6 +12,11 @@
     in module resolution. Similarly, linux can include paths in the
     ~EDEN_MODULE_PATH~, but they must be colon separated.
 
+    On linux, eden will attempt to find modules in
+    /usr/share/eden/libs and ~/.eden/libs
+
+    On windows, it will only attempt to find modules in ~/.eden/libs
+
   - Improved Commandline. Included commandline argument
     ~-m, --modulepath~ which takes a (semi-colon separated /
     colon-separated) path listing which will be included in the module
@@ -19,7 +24,8 @@
     
   - Commandline also includes ~-v --verbose~ which can be used to turn
     on more verbose error messages. Error messages are now less
-    verbose by default.
+    verbose by default. When enabled, it will also display the Module
+    Paths that are currently active.
 
   - Slight improvements to error messages. They will now display which
     file the error occured in.
