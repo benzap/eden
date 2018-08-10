@@ -11,6 +11,8 @@
    [eden.stdlib.system :refer [import-stdlib-system]]
    [eden.stdlib.filesystem :refer [import-stdlib-filesystem]]
    [eden.stdlib.http :refer [import-stdlib-http]]
+   [eden.stdlib.io :refer [import-stdlib-io]]
+   [eden.stdlib.transit :refer [import-stdlib-transit]]
    [eden.stdlib.shell :refer [import-stdlib-shell]]))
 
 
@@ -27,4 +29,6 @@
       import-stdlib-system
       import-stdlib-filesystem
       import-stdlib-http
+      import-stdlib-io
+      import-stdlib-transit
       import-stdlib-shell))

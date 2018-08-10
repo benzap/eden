@@ -4,9 +4,16 @@
    [eden.def :refer [set-var!]]))
 
 
+(defn uuid
+  ([s] (java.util.UUID/fromString s))
+  ([] (java.util.UUID/randomUUID)))
+
+;;(uuid (str (uuid)))
+
+
 (defn import-stdlib-core [eden]
   (-> eden
-      ;; TODO: apply
+      (set-var! 'apply apply)
       (set-var! 'add-watch add-watch)
       (set-var! 'assoc assoc)
       (set-var! 'assoc-in assoc-in)
@@ -58,6 +65,7 @@
       (set-var! 'drop-last drop-last)
       (set-var! 'drop-while drop-while)
       (set-var! 'empty empty)
+      (set-var! 'ensure-reduced ensure-reduced)
       (set-var! 'even? even?)
       (set-var! 'every? every?)
       (set-var! 'false? false?)
@@ -72,6 +80,8 @@
       (set-var! 'flush flush)
       (set-var! 'fnext fnext)
       (set-var! 'fnil fnil)
+      (set-var! 'future #(future (%)))
+      (set-var! 'future? future?)
       #?(:clj (set-var! 'format format))
       (set-var! 'get get)
       (set-var! 'get-in get-in)
@@ -169,6 +179,8 @@
       (set-var! 'regex re-pattern)
       (set-var! 're-seq re-seq)
       (set-var! 'reduce reduce)
+      (set-var! 'reduced reduced)
+      (set-var! 'reduced? reduced?)
       (set-var! 'repeat repeat)
       (set-var! 'rem rem)
       (set-var! 'remove remove)
@@ -193,6 +205,7 @@
       (set-var! 'short short)
       (set-var! 'shuffle shuffle)
       #?(:clj (set-var! 'slurp slurp))
+      (set-var! 'sleep #(Thread/sleep %))
       (set-var! 'some some)
       (set-var! 'some? some?)
       (set-var! 'sort sort)
@@ -218,10 +231,12 @@
       (set-var! 'take-while take-while)
       (set-var! 'true? true?)
       (set-var! 'type type)
+      (set-var! 'unreduced unreduced)
       (set-var! 'update update)
       (set-var! 'update-in update-in)
       (set-var! 'uri? uri?)
       (set-var! 'uuid? uuid?)
+      (set-var! 'uuid uuid)
       (set-var! 'val val)
       (set-var! 'vals vals)
       (set-var! 'vec vec)

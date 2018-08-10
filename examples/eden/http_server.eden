@@ -1,14 +1,12 @@
 ;; Fully Functional Web Server running in eden
 
-local _v = vector
-
 ;;
 ;; CSS Stylesheet
 ;;
 
 local stylesheet = [
-  _v(:* {:background-color "#fdfdfd"})
-  _v(:body {:margin "1em"})
+  [:* {:background-color "#fdfdfd"}]
+  [:body {:margin "1em"}]
 ]
 
 
@@ -20,24 +18,6 @@ function generate-css()
   return s
 end
 
-;;
-;; HTML Generation
-;;
-
-function element(name)
-  return vec(concat([keyword(name)] rest(*arguments*)))
-end
-
-el = {
-  :html (partial(element "html"))
-  :head (partial(element "head"))
-  :body (partial(element "body"))
-  :style (partial(element "style"))
-  :h1 (partial(element "h1"))
-  :p (partial(element "p"))
-  :a (partial(element "a"))
-  :title (partial(element "title"))
-}
 
 ;;
 ;; Request Handlers
@@ -48,15 +28,14 @@ local home-page = function(req)
   home-count = home-count + 1
 
   return http.server.response(html.stringify(
-    el.html(
-      el.head(
-        el.title("Home Page - Eden Server")
-        el.style(generate-css()))
-        el.body(
-          el.h1("Hello from Eden!")
-          el.p("You have accessed this page " home-count " times.")
-	  el.a({:href "about.html"} "About Me")
-  ))))
+    [:html
+      [:head
+        [:title "Home Page - Eden Server"]
+        [:style generate-css()]]
+      [:body
+        [:h1 "Hello from Eden!"]
+        [:p "You have accessed this page " home-count " times."]
+	[:a {:href "about.html"} "About Me"]]]))
 end
 
 local about-count = 0
@@ -64,15 +43,14 @@ local about-page = function(req)
   about-count = about-count + 1
 
   return http.server.response(html.stringify(
-    el.html(
-      el.head(
-        el.title("About Page - Eden Server")
-        el.style(generate-css()))
-        el.body(
-          el.h1("Hello from Eden!")
-          el.p("You have accessed this page " about-count " times.")
-	  el.a({:href "index.html"} "Home Page")
-  ))))
+    [:html
+      [:head
+        [:title "About Page - Eden Server"]
+        [:style generate-css()]]
+      [:body
+        [:h1 "Hello from Eden!"]
+        [:p "You have accessed this page " about-count " times."]
+	[:a {:href "index.html"} "Home Page"]]]))
 end
 
 

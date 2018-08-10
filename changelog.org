@@ -70,3 +70,13 @@
   - Added http client and server, which is [[http://http-kit.org]]
   - Added routing library, which is [[http://github.com/juxt/bidi][bidi]]
   - Example of http server in ./examples/bidi/http_server.eden
+* 0.7.0 (BETA SNAPSHOT)
+  - Added transit library under transit, which is a wrapped
+    [[https://github.com/cognitect/transit-clj][transit-clj]] library
+  - Added clojure.java.io under io
+  - Changed how the parser associates getters and function calls to
+    only target identifers (variables) and anonymous functions
+    (function() ... end). This was done to mitigate issues with
+    collection literals getting confused with functions calls and
+    getters. This also likely means that metafunctions will never
+    happen.

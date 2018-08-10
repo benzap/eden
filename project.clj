@@ -1,4 +1,4 @@
-(defproject eden "0.6.0-SNAPSHOT"
+(defproject eden "0.7.0-SNAPSHOT"
   ;;:global-vars {*warn-on-reflection* true}
   :description "lua-based scripting language in Clojure(script)"
   :url "http://github.com/benzap/eden"
@@ -11,6 +11,7 @@
                  
                  ;; Eden Contrib Standard Libraries
                  [cheshire "5.8.0"] ;; JSON Library
+                 [com.cognitect/transit-clj "0.8.309"] ;; Transit Data Format
                  [funcool/cuerdas "2.0.5"] ;; String Library
                  [com.rpl/specter "1.1.1"] ;; Code Navigation
                  [hiccup "1.0.5"] ;; HTML Generation
@@ -19,7 +20,7 @@
                  [me.raynes/fs "1.4.6"] ;; More sane file system functions in clojure
                  [http-kit "2.3.0-beta2"] ;; HTTP Client/Server Library
                  [bidi "2.1.3"] ;; HTTP Routing Library
-                 [garden "1.3.5"]
+                 [garden "1.3.5"] ;; CSS Generation
                  ]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-ancient "0.6.15"]

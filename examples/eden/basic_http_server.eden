@@ -9,3 +9,4 @@ end
 local server = http.server.run-server(app {:port 8000})
 
 println("Started server on port 8000")
+

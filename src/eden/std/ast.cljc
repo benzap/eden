@@ -520,18 +520,27 @@
         (parser-error astm "Given module path needs to be a string.")))
 
     :else
-    (let [[astm primary-expr] (call-rule astm ::anonymous-function)]
+    (let [[astm first-expr] (call-rule astm ::anonymous-function)]
 
       ;; Determine if the expression has a chain of function calls, accessors, etc.
       (loop [astm astm
-             primary-expr primary-expr]
+             primary-expr first-expr]
 
        (cond
-         (check-token astm list?)
+         
+         ;; Prevent function calls for everything but identifiers and anonymous functions
+         (and
+          (or (instance? eden.std.impl.expression.IdentifierExpression first-expr)
+              (instance? eden.std.function.EdenFunction first-expr))
+          (check-token astm list?))
          (let [[astm arg-exprs] (call-rule astm ::arguments)]
            (recur astm (expression/->CallFunctionExpression (:*sm astm) primary-expr arg-exprs)))
          
-         (and (check-token astm token/identifier-assoc?))
+         ;; Prevent getter chaining for everything but identifiers and anonymous functions
+         (and
+          (or (instance? eden.std.impl.expression.IdentifierExpression first-expr)
+              (instance? eden.std.function.EdenFunction first-expr))
+          (check-token astm token/identifier-assoc?))
          (let [[astm primary-expr] (parse-get-property astm primary-expr)]
            (recur astm primary-expr))
 
