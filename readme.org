@@ -237,7 +237,7 @@ collections.
   
   #+BEGIN_SRC clojure
 
-  [eden "0.7.0-SNAPSHOT"]
+  [eden "0.8.0"]
 
   #+END_SRC
 
@@ -245,7 +245,7 @@ collections.
 
   #+BEGIN_SRC clojure
 
-  eden {:mvn/version "0.7.0-SNAPSHOT"}
+  eden {:mvn/version "0.8.0"}
 
   #+END_SRC
 
@@ -253,7 +253,7 @@ collections.
 
   #+BEGIN_SRC groovy
 
-  compile 'eden:eden:0.7.0-SNAPSHOT'
+  compile 'eden:eden:0.8.0'
 
   #+END_SRC
 
@@ -264,7 +264,7 @@ collections.
   <dependency>
     <groupId>eden</groupId>
     <artifactId>eden</artifactId>
-    <version>0.7.0-SNAPSHOT</version>
+    <version>0.8.0</version>
   </dependency>
 
   #+END_SRC
