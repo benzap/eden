@@ -1,6 +1,6 @@
 ;; Try running a few things that are likely slow
 
-println("Args: " sys)
+println("Args: " system.argv)
 
 local x = range(10000)
 local y = map(inc x)

@@ -1,1 +1,1 @@
-prn(sys.args)
+prn(system.argv)

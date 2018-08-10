@@ -1,5 +1,6 @@
 (ns eden.std.module
   (:require
+   [me.raynes.fs :as fs]
    [clojure.string :as str])
   (:import java.io.File))
 
@@ -7,7 +8,7 @@
 (defn join-path* [^String p1 ^String p2]
   (let [f1 (File. p1)
         f2 (File. f1 p2)]
-    (.getPath f2)))
+    (-> f2 fs/expand-home .getAbsolutePath)))
 
 
 (defn join-path [& p]
@@ -52,7 +53,15 @@
 
 
 (def ^:dynamic *eden-module-path-list*
-  (get-environment-paths))
+  (concat
+   (if-not windows-machine?
+     ["/usr/share/eden/libs"]
+     [])
+   (get-environment-paths)
+   ["~/.eden/libs"]))
+
+
+(fs/absolute (fs/expand-home "/.eden/libs"))
 
 
 (def cwd ".")

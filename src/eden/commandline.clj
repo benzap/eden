@@ -27,7 +27,7 @@ Options:
 Website:
   github.com/benzap/eden
 Notes:
-  * Commandline Arguments are placed in the variable sys.args")
+  * Commandline Arguments are placed in the variable system.argv")
 
 
 (def cli-options
@@ -67,6 +67,8 @@ Notes:
      (:eval options)
      (binding [module/*eden-module-path-list* (cmdline-module-paths options)
                *verbose* (:verbosity options)]
+       (when *verbose*
+         (println "Module Paths:" module/*eden-module-path-list*))
        (println (eden/eval-expression-string (str/join " " arguments))))
 
      (> (count arguments) 0)
@@ -75,8 +77,10 @@ Notes:
        (binding [module/*eden-module-path-list* (cmdline-module-paths options)
                  *file-path* filename
                  *verbose* (:verbosity options)]
+         (when *verbose*
+           (println "Module Paths:" module/*eden-module-path-list*))
          (eden/eval system = system or {})
-         (eden/eval-fn (form system.args = %clj (vec args)))
+         (eden/eval-fn (form system.argv = %clj (vec args)))
          (eden/eval-string sform))
        (flush))
 
