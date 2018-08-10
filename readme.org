@@ -341,40 +341,395 @@ collections.
   own native executable, or grab one of the pre-compiled ones provided
   on the [[https://github.com/benzap/eden/releases][releases page]]
 
-* Module System
+* Programming in Eden
+  This is a short manual explaining how to use the Eden programming language.
+** Values and Types
+   Eden is a /dynamically typed/ language based on data types provided
+   in the [[https://github.com/edn-format/edn][EDN data format]]. The types include:
 
-  *eden* has a simple module system. eden will look for files based on
-  the current working directory, and any paths in the Environment
-  Variable EDEN_MODULE_PATH, which should contain comma-separated
-  directory paths.
+   - Integers / BigIntegers :: 0, 13, -13, 14N
+   - Floats / Doubles :: 3.14, 10e+3
+   - Strings :: "Hello"
+   - Keywords :: :foo, :bar
+   - Booleans :: true, false
+   - Symbols (vars) :: x, y
+   - Lists :: list(1 2 3), list(4 5 6)
+   - Vectors :: [1 2 3], vector(1 2 3)
+   - Maps :: {:a 123 :b 456}
+   - Set :: #{:a :b :c}, set(:a :b :c)
+   - Nil :: nil
 
-  /Currently broken, only works in current working directory/
+   I encourage you to review the EDN data format for additional types
+   you might experience when using Eden.
 
-  As an example, assuming I have a file named test.eden in the current
-  working directory:
+** Variables
+   Variables in Eden are presented in the form of Symbols.
 
-  #+BEGIN_SRC
-  ;; test.eden
+   #+BEGIN_SRC
+   x y foo bar is-value? set-value!
+   #+END_SRC
 
-  local print-hello = function(name)
-    return println(str("Hello " name "!"))
-  end
+** Statements
+*** Assignment
+    Assignment in Eden is similar to languages like lua, or
+    python. The most basic form of assignment is assigning a value to
+    a global variable:
 
-  export {:hello print-hello}
+    #+BEGIN_SRC
+    <identifier> = <value>
 
-  #+END_SRC
+    x = 12
+    foo = :bar
+    chk? = false
+    #+END_SRC
 
-  importing the module is simple:
+    Global variables live for the duration of the program, and can be
+    accessed from anywhere in the program.
 
-  #+BEGIN_SRC
-  
-  test = require "test"
+    The second form of assignment is assigning to a local variable:
 
-  test.hello("Ben") ;; "Hello Ben!"
+    #+BEGIN_SRC
+    local <identifier> = <value>
+    
+    local x = 12
+    local foo = :bar
+    local chk? = false
+    #+END_SRC
 
-  #+END_SRC
+*** Conditional Structure
+    The first and most often used control structure is the ~if~
+    control structure:
+
+    #+BEGIN_SRC
+    ;; if structure
+    if <condition> then
+      <truthy body statements...>
+    end
+
+    ;; if-else structure
+    if <condition> then
+      <truthy body statements...>
+    else
+      <falsy body statements...>
+    end
+
+    ;; if-elseif-else structure
+    if <condition> then
+      <body...>
+    elseif <condition> then
+      <body...>
+    else
+      <body...>
+    end
+    #+END_SRC
+
+    Examples
+
+    #+BEGIN_SRC
+    local age = 12
+    if age < 21 then
+      println("You are underage")
+    end
+
+    chk? = true
+    if chk? then
+      println("Value is true")
+    else
+      println("Value is false")
+    end
+    #+END_SRC
+
+*** While Statement
+    #+BEGIN_SRC
+    while <condition> do
+      <body...>
+    end
+    #+END_SRC
+
+*** Repeat-Until Statement
+    #+BEGIN_SRC
+    repeat
+      <body...>
+    until <condition>
+    #+END_SRC
+
+*** For Statement
+    The first ~for~ statement representation closely resembles the for
+    statement seen in C-based programming languages:
+
+    #+BEGIN_SRC
+    for <iter-var> = <start> <end> [step] do
+      <body...>
+    end
+    #+END_SRC
+
+    The second type of ~for~ statement, called the ~for-each~
+    statement. This is the more popular, and more often used loop
+    conditional.
+
+    #+BEGIN_SRC
+    for <iter-var> in <collection> do
+      <body...>
+    end
+    #+END_SRC
+** Expressions
+*** Arithmetic Operators
+    - Addition :: +
+    - Subtraction :: -
+    - Multiplication :: *
+    - Division :: /
+
+    #+BEGIN_SRC
+    println(2 + 2)
+    println(2 + 2 - 2)
+    println(2 * 2 - 5)
+    println((2 + 2) * 4)
+    println((2 / 2) * 5)
+    #+END_SRC
+
+*** Coercions & Conversions
+    Arithmetic performed between integer values will remain as
+    integers. It is only if you include a float within an arithmetic
+    operation that it is automatically converted into a float value.
+
+    Almost all types can be converted into a string using the ~str~
+    function.
+
+*** Relational Operators
+    - Equality :: ==
+    - Inequality :: !=
+    - Less Than :: <
+    - Greater Than :: >
+    - Less Or Equal Than :: <=
+    - Greater Or Equal Than :: >=
+
+*** Logical Operators
+    - And Operator :: and
+    - Or Operator :: or
+
+    #+BEGIN_SRC
+    10 or 20 ;; 10
+    nil or "a" ;; "a"
+    nil and 10 ;; nil
+    nil or 10 ;; 10
+    10 and 20 ;; 20
+    #+END_SRC
+*** Length and Concatenation
+    Unlike Lua, eden does not make use of special operators for length
+    or concatenation. Instead, length can be obtained by using the
+    function ~count~, and concatentation can be performed by using
+    ~concat~.
+
+    #+BEGIN_SRC
+    count([1 2 3]) ;; 3
+    count("test") ;; 4
+
+    concat([1 2 3] [4 5 6]) ;; (1 2 3 4 5 6)
+    #+END_SRC
+*** Precedence
+    Precendence is in this order (similar to lua):
+    - or, and
+    - <, >, <=, >=, !=, ==
+    - +, -
+    - *, /
+    - unary operators (-, not)
+*** Collection Construction
+    Constructing each of the main collections is straightforward
+**** Vector
+     - [1 2 3]
+     - vector(1 2 3)
+     - apply(vector list(1 2 3))
+     - to convert a collection to a vector, use ~vec~
+**** Map
+     - {:a 123 :b (2 + 2)}
+     - to convert a collection to a map, use ~into~
+       #+BEGIN_SRC
+       into({} [[:a 123] [:b "test"]])
+       #+END_SRC
+**** Set
+     - #{:a :b :c}
+     - to convert a collection to a set, use ~set~
+**** List
+     - list(1 2 3)
+     - apply(list [1 2 3])
+     - to convert a collection to a list, use ~into~
+       #+BEGIN_SRC
+       into(list() vector(1 2 3 4))
+       #+END_SRC
+*** Function Calls
+    Function calls are similar to lua:
+    #+BEGIN_SRC
+    <identifier>([arguments...])
+    #+END_SRC
+
+    Examples
+    #+BEGIN_SRC
+    x("test") ;; call the function in variable 'x' with the argument "test"
+    #+END_SRC
+
+*** Function Definitions
+    Function creation can either be done standalone, or an anonymous
+    function be assigned to a variable:
+
+    #+BEGIN_SRC
+    function add(x y)
+      return x + y
+    end
+
+    add = function(x y)
+      return x + y    
+    end
+    #+END_SRC
+
+    In both cases, they can be assigned to a local variable
+
+    #+BEGIN_SRC
+    local function add(x y)
+      return x + y
+    end
+
+    local add = function(x y)
+      return x + y
+    end
+    #+END_SRC
+** Module System
+
+   *eden* has a simple module system. eden will look for files in
+   order of increasing precedence:
+   
+   - If on linux, in /usr/share/eden/libs
+   - If on linux, it will look in each of the colon separated paths in
+     the Environment Variable ~EDEN_MODULE_PATH~
+   - if on windows, it will look in each of the /semi-colon separated/
+     paths in the Environment Variable ~EDEN_MODULE_PATH~
+   - In your home folder, located at ~/.eden/libs (%HOME%/.eden/libs on windows)
+   - The current working directory
 
 
+   As an example, assuming I have a file named test.eden in the current
+   working directory:
+
+   #+BEGIN_SRC
+   ;; test.eden
+
+   local print-hello = function(name)
+     println(str("Hello " name "!"))
+   end
+
+   export {:hello print-hello}
+
+   #+END_SRC
+
+   importing the module is simple:
+
+   #+BEGIN_SRC
+   ;; another_file.eden
+
+   test = require "test"
+
+   test.hello("Ben")
+
+   #+END_SRC
+
+   #+BEGIN_SRC sh
+   $ eden another_file.eden
+   Hello Ben!
+   $ 
+   #+END_SRC
+
+** Standard Libraries
+   Most of the standard libraries are handpicked community libraries
+   that i've used in my other projects. The core libraries closely
+   resemble the libraries seen in clojure
+*** Core Library
+    Most of the clojure core library has been implemented in Eden as a
+    core library. The complete list of clojure.core can be found
+    [[http://clojuredocs.org/clojure.core][here]]. Any dynamic variables, or macros have not been included from
+    the core library.
+*** ~system~ Library
+    - system.env(s) :: Get the Environment Variable by the name ~s~
+    - system.exit(n) :: Return from program with Exit Code ~n~
+    - system.get-globals() :: Return all of the Eden program's global
+         variables. Note that the keys are represented as symbols.
+    - system.set-global(name value) :: Set global variable
+         programmatically.
+*** ~string~ Library
+    The Eden string library is a direct mirror of the [[https://funcool.github.io/cuerdas/latest/][cuerdas]] string
+    library. Please refer to the provided page for the list of
+    functions, which can be accessed via the ~string~ variable.
+
+    Examples
+    #+BEGIN_SRC
+    string.caseless=("Hello There!" "HELLO There!") ;; true
+    string.human(:great-for-csv-headers) ;; "great for csv headers"
+    #+END_SRC
+*** ~filesystem~ Library
+    The Eden filesystem library is a direct mirror of the [[https://github.com/Raynes/fs/][Raynes.fs]]
+    filesystem library. The library api can be found [[https://raynes.github.io/fs/][here]].
+*** ~io~ Library
+    The Eden io library is a copy of the [[http://clojuredocs.org/clojure.java.io][clojure.java.io]] library.
+*** ~$~, Specter Library
+    For data transformations, the popular [[https://github.com/nathanmarz/specter][specter]] library has been
+    included in the variable ~$~
+
+    Examples
+    #+BEGIN_SRC
+    $.setval([:a $.END] [4 5] {:a [1 2 3]}) ;; {:a [1 2 3 4 5]}
+
+    $.transform([$.filterer(odd?) $.LAST] inc range(1 9)) ;; (1 2 3 4 5 6 8 8)
+
+    $.transform($.ALL inc #{1 2 3}) ;; #{2 3 4}
+    #+END_SRC
+*** Parsing Libraries
+**** ~html~ Library
+     - html.parse(s) :: Parses HTML string using [[https://github.com/davidsantiago/hickory][hickory]] (generates
+                        hiccup style collection)
+     - html.stringify(coll) :: Creates HTML string from collection
+          using [[https://github.com/weavejester/hiccup][hiccup]]
+
+     Also has css generator provided by [[https://github.com/noprompt/garden][garden]]
+     - html.css.gen-css(coll) :: provided by garden.core/css
+     - html.css.gen-style(coll) :: provided by garden.core/style
+     - html.css.color :: several color functions from garden.color
+     - html.css.units :: several unit functions from garden.units
+**** ~json~ Library
+     JSON library provided by [[https://github.com/dakrone/cheshire][cheshire]]
+     - json.parse(s) :: provided by cheshire.core/parse-string
+     - json.stringify(coll) :: provided by cheshire.core/generate-string
+**** ~edn~ Library
+     EDN library parser provided by [[https://github.com/clojure/tools.reader][tools.reader]]
+     - edn.parse(s) :: provided by clojure.tools.reader.edn/read-string
+     - edn.stringify(coll) :: clojure.core/pr-str
+**** ~transit~ Library
+     Transit Reader and Generator provided by [[https://github.com/cognitect/transit-clj][transit-clj]]
+
+     *incomplete*
+
+     - transit.read :: provided by cognitect.transit/read
+     - transit.write :: provided by cognitect.transit/write
+*** ~http~ Library
+    HTTP Client and Server provided by [[http://www.http-kit.org/][http-kit]]
+    HTTP Router provided by [[https://github.com/juxt/bidi][bidi]]
+    
+    - http.router.make-handler :: provided by bidi.ring/make-handler
+    - http.server.run-server :: provided by org.httpkit.server/run-server
+    - http.client.get :: provided by org.httpkit.client/get
+
+    Example found at ./examples/eden/http_server.eden
+    
+*** ~shell~ Library
+    Shell library provided by [[https://github.com/Raynes/conch][conch]], unfortunately it doesn't work due
+    to reflection issues that will be resolved in future native executables
+*** ~operator~ Library
+    Includes all of the clojure equivalent operators. Useful for
+    additional performance in certain applications
+    - operator.add :: clojure.core/+
+    - operator.sub :: clojure.core/-
+    - operator.mult :: clojure.core/*
+    - operator.div :: clojure.core//
+    - operator.not :: clojure.core/not
+    - operator.and :: clojure.core/and
+    - operator.or :: clojure.core/or
 * Dark-corners of Eden
 
   Since *eden* uses EDN data values directly, it does mean some funky
@@ -470,18 +825,18 @@ collections.
 
 * Development
 ** Uberjar
-   Run ~lein uberjar~
+   To generate a standalone uberjar file, run ~lein uberjar~
    
-   This generates a jar file in ./target/*.jar
+   The generated jar file will be located in ./target/eden-<version>-standalone.jar
 
 ** Native Executable Distribution
    Please read the Makefile for instructions on how to native compile
    *eden* using GraalVM.
-*** Debian DPKG
+*** Debian DPKG (Tested on Ubuntu 17.10)
     ~make dpkg~
-*** Redhat RPM
+*** Redhat RPM (Tested on Fedora 28)
     ~make rpm~
-*** Tar Archive
+*** Tar Archive (Tested on Ubuntu 17.10)
     ~make tar~
 ** Testing
    Tests can be run with ~lein test~
@@ -495,3 +850,9 @@ collections.
   - +clojure.string (or use funcool.cuerdas, can it native compile?)+
     (added in 0.3.0-SNAPSHOT)
   - +json parse and stringify libs (one that native compiles)+ (added in 0.3.0-SNAPSHOT)
+* Future Unreachable(?) Goals
+  - eden repl
+  - clojurescript build with passing tests
+  - metafunctions
+  - lua table implementation
+  - natively compiled database interface (sqlite, psql)
