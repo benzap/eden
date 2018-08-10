@@ -67,7 +67,10 @@
 
 
 (defn eval-fn [tokens]
-  (eden.std.ast/evaluate (:astm *default-eden-instance*) tokens))
+  (try
+    (eden.std.ast/evaluate (:astm *default-eden-instance*) tokens)
+    (catch #?(:clj ExceptionInfo :cljs js/Object) ex
+      ((:error-handler *default-eden-instance*) ex))))
 
 
 (defmacro eval [& tokens]

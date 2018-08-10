@@ -6,7 +6,7 @@
                                evaluate-statement
                                STATEMENT##]]
    [eden.std.expression :refer [Expression evaluate-expression]]
-   [eden.std.exceptions :refer [runtime-error]]
+   [eden.std.exceptions :refer [runtime-error *file-path*]]
    [eden.std.display :as display :refer [display-node display-do-statement]]
    [eden.std.token :refer [TokenType token-type]]
    [eden.std.return :as std.return]
@@ -204,7 +204,8 @@
 
   Statement
   (evaluate-statement [_]
-    (binding [std.export/*enable-export?* true]
+    (binding [std.export/*enable-export?* true
+              *file-path* spath]
       (try
         (swap! *sm state/add-environment)
         (doseq [stmt stmts]

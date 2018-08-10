@@ -1,5 +1,10 @@
-(ns eden.std.exceptions)
+(ns eden.std.exceptions
+  (:require
+   [clojure.pprint :refer [pprint]]))
 
+
+(def ^:dynamic *file-path* nil)
+(def ^:dynamic *verbose* false)
 
 (defn generate-window
   "TODO: write this function, with bigger window."
@@ -9,7 +14,8 @@
 
 (defn generate-parser-data
   [{:keys [tokens index] :as astm}]
-  {:position index
+  {:file *file-path*
+   :position index
    :window
    (str 
     (if (> index 1) "... " "|BEGINNING| ")
@@ -38,7 +44,7 @@
 (defn runtime-error
   ([msg data]
    (throw (ex-info (str "Eden Runtime Error: " msg) {:type ::runtime-error :data data})))
-  ([msg] (runtime-error msg {}))
+  ([msg] (runtime-error msg {:file *file-path*}))
   ([] (runtime-error "No Message")))
 
 
@@ -54,13 +60,13 @@
 
 
 (defn default-error-handler [ex]
-  (cond
-    (parser-error? ex)
-    (do
-      (throw ex))
+  (if-not *verbose*
+    (cond
+      (parser-error? ex)
+      (pprint (ex-data ex))
 
-    (runtime-error? ex)
-    (do
-      (throw ex))
+      (runtime-error? ex)
+      (pprint (ex-data ex))
 
-    :else (throw ex)))
+      :else (binding [*out* *err*] (println (str ex))))
+    (throw ex)))

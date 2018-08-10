@@ -2,7 +2,7 @@
   (:require
    [eden.state-machine.environment :as environment]
    [eden.std.token :as token :refer [identifier?]]
-   [eden.std.exceptions :as exceptions :refer [parser-error]]
+   [eden.std.exceptions :as exceptions :refer [parser-error *file-path*]]
    [eden.std.expression :as std.expression]
    [eden.std.impl.expression :as expression]
    [eden.std.statement :refer [evaluate-statement isa-statement?]]
@@ -509,7 +509,7 @@
       (cond
         (string? spath)
         (let [tokens (read-file spath)
-              stmts (parse astm tokens)]
+              stmts (binding [*file-path* spath] (parse astm tokens))]
           
           [astm (statement/->RequireModuleStatement (:*sm astm) spath stmts (atom nil))])
 
