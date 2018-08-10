@@ -5,42 +5,39 @@
 #+LANGUAGE: en
 #+OPTIONS: H:2 num:t toc:t \n:nil ::t |:t ^:t f:t tex:t
 
-* 0.1.0 (BETA SNAPSHOT)
-  - First Beta Version of Eden
+* 0.8.0 (First Release)
+  - Module System is now working. Module paths on windows are supplied
+    within the Environment Variable ~EDEN_MODULE_PATH~ as semi-colon
+    separated directory paths, with later entries taking precedence
+    in module resolution. Similarly, linux can include paths in the
+    ~EDEN_MODULE_PATH~, but they must be colon separated.
 
-* 0.2.0 (BETA SNAPSHOT)
-  - Added native build scripts for GraalVM, along with scripts for
-    building .deb packages and .rpm packages
-  - Tested on Ubuntu 17.10, with debian package created.
-* 0.3.0 (BETA SNAPSHOT)
-  - Added several more unit tests for the language standard
-  - Added string module, which is a direct of clojure.string
-  - Fixed edn module, which includes the functions edn.parse and edn.stringify
-  - Improved Parser Error Messages, still requires work
-* 0.4.0 (BETA SNAPSHOT)
-  - Added support for 'elseif' keyword
-
-    ex.
-
-    #+BEGIN_SRC
-
-    function check-age(age)
-      if age < 18 then
-        println("Under-age")
-      elseif age >= 18 and age < 50 then
-        println("Average-age")
-      else
-        println("Senior-age")
-      end
-    end
-
-    check-age(16)
-    check-age(19)
-    check-age(55)
-
-    #+END_SRC
+  - Improved Commandline. Included commandline argument
+    ~-m, --modulepath~ which takes a (semi-colon separated /
+    colon-separated) path listing which will be included in the module
+    path resolution.
     
-  - Improved Error Handling
+  - Commandline also includes ~-v --verbose~ which can be used to turn
+    on more verbose error messages. Error messages are now less
+    verbose by default.
+
+  - Slight improvements to error messages. They will now display which
+    file the error occured in.
+* 0.7.0 (BETA SNAPSHOT)
+  - Added transit library under transit, which is a wrapped
+    [[https://github.com/cognitect/transit-clj][transit-clj]] library
+  - Added clojure.java.io under io
+  - Changed how the parser associates getters and function calls to
+    only target identifers (variables) and anonymous functions
+    (function() ... end). This was done to mitigate issues with
+    collection literals getting confused with functions calls and
+    getters. This also likely means that metafunctions will never
+    happen.
+* 0.6.0 (BETA SNAPSHOT)
+  - Added css library under html.css, which is wrapped [[http://github.com/noprompt/hiccup][hiccup]] library
+  - Added http client and server, which is [[http://http-kit.org]]
+  - Added routing library, which is [[http://github.com/juxt/bidi][bidi]]
+  - Example of http server in ./examples/bidi/http_server.eden
 * 0.5.0 (BETA SNAPSHOT)
   - Added json library, which is a wrapped
     [[https://github.com/dakrone/cheshire][popular json library]]
@@ -65,18 +62,39 @@
 
   - Replaced clojure.string library with
     [[https://funcool.github.io/cuerdas/latest][a popular string library]]
-* 0.6.0 (BETA SNAPSHOT)
-  - Added css library under html.css, which is wrapped [[http://github.com/noprompt/hiccup][hiccup]] library
-  - Added http client and server, which is [[http://http-kit.org]]
-  - Added routing library, which is [[http://github.com/juxt/bidi][bidi]]
-  - Example of http server in ./examples/bidi/http_server.eden
-* 0.7.0 (BETA SNAPSHOT)
-  - Added transit library under transit, which is a wrapped
-    [[https://github.com/cognitect/transit-clj][transit-clj]] library
-  - Added clojure.java.io under io
-  - Changed how the parser associates getters and function calls to
-    only target identifers (variables) and anonymous functions
-    (function() ... end). This was done to mitigate issues with
-    collection literals getting confused with functions calls and
-    getters. This also likely means that metafunctions will never
-    happen.
+* 0.4.0 (BETA SNAPSHOT)
+  - Added support for 'elseif' keyword
+
+    ex.
+
+    #+BEGIN_SRC
+
+    function check-age(age)
+      if age < 18 then
+        println("Under-age")
+      elseif age >= 18 and age < 50 then
+        println("Average-age")
+      else
+        println("Senior-age")
+      end
+    end
+
+    check-age(16)
+    check-age(19)
+    check-age(55)
+
+    #+END_SRC
+    
+  - Improved Error Handling
+* 0.3.0 (BETA SNAPSHOT)
+  - Added several more unit tests for the language standard
+  - Added string module, which is a direct of clojure.string
+  - Fixed edn module, which includes the functions edn.parse and edn.stringify
+  - Improved Parser Error Messages, still requires work
+
+* 0.2.0 (BETA SNAPSHOT)
+  - Added native build scripts for GraalVM, along with scripts for
+    building .deb packages and .rpm packages
+  - Tested on Ubuntu 17.10, with debian package created.
+* 0.1.0 (BETA SNAPSHOT)
+  - First Beta Version of Eden
