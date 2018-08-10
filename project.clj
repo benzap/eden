@@ -1,4 +1,4 @@
-(defproject eden "0.7.0-SNAPSHOT"
+(defproject eden "0.7.0"
   ;;:global-vars {*warn-on-reflection* true}
   :description "lua-based scripting language in Clojure(script)"
   :url "http://github.com/benzap/eden"

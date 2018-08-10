@@ -19,6 +19,14 @@
     (.isFile f)))
 
 
+(def os-name (System/getProperty "os.name"))
+(def windows-machine?
+  (boolean (re-matches #"win|windows.*" (str/lower-case os-name))))
+
+
+(def module-path-separator (if windows-machine? #";" #":"))
+
+
 ;;(join-path "../" "test" "test2" "test3")
 ;;(join-path "test/foo")
 
@@ -30,24 +38,32 @@
 ;;(module-path->file-path "bar/foo")
 
 
+(defn split-module-paths [s]
+  (vec (str/split s module-path-separator)))
+
+
 (defn get-environment-paths []
   (if-let [paths (System/getenv "EDEN_MODULE_PATH")]
-    (vec (str/split paths #":"))
+    (split-module-paths paths)
     []))
 
 
+;;(get-environment-paths)
+
+
 (def ^:dynamic *eden-module-path-list*
-  (concat
-   (get-environment-paths)
-   ["."]))
+  (get-environment-paths))
 
 
+(def cwd ".")
 (defn resolve-module-file-path [^String s]
-  (loop [paths (reverse *eden-module-path-list*)]
+  (loop [paths (reverse (conj *eden-module-path-list* cwd))]
     (if-not (empty? paths)
       (let [path (join-path (first paths) (module-path->file-path s))]
         (if (is-file? (str path ".eden"))
           (str path ".eden")
           (recur (rest paths)))))))
+
+
 
 

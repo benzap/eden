@@ -58,7 +58,6 @@
       (set-var! 'dissoc dissoc)
       (set-var! 'distinct distinct)
       (set-var! 'distinct? distinct?)
-      ;; TODO: do
       (set-var! 'double double)
       (set-var! 'double? double?)
       (set-var! 'drop drop)
@@ -80,6 +79,7 @@
       (set-var! 'flush flush)
       (set-var! 'fnext fnext)
       (set-var! 'fnil fnil)
+      (set-var! 'fn? fn?)
       (set-var! 'future #(future (%)))
       (set-var! 'future? future?)
       #?(:clj (set-var! 'format format))
@@ -88,6 +88,7 @@
       (set-var! 'group-by group-by)
       (set-var! 'identical? identical?)
       (set-var! 'identity identity)
+      (set-var! 'ifn? ifn?)
       (set-var! 'inc inc)
       (set-var! 'indexed? indexed?)
       (set-var! 'inst-ms inst-ms)

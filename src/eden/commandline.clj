@@ -4,6 +4,7 @@
    [clojure.string :as str]
    [clojure.java.io :as io]
    [clojure.tools.cli :refer [parse-opts]]
+   [eden.std.module :as module]
    [eden.client :refer [form]]
    [eden.core :as eden])
   (:gen-class))
@@ -16,8 +17,10 @@ Usage:
   eden <filename> [arguments..] [options]
   
 Options:
-  -h, --help    Show this screen.
-  -e            Evaluate Commandline Arguments
+  -h, --help        Show this screen.
+  -m, --modulepath  Add Eden Module Paths separated by
+                    ':' in Linux or ';' in Windows
+  -e                Evaluate Commandline Arguments as an Eden Expression
 Website:
   github.com/benzap/eden
 Notes:
@@ -26,7 +29,17 @@ Notes:
 
 (def cli-options
  [["-h" "--help"]
+  ["-m" "--modulepath PATHS" "Module Paths"
+   :id :modpath
+   :parse-fn #(module/split-module-paths %)]
   ["-e" nil :id :eval]])
+
+
+(defn cmdline-module-paths [options]
+  (let [modpath module/*eden-module-path-list*]
+    (if (:modpath options)
+      (concat modpath (:modpath options))
+      modpath)))
 
 
 (defn -main
@@ -46,14 +59,16 @@ Notes:
      (println help-message)
 
      (:eval options)
-     (println (eden/eval-expression-string (str/join " " arguments)))
+     (binding [module/*eden-module-path-list* (cmdline-module-paths options)]
+       (println (eden/eval-expression-string (str/join " " arguments))))
 
      (> (count arguments) 0)
      (let [[filename & args] arguments
            sform (slurp filename)]
        (eden/eval system = system or {})
        (eden/eval-fn (form system.args = %clj (vec args)))
-       (eden/eval-string sform)
+       (binding [module/*eden-module-path-list* (cmdline-module-paths options)]
+         (eden/eval-string sform))
        (flush))
 
      :else
