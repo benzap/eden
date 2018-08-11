@@ -312,28 +312,47 @@ collections.
 
   #+END_SRC
 
-* Commandline Execution
+* Installing the Eden Console for Administrative Tooling
 
-  *eden* can be run from the commandline. It can evaluate-expressions
+  *eden* can be run from the commandline, which can make it suitable
+  for commandline scripting. It can evaluate expressions
   with the -e commandline flag, or can evaluate files, which are
   usually designated with the suffix *.eden.
 
-  From the leiningen cloned project, you can run the examples provided
-  in the ./examples folder
+  The easiest way to try out *eden* is to clone the project and run it
+  within the project directory.
 
   #+BEGIN_SRC sh
-
+  $ git clone https://github.com/benzap/eden.git
+  $ cd eden
   $ lein run ./examples/eden/get_project_version.eden
-  0.7.0-SNAPSHOT
-
+  0.8.0
   #+END_SRC
 
-  Alternatively, you can use the provided standalone *.jar file
-  provided on the releases page
+** Debian Installation
+   Tested in Ubuntu 17.10, 18.10.
+   
+   /May require stdc++ lib dependencies for other distributions./
+   
+   #+BEGIN_SRC
+   wget https://github.com/benzap/eden/releases/download/0.8.0/eden-0.8.0-amd64.deb
+   sudo dpkg -i eden-0.8.0-amd64.deb
+   #+END_SRC
+
+** Redhat Installaion
+   Tested on Fedora 28
+   
+   #+BEGIN_SRC
+   wget https://github.com/benzap/eden/releases/download/0.8.0/eden-0.8.0-1.x86_64.rpm
+   sudo rpm -i eden-0.8.0-1.x86_64.rpm
+   #+END_SRC
+
+** Running the standalone uberjar
+   Grab a pre-generated uberjar from the [[https://github.com/benzap/eden/releases][releases page]], and run it directly:
 
   #+BEGIN_SRC
 
-  $ java -jar eden-0.7.0-SNAPSHOT.jar ./examples/eden/basic_http_server.eden
+  $ java -jar eden-0.8.0.jar ./examples/eden/basic_http_server.eden
 
   #+END_SRC
 
@@ -341,8 +360,15 @@ collections.
   own native executable, or grab one of the pre-compiled ones provided
   on the [[https://github.com/benzap/eden/releases][releases page]]
 
+** Installing on Windows
+   *experimental*
+
+   Download the *.exe from the [[https://github.com/benzap/eden/releases][releases page]]
+
+   /Note: Has issues with the current working directory, *.jar recommended/
+
 * Programming in Eden
-  This is a short manual explaining how to use the Eden programming language.
+  This is a short manual explaining the Eden programming language.
 ** Values and Types
    Eden is a /dynamically typed/ language based on data types provided
    in the [[https://github.com/edn-format/edn][EDN data format]]. The types include:
@@ -870,6 +896,15 @@ collections.
 
    #+END_SRC
 
+   Note that indexing is only in effect after identifiers and function
+   calls
+
+   #+BEGIN_SRC
+   x[1] ;; indexing
+   list([1 2 3] x) ;; not indexing
+   list([1 2 3] x [2]) ;; x[2] is an index!
+   #+END_SRC
+
 ** The EDN parser gets confused with complex map hashes
 
    #+BEGIN_SRC
@@ -915,6 +950,19 @@ collections.
     x = ["A" "B" "C"]
     println(x[1]) ;; B
    #+END_SRC
+** Equality Symbols
+   Lua uses ~= to represent inequality, whereas Eden uses ~!=~
+
+   #+BEGIN_SRC lua
+   -- Lua
+   print(true ~= false) -- true
+   #+END_SRC
+
+   #+BEGIN_SRC
+   ;; eden
+   println(true != false) ;; true
+   #+END_SRC
+
 ** Module Systems
    *eden* adopts a module system with the special keyword ~export~ for
    exporting, whereas Lua reuses ~return~ to represent the module
