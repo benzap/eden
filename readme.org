@@ -369,7 +369,7 @@ collections.
 
   #+BEGIN_SRC
 
-  $ java -jar eden-0.8.0.jar ./examples/eden/basic_http_server.eden
+  $ java -jar eden-0.8.0-standalone.jar ./examples/eden/basic_http_server.eden
 
   #+END_SRC
 
