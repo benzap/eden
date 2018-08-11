@@ -269,6 +269,23 @@ collections.
 
   #+END_SRC
 
+** Docker Image Execution
+   If you wish to just try out *eden*, and you have docker installed,
+   give this a shot:
+
+   #+BEGIN_SRC
+   $ docker run --rm -ti benzap/eden:0.8.0-1 -e '"Hello Eden!"'
+   #+END_SRC
+
+   Using *eden* with docker has its issues, as you have to mount
+   volumes in order to execute scripts. Here is a small example, which
+   mounts my current working directory under the volume */mount*, so
+   that it can execute an eden script that also resides in my current
+   working directory.
+
+   #+BEGIN_SRC
+   $ docker run --rm -v `pwd`:/mount -ti benzap/eden:0.8.0-1 /mount/my_script.eden
+   #+END_SRC
 * Introduction
 
   *eden* is an imperative language, so it embraces the idea of mutable
