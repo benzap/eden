@@ -347,26 +347,36 @@ collections.
    Eden is a /dynamically typed/ language based on data types provided
    in the [[https://github.com/edn-format/edn][EDN data format]]. The types include:
 
-   - Integers / BigIntegers :: 0, 13, -13, 14N
-   - Floats / Doubles :: 3.14, 10e+3
-   - Strings :: "Hello"
-   - Keywords :: :foo, :bar
-   - Booleans :: true, false
-   - Symbols (vars) :: x, y
-   - Lists :: list(1 2 3), list(4 5 6)
-   - Vectors :: [1 2 3], vector(1 2 3)
-   - Maps :: {:a 123 :b 456}
-   - Set :: #{:a :b :c}, set(:a :b :c)
-   - Nil :: nil
+   * Integers / BigIntegers :: ~0~, ~13~, ~-13~, ~14N~
+   * Floats / Doubles :: ~3.14~, ~10e+3~
+   * Strings :: ~"Hello"~
+   * Keywords :: ~:foo~, ~:bar~
+   * Booleans :: ~true~, ~false~
+   * Symbols (vars) :: ~x~, ~y~
+   * Lists :: ~list(1 2 3)~, ~list(4 5 6)~
+   * Vectors :: ~[1 2 3]~, ~vector(1 2 3)~
+   * Maps :: ~{:a 123 :b 456}~
+   * Set :: ~#{:a :b :c}~, ~set(:a :b :c)~
+   * Nil :: ~nil~
 
    I encourage you to review the EDN data format for additional types
    you might experience when using Eden.
 
 ** Variables
-   Variables in Eden are presented in the form of Symbols.
+   Variables in Eden are presented in the form of Symbols. The extent
+   of allowed variable names consists of what is allowed in the EDN
+   format, but also restricts you from using keywords used by the Eden
+   language, and symbols beginning with a dot (ex. ~.name ~.foo),
+   since this is used to access collection properties.
 
    #+BEGIN_SRC
-   x y foo bar is-value? set-value!
+   ;; Allowed
+
+   x y foo bar is-value? set-value! $hallo
+
+   ;; Not Allowed
+
+   for in .foo .bar end
    #+END_SRC
 
 ** Statements
@@ -416,8 +426,13 @@ collections.
     ;; if-elseif-else structure
     if <condition> then
       <body...>
+
     elseif <condition> then
       <body...>
+
+    [elseif <condition> then
+      <body...>]...
+
     else
       <body...>
     end
@@ -440,17 +455,63 @@ collections.
     #+END_SRC
 
 *** While Statement
+    While statements check its condition, and upon determining that
+    it's true, will run the block of statements contained in its
+    body. Each time, it will check the condition and call the statment
+    block forever until the condition becomes false.
+
     #+BEGIN_SRC
     while <condition> do
       <body...>
     end
     #+END_SRC
 
+    Examples
+
+    #+BEGIN_SRC
+
+    ;; keep looping until `i` is greater than or equal to 10
+    local i = 0
+    while i < 10 do
+      println("i: " i)
+      i = i - 1
+    end    
+
+    ;; this will loop forever
+    while true do
+      println("Never gonna give you up")
+    end
+
+    #+END_SRC
+
 *** Repeat-Until Statement
+    Repeat statements are similar to the while statement, with the
+    differences being that the body is guaranteed to always be called
+    at least once, and the body will be looped over only if the
+    condition is false.
     #+BEGIN_SRC
     repeat
       <body...>
     until <condition>
+    #+END_SRC
+
+    Examples
+
+    #+BEGIN_SRC
+    
+
+    ;; keep looping until 'i' is greater than or equal to 10
+    local i = 1
+    repeat
+      println("i: " i)
+      i = i + 1
+    until i >= 10
+
+    ;; this will loop forever
+    repeat
+      println("Never gonna let you down")
+    until false
+
     #+END_SRC
 
 *** For Statement
@@ -463,7 +524,28 @@ collections.
     end
     #+END_SRC
 
-    The second type of ~for~ statement, called the ~for-each~
+    Examples
+
+    #+BEGIN_SRC
+
+    ;; loop from 0 to 10
+    for i = 0 10 do
+      println("i: " i)
+    end
+
+    ;; loop from first index to the length of the vector
+    local x = [1 2 3]
+    for i = 0 count(x) do
+      println(i "-" x[i])
+    end
+
+    ;; provide a step
+    for i = 0 10 2 do
+      println("i: " i)
+    end
+    #+END_SRC
+
+    The second type of ~for~ statement is called the ~for-each~
     statement. This is the more popular, and more often used loop
     conditional.
 
@@ -472,19 +554,33 @@ collections.
       <body...>
     end
     #+END_SRC
-** Expressions
-*** Arithmetic Operators
-    - Addition :: +
-    - Subtraction :: -
-    - Multiplication :: *
-    - Division :: /
+
+    Examples
 
     #+BEGIN_SRC
+
+    ;; Print out each element of xs
+    local xs = [1 2 3]
+    for x in xs do
+      println("Element: " x)
+    end
+
+    #+END_SRC
+** Expressions
+*** Arithmetic Operators
+    - Addition :: ~+~
+    - Subtraction :: ~-~
+    - Multiplication :: ~*~
+    - Division :: ~/~
+
+    #+BEGIN_SRC
+
     println(2 + 2)
     println(2 + 2 - 2)
     println(2 * 2 - 5)
     println((2 + 2) * 4)
     println((2 / 2) * 5)
+
     #+END_SRC
 
 *** Coercions & Conversions
@@ -495,17 +591,32 @@ collections.
     Almost all types can be converted into a string using the ~str~
     function.
 
+    #+BEGIN_SRC
+    println(2 + 2) ;; 4 (integer)
+    println(2 + 2.) ;; 4. (float)
+    #+END_SRC
+
 *** Relational Operators
-    - Equality :: ==
-    - Inequality :: !=
-    - Less Than :: <
-    - Greater Than :: >
-    - Less Or Equal Than :: <=
-    - Greater Or Equal Than :: >=
+    - Equality :: ~==~
+    - Inequality :: ~!=~
+    - Less Than :: ~<~
+    - Greater Than :: ~>~
+    - Less Or Equal Than :: ~<=~
+    - Greater Or Equal Than :: ~>=~
+
+    #+BEGIN_SRC
+    println(2 == 2) ;; true
+    println(2 != 1) ;; true
+    
+    local age = 12
+
+    println(age < 18) ;; true
+    println(age > 18) ;; false
+    #+END_SRC
 
 *** Logical Operators
-    - And Operator :: and
-    - Or Operator :: or
+    - And Operator :: ~and~
+    - Or Operator :: ~or~
 
     #+BEGIN_SRC
     10 or 20 ;; 10
@@ -528,30 +639,34 @@ collections.
     #+END_SRC
 *** Precedence
     Precendence is in this order (similar to lua):
-    - or, and
-    - <, >, <=, >=, !=, ==
-    - +, -
-    - *, /
-    - unary operators (-, not)
+    + ~or~, ~and~
+    + ~<~, ~>~, ~<=~, ~>=~, ~!=~, ~==~
+    + ~+~, ~-~
+    + ~*~, ~/~
+    + unary operators (~-~, ~not~)
+
+    #+BEGIN_SRC
+    println(2 + 2 * 4) ;; 10
+    #+END_SRC
 *** Collection Construction
     Constructing each of the main collections is straightforward
 **** Vector
-     - [1 2 3]
-     - vector(1 2 3)
-     - apply(vector list(1 2 3))
+     - ~[1 2 3]~
+     - ~vector(1 2 3)~
+     - ~apply(vector list(1 2 3))~
      - to convert a collection to a vector, use ~vec~
 **** Map
-     - {:a 123 :b (2 + 2)}
+     - ~{:a 123 :b (2 + 2)}~
      - to convert a collection to a map, use ~into~
        #+BEGIN_SRC
        into({} [[:a 123] [:b "test"]])
        #+END_SRC
 **** Set
-     - #{:a :b :c}
+     - ~#{:a :b :c}~
      - to convert a collection to a set, use ~set~
 **** List
-     - list(1 2 3)
-     - apply(list [1 2 3])
+     - ~list(1 2 3)~
+     - ~apply(list [1 2 3])~
      - to convert a collection to a list, use ~into~
        #+BEGIN_SRC
        into(list() vector(1 2 3 4))
@@ -647,11 +762,11 @@ collections.
     [[http://clojuredocs.org/clojure.core][here]]. Any dynamic variables, or macros have not been included from
     the core library.
 *** ~system~ Library
-    - system.env(s) :: Get the Environment Variable by the name ~s~
-    - system.exit(n) :: Return from program with Exit Code ~n~
-    - system.get-globals() :: Return all of the Eden program's global
+    - ~system.env(s)~ :: Get the Environment Variable by the name ~s~
+    - ~system.exit(n)~ :: Return from program with Exit Code ~n~
+    - ~system.get-globals()~ :: Return all of the Eden program's global
          variables. Note that the keys are represented as symbols.
-    - system.set-global(name value) :: Set global variable
+    - ~system.set-global(name value)~ :: Set global variable
          programmatically.
 *** ~string~ Library
     The Eden string library is a direct mirror of the [[https://funcool.github.io/cuerdas/latest/][cuerdas]] string
@@ -682,24 +797,24 @@ collections.
     #+END_SRC
 *** Parsing Libraries
 **** ~html~ Library
-     - html.parse(s) :: Parses HTML string using [[https://github.com/davidsantiago/hickory][hickory]] (generates
+     - ~html.parse(s)~ :: Parses HTML string using [[https://github.com/davidsantiago/hickory][hickory]] (generates
                         hiccup style collection)
-     - html.stringify(coll) :: Creates HTML string from collection
+     - ~html.stringify(coll)~ :: Creates HTML string from collection
           using [[https://github.com/weavejester/hiccup][hiccup]]
 
      Also has css generator provided by [[https://github.com/noprompt/garden][garden]]
-     - html.css.gen-css(coll) :: provided by garden.core/css
-     - html.css.gen-style(coll) :: provided by garden.core/style
-     - html.css.color :: several color functions from garden.color
-     - html.css.units :: several unit functions from garden.units
+     + ~html.css.gen-css(coll)~ :: provided by garden.core/css
+     + ~html.css.gen-style(coll)~ :: provided by garden.core/style
+     + ~html.css.color~ :: several color functions from garden.color
+     + ~html.css.units~ :: several unit functions from garden.units
 **** ~json~ Library
      JSON library provided by [[https://github.com/dakrone/cheshire][cheshire]]
-     - json.parse(s) :: provided by cheshire.core/parse-string
-     - json.stringify(coll) :: provided by cheshire.core/generate-string
+     - ~json.parse(s [opts])~ :: provided by cheshire.core/parse-string
+     - ~json.stringify(coll [opts])~ :: provided by cheshire.core/generate-string
 **** ~edn~ Library
      EDN library parser provided by [[https://github.com/clojure/tools.reader][tools.reader]]
-     - edn.parse(s) :: provided by clojure.tools.reader.edn/read-string
-     - edn.stringify(coll) :: clojure.core/pr-str
+     - ~edn.parse(s [opts])~ :: provided by clojure.tools.reader.edn/read-string
+     - ~edn.stringify(coll [opts])~ :: clojure.core/pr-str
 **** ~transit~ Library
      Transit Reader and Generator provided by [[https://github.com/cognitect/transit-clj][transit-clj]]
 
@@ -711,25 +826,27 @@ collections.
     HTTP Client and Server provided by [[http://www.http-kit.org/][http-kit]]
     HTTP Router provided by [[https://github.com/juxt/bidi][bidi]]
     
-    - http.router.make-handler :: provided by bidi.ring/make-handler
-    - http.server.run-server :: provided by org.httpkit.server/run-server
-    - http.client.get :: provided by org.httpkit.client/get
+    - ~http.router.make-handler(coll)~ :: provided by bidi.ring/make-handler
+    - ~http.server.run-server(handler [opts])~ :: provided by org.httpkit.server/run-server
+    - ~http.client.get(url [opts])~ :: provided by org.httpkit.client/get
 
     Example found at ./examples/eden/http_server.eden
     
 *** ~shell~ Library
     Shell library provided by [[https://github.com/Raynes/conch][conch]], unfortunately it doesn't work due
-    to reflection issues that will be resolved in future native executables
+    to reflection issues that will be resolved in future native
+    executables
+
 *** ~operator~ Library
     Includes all of the clojure equivalent operators. Useful for
     additional performance in certain applications
-    - operator.add :: clojure.core/+
-    - operator.sub :: clojure.core/-
-    - operator.mult :: clojure.core/*
-    - operator.div :: clojure.core//
-    - operator.not :: clojure.core/not
-    - operator.and :: clojure.core/and
-    - operator.or :: clojure.core/or
+    * ~operator.add(x ...)~ :: clojure.core/+
+    * ~operator.sub(x ...)~ :: clojure.core/-
+    * ~operator.mult(x ...)~ :: clojure.core/*
+    * ~operator.div(x ...)~ :: clojure.core//
+    * ~operator.not(x)~ :: clojure.core/not
+    * ~operator.and(x y)~ :: clojure.core/and, 2-arity wrapped macro
+    * ~operator.or(x y)~ :: clojure.core/or, 2-arity wrapped macro
 * Dark-corners of Eden
 
   Since *eden* uses EDN data values directly, it does mean some funky
