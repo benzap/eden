@@ -13,8 +13,8 @@
    [eden.stdlib.http :refer [import-stdlib-http]]
    [eden.stdlib.io :refer [import-stdlib-io]]
    [eden.stdlib.transit :refer [import-stdlib-transit]]
-   [eden.stdlib.shell :refer [import-stdlib-shell]]
-   [eden.stdlib.database :refer [import-stdlib-database]]))
+   [eden.stdlib.shell :refer [import-stdlib-shell]]))
+   ;;[eden.stdlib.database :refer [import-stdlib-database]]))
 
 
 (defn import-stdlib [eden]
@@ -32,5 +32,5 @@
       import-stdlib-http
       import-stdlib-io
       import-stdlib-transit
-      import-stdlib-shell
-      import-stdlib-database))
+      import-stdlib-shell))
+      ;;import-stdlib-database))

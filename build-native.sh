@@ -26,8 +26,10 @@ echo ""
 
 echo "Building Native Image..."
 native-image -jar target/eden-$EDEN_VERSION-standalone.jar \
+	     --no-server \
              -H:Name="eden-${EDEN_VERSION}" \
              -H:+ReportUnsupportedElementsAtRuntime \
+	     --enable-url-protocols=http,https \
 	     --enable-http \
 	     --enable-https \
 	     --enable-all-security-services \

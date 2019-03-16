@@ -5,24 +5,25 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.339"]
-                 [org.clojure/tools.reader "1.3.0"]
-                 [org.clojure/tools.cli "0.3.7"]
+                 [org.clojure/clojurescript "1.10.520"]
+                 [org.clojure/tools.reader "1.3.2"]
+                 [org.clojure/tools.cli "0.4.1"]
                  
                  ;; Eden Contrib Standard Libraries
-                 [cheshire "5.8.0"] ;; JSON Library
-                 [com.cognitect/transit-clj "0.8.309"] ;; Transit Data Format
-                 [funcool/cuerdas "2.0.5"] ;; String Library
-                 [com.rpl/specter "1.1.1"] ;; Code Navigation
+                 [cheshire "5.8.1"] ;; JSON Library
+                 [com.cognitect/transit-clj "0.8.313"] ;; Transit Data Format
+                 [funcool/cuerdas "2.1.0"] ;; String Library
+                 [com.rpl/specter "1.1.2"] ;; Code Navigation
                  [hiccup "1.0.5"] ;; HTML Generation
                  [hickory "0.7.1"] ;; HTML Parsing
                  [me.raynes/conch "0.8.0"] ;; Shell Program Execution
                  [me.raynes/fs "1.4.6"] ;; More sane file system functions in clojure
-                 [http-kit "2.3.0-beta2"] ;; HTTP Client/Server Library
-                 [bidi "2.1.3"] ;; HTTP Routing Library
-                 [garden "1.3.5"] ;; CSS Generation
-                 [org.clojure/java.jdbc "0.7.8"] ;; Java JDBC for database interaction
-                 [org.xerial/sqlite-jdbc "3.23.1"]] ;; Sqlite Driver
+                 [http-kit "2.3.0"] ;; HTTP Client/Server Library
+                 [ring/ring-defaults "0.3.2"] ;; HTTP Ring Middleware
+                 [bidi "2.1.5"] ;; HTTP Routing Library
+                 [garden "1.3.6"] ;; CSS Generation
+                 [org.clojure/java.jdbc "0.7.9"] ;; Java JDBC for database interaction
+                 [org.xerial/sqlite-jdbc "3.27.2"]] ;; Sqlite Driver
   
   
   :plugins [[lein-cljsbuild "1.1.7"]
