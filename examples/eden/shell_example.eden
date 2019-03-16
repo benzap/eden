@@ -1,0 +1,7 @@
+;; Example of executing a shell process
+echo = shell.program("eden")
+
+println(echo("-e" "2 + 2"))
+println(echo("-e" "2 - 2"))
+
+system.exit(0)

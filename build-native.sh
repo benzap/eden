@@ -25,7 +25,15 @@ lein uberjar
 echo ""
 
 echo "Building Native Image..."
-native-image -jar target/eden-$EDEN_VERSION-standalone.jar -H:Name="eden-${EDEN_VERSION}" -H:+ReportUnsupportedElementsAtRuntime -H:EnableURLProtocols=http
+native-image -jar target/eden-$EDEN_VERSION-standalone.jar \
+             -H:Name="eden-${EDEN_VERSION}" \
+             -H:+ReportUnsupportedElementsAtRuntime \
+	     --enable-http \
+	     --enable-https \
+	     --enable-all-security-services \
+	     --rerun-class-initialization-at-runtime=javax.net.ssl.SSLContext \
+	     -H:+ReportExceptionStackTraces \
+             -H:ReflectionConfigurationFiles=ReflectionConfig.json
 echo ""
 
 echo "Post Configuration..."

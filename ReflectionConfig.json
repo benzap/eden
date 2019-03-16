@@ -1,0 +1,26 @@
+[
+    {
+	"name" : "java.lang.ProcessBuilder",
+	"allPublicConstructors" : true
+    },
+
+    {
+	"name" : "java.io.BufferedReader",
+	"allPublicMethods" : true
+    },
+
+    {
+	"name" : "java.util.concurrent.LinkedBlockingQueue",
+	"allPublicMethods" : true
+    },
+
+    {
+	"name" : "java.lang.String",
+	"allPublicMethods" : true
+    },
+
+    {
+	"name" : "java.lang.UNIXProcess",
+	"allPublicMethods" : true
+    }
+]

@@ -5,7 +5,6 @@
    [eden.def :refer [set-var!]]))
 
 
-;; Native Error: Fails due to missing ProcessBuilder
 (defn program-fn [name]
   (fn [& args]
     (apply conch/execute name args)))
@@ -17,4 +16,5 @@
 
 (defn import-stdlib-shell
   [eden]
-  (set-var! eden 'shell shell))
+  (-> eden
+      (set-var! 'shell shell)))

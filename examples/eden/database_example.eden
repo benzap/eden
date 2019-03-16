@@ -1,0 +1,27 @@
+;; Sqlite Database Example
+db-spec = database.create-sqlite-schema("test.db")
+
+table-query = "
+  CREATE TABLE IF NOT EXISTS test (
+    u_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT
+  )
+"
+
+function insert-row(name)
+  println("Inserting Row: " name)
+  local insert-query = "
+    INSERT INTO test (name) VALUES (?)
+  "
+  database.execute!(db-spec vector(insert-query name))
+end
+
+
+println("Create Database...")
+database.execute!(db-spec vector(table-query))
+insert-row("Ben")
+insert-row("Jane")
+insert-row("Billy")
+
+
+pprint(database.query(db-spec vector("SELECT * FROM test")))
