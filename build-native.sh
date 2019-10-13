@@ -26,15 +26,14 @@ echo ""
 
 echo "Building Native Image..."
 native-image -jar target/eden-$EDEN_VERSION-standalone.jar \
-	     --no-server \
              -H:Name="eden-${EDEN_VERSION}" \
-             -H:+ReportUnsupportedElementsAtRuntime \
-	     --enable-url-protocols=http,https \
-	     --enable-http \
-	     --enable-https \
+             --initialize-at-build-time \
+	     --no-server \
+             --report-unsupported-elements-at-runtime \
+             --no-fallback \
 	     --enable-all-security-services \
-	     --rerun-class-initialization-at-runtime=javax.net.ssl.SSLContext \
 	     -H:+ReportExceptionStackTraces \
+             -H:+TraceClassInitialization \
              -H:ReflectionConfigurationFiles=ReflectionConfig.json
 echo ""
 
