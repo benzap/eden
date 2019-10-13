@@ -38,8 +38,10 @@ Notes:
   ["-v" "--verbose" "Verbose Error Messages"
    :id :verbosity
    :default false]
-  ["-e" nil :id :eval]])
-
+  ["-e" nil :id :eval]
+  ["-i" "--stdin" "Read from *in* (system.stdin)"
+   :id :stdin
+   :default false]])
 
 (defn cmdline-module-paths [options]
   (let [modpath module/*eden-module-path-list*]
@@ -52,6 +54,10 @@ Notes:
   [& args]
   (let [{:keys [options arguments errors]}
         (parse-opts args cli-options)]
+    
+    (when (:stdin options)
+      (eden/eval-fn (form system.stdin = %clj (slurp *in*))))
+
     (cond
      (not (empty? errors))
      (do
