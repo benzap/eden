@@ -9,7 +9,8 @@
    [eden.std.exceptions :as exceptions :refer [*file-path* *verbose*]]
    [eden.client :refer [form]]
    [eden.state :refer [*default-eden-instance*]]
-   [eden.core :as eden])
+   [eden.core :as eden]
+   [eden.repl])
   (:gen-class))
 
 
@@ -91,4 +92,4 @@ Notes:
        (flush))
 
      :else
-     (println help-message))))
+     (eden.repl/run!))))

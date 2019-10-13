@@ -646,5 +646,10 @@
   "Evaluate the tokens in the provided eden state machine."
   [astm tokens]
   (let [statements (parse astm tokens)]
-    (doseq [stmt statements]
-      (evaluate-statement stmt))))
+    (loop [statements statements
+           result nil]
+      (if-not (empty? statements)
+        (recur 
+         (rest statements)
+         (evaluate-statement (first statements)))
+        result))))

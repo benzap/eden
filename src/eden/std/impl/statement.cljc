@@ -47,7 +47,8 @@
   Statement
   (evaluate-statement [_]
     (let [value (evaluate-expression expr)]
-      (swap! *sm state/set-var var value)))
+      (swap! *sm state/set-var var value)
+      nil))
 
   display/Display
   (display-node [_]
@@ -61,7 +62,8 @@
   Statement
   (evaluate-statement [_]
     (let [value (evaluate-expression expr)]
-      (swap! *sm state/set-local-var var value)))
+      (swap! *sm state/set-local-var var value)
+      nil))
 
   display/Display
   (display-node [_]
