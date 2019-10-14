@@ -92,4 +92,5 @@ Notes:
        (flush))
 
      :else
-     (eden.repl/run!))))
+     (eden.repl/run!))
+    (System/exit 0)))

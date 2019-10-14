@@ -21,6 +21,11 @@
 
     {
 	"name" : "java.lang.UNIXProcess",
-	"allPublicMethods" : true
+	"allPublicMethods" : true,
+        "allDeclaredConstructors" : true,
+        "allPublicConstructors" : true,
+        "allDeclaredMethods" : true,
+        "allDeclaredClasses" : true,
+        "allPublicClasses" : true
     }
 ]

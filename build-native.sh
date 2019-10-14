@@ -33,7 +33,6 @@ native-image -jar target/eden-$EDEN_VERSION-standalone.jar \
              --report-unsupported-elements-at-runtime \
 	     --enable-all-security-services \
 	     -H:+ReportExceptionStackTraces \
-             -H:+TraceClassInitialization \
              -H:ReflectionConfigurationFiles=ReflectionConfig.json
 echo ""
 
