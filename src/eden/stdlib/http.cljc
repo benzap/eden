@@ -5,7 +5,7 @@
    [bidi.ring]
    [ring.util.response :refer [response]]
    [org.httpkit.server :as server]
-   [org.httpkit.client :as client]
+   ;;[org.httpkit.client :as client]
    [eden.def :refer [set-var!]]))
 
 
@@ -46,27 +46,27 @@
      :send! server/send!
      :on-receive server/on-receive
      :on-ping server/on-ping
-     :on-close server/on-close
-     }}
+     :on-close server/on-close}}
    
-   :client
-   {:get client/get
-    :delete client/delete
-    :head client/head
-    :post client/post
-    :put client/put
-    :options client/options
-    :patch client/patch
-    :propfind client/propfind
-    :proppatch client/proppatch
-    :lock client/lock
-    :unlock client/unlock
-    :report client/report
-    :acl client/acl
-    :copy client/copy
-    :move client/move
-    :request client/request
-    }})
+   
+   #_:client
+   #_{:get client/get
+      :delete client/delete
+      :head client/head
+      :post client/post
+      :put client/put
+      :options client/options
+      :patch client/patch
+      :propfind client/propfind
+      :proppatch client/proppatch
+      :lock client/lock
+      :unlock client/unlock
+      :report client/report
+      :acl client/acl
+      :copy client/copy
+      :move client/move
+      :request client/request}})
+    
 
 
 (defn import-stdlib-http

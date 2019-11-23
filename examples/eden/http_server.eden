@@ -65,8 +65,11 @@ local routes = ["/" {"index.html" home-page
 local app = http.router.make-handler(routes)
 
 
-http.server.run-server(app {:port 8000})
+local server = http.server.run-server(app {:port 8000})
 
 
 println("Started Web Server")
 println("Access at http://localhost:8000/index.html")
+
+
+while true do end

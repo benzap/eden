@@ -25,6 +25,7 @@ Options:
   -m, --modulepath  Add Eden Module Paths separated by
                     ':' in Linux or ';' in Windows
   -e                Evaluate Commandline Arguments as an Eden Expression
+  -i, --stdin       Read from *in* (system.in)
 Website:
   github.com/benzap/eden
 Notes:
@@ -40,9 +41,10 @@ Notes:
    :id :verbosity
    :default false]
   ["-e" nil :id :eval]
-  ["-i" "--stdin" "Read from *in* (system.stdin)"
+  ["-i" "--stdin" "Read from *in* (system.in)"
    :id :stdin
    :default false]])
+
 
 (defn cmdline-module-paths [options]
   (let [modpath module/*eden-module-path-list*]
@@ -57,7 +59,7 @@ Notes:
         (parse-opts args cli-options)]
     
     (when (:stdin options)
-      (eden/eval-fn (form system.stdin = %clj (slurp *in*))))
+      (eden/eval-fn (form system.in = %clj (slurp *in*))))
 
     (cond
      (not (empty? errors))

@@ -5,6 +5,32 @@
 #+LANGUAGE: en
 #+OPTIONS: H:2 num:t toc:t \n:nil ::t |:t ^:t f:t tex:t
 
+* 0.9.0 (Multi Platform Release)
+  - Added repl, which is opened by running eden without any parameters
+    #+BEGIN_SRC sh
+   
+    $ eden
+    Eden Repl
+    'help' for Help Message,
+    'exit' to Exit.
+    > println("Hello World!")
+    Hello World!
+    nil
+    > x = 10
+    > x
+    10
+
+    #+END_SRC
+
+  - Added '-i' flag to eden commandline execution to pass in standard
+    input
+    #+BEGIN_SRC sh
+    
+    $ echo "Hello World" | eden -ie system.in
+    Hello World!
+    
+    #+END_SRC
+
 * 0.8.0 (First Release)
   - Module System is now working. Module paths on windows are supplied
     within the Environment Variable ~EDEN_MODULE_PATH~ as semi-colon
