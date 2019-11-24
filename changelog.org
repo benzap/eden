@@ -31,6 +31,29 @@
     
     #+END_SRC
 
+  - Transit Libraries have been fixed
+
+    ~transit.stringify~ and ~transit.parse~ can be used create and
+    export transit JSON strings.
+
+  - Http Client library fixed by using clj-http-lite
+
+    New functions in ~http.client~ variable
+
+    #+BEGIN_SRC clojure
+
+    http.client.get("http://google.com") ;; returns a Response map
+
+    #+END_SRC
+
+  - Added Markdown Library
+
+    #+BEGIN_SRC clojure
+
+    markdown.stringify("# Test") ;; <h1>Test</h1>
+
+    #+END_SRC
+
 * 0.8.0 (First Release)
   - Module System is now working. Module paths on windows are supplied
     within the Environment Variable ~EDEN_MODULE_PATH~ as semi-colon

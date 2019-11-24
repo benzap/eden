@@ -31,6 +31,7 @@ native-image -jar target/eden-$EDEN_VERSION-standalone.jar \
 	     --no-server \
              --no-fallback \
              --report-unsupported-elements-at-runtime \
+             -H:EnableURLProtocols=http,https \
 	     --enable-all-security-services \
 	     -H:+ReportExceptionStackTraces \
              -H:ReflectionConfigurationFiles=ReflectionConfig.json

@@ -11,14 +11,16 @@
                  
                  ;; Eden Contrib Standard Libraries
                  [cheshire "5.8.1"] ;; JSON Library
+                 [org.martinklepsch/clj-http-lite "0.4.1"] ;; HTTP Client Library
                  [com.cognitect/transit-clj "0.8.313"] ;; Transit Data Format
                  [funcool/cuerdas "2.1.0"] ;; String Library
                  [com.rpl/specter "1.1.2"] ;; Code Navigation
                  [hiccup "1.0.5"] ;; HTML Generation
                  [hickory "0.7.1"] ;; HTML Parsing
+                 [markdown-clj "1.10.0"] ;; Markdown Common Parser
                  [me.raynes/conch "0.8.0"] ;; Shell Program Execution
                  [me.raynes/fs "1.4.6"] ;; More sane file system functions in clojure
-                 [http-kit "2.3.0"] ;; HTTP Client/Server Library
+                 [http-kit "2.3.0"] ;; HTTP Server Library
                  [ring/ring-defaults "0.3.2"] ;; HTTP Ring Middleware
                  [bidi "2.1.5"] ;; HTTP Routing Library
                  [garden "1.3.6"] ;; CSS Generation
