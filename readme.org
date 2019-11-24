@@ -858,20 +858,23 @@ collections.
      EDN library parser provided by [[https://github.com/clojure/tools.reader][tools.reader]]
      - ~edn.parse(s [opts])~ :: provided by clojure.tools.reader.edn/read-string
      - ~edn.stringify(coll [opts])~ :: clojure.core/pr-str
+**** ~markdown~ Library
+     Markdown library stringifier provided by [[https://github.com/yogthos/markdown-clj][markdown-clj]]
+     - ~markdown.stringify(s) :: provided by markdown-clj.core/md-to-html-string
 **** ~transit~ Library
      Transit Reader and Generator provided by [[https://github.com/cognitect/transit-clj][transit-clj]]
 
-     *incomplete*
-
-     - transit.read :: provided by cognitect.transit/read
-     - transit.write :: provided by cognitect.transit/write
+     - transit.parse(s)
+     - transit.write(x)
 *** ~http~ Library
-    HTTP Client and Server provided by [[http://www.http-kit.org/][http-kit]]
+    HTTP Server provided by [[http://www.http-kit.org/][http-kit]]
+    HTTP Client provided by [[https://github.com/martinklepsch/clj-http-lite/][clj-http-lite]]
     HTTP Router provided by [[https://github.com/juxt/bidi][bidi]]
-    
+        
+
     - ~http.router.make-handler(coll)~ :: provided by bidi.ring/make-handler
     - ~http.server.run-server(handler [opts])~ :: provided by org.httpkit.server/run-server
-    - ~http.client.get(url [opts])~ :: provided by org.httpkit.client/get
+    - ~http.client.get(url [opts])~ :: provided by clj-http.lite.client/get
 
     Example found at ./examples/eden/http_server.eden
     
