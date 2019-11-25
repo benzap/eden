@@ -1,0 +1,38 @@
+;; Async Example
+
+local channel-in = async.chan()
+local channel-out = async.chan()
+
+thread.future(function(cin cout)
+  while true do
+    local value = async.take!!(cin)
+    if value then
+      println("Putting Value: " value)
+      async.put!!(cout value)
+    else
+      println("Ending Thread...")
+      async.close!(cout)
+      return nil
+    end
+  end
+end channel-in channel-out)
+
+thread.future(function(cin)
+
+  async.put!!(cin "Hello")
+  async.put!!(cin "World")
+  async.close!(cin)
+
+end channel-in)
+
+local loop? = true
+while loop? do
+  local value = async.take!!(channel-out)
+  if value then
+    println("Took Value: " value)
+  else
+    loop? = false
+  end
+end
+
+println("Finished!")

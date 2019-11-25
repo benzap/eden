@@ -54,6 +54,28 @@
 
     #+END_SRC
 
+  - Added threading and promise libraries
+    
+    #+BEGIN_SRC clojure
+
+    local f = thread.future(function()
+      println(str("Hello from " thread.id() "!"))
+      print("Waiting")
+      for i in range(5) do
+        thread.sleep(500)
+        print(".")
+      end
+      println("Done")
+    end)
+
+    println("Started!")
+    deref(f)
+    println("Finished!")
+
+    #+END_SRC
+
+    
+
 * 0.8.0 (First Release)
   - Module System is now working. Module paths on windows are supplied
     within the Environment Variable ~EDEN_MODULE_PATH~ as semi-colon

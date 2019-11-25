@@ -14,7 +14,10 @@
    [eden.stdlib.io :refer [import-stdlib-io]]
    [eden.stdlib.transit :refer [import-stdlib-transit]]
    [eden.stdlib.shell :refer [import-stdlib-shell]]
-   [eden.stdlib.markdown :refer [import-stdlib-markdown]]))
+   [eden.stdlib.markdown :refer [import-stdlib-markdown]]
+   [eden.stdlib.thread :refer [import-stdlib-thread]]
+   [eden.stdlib.promise :refer [import-stdlib-promise]]))
+   ;;[eden.stdlib.async :refer [import-stdlib-async]]))
    ;;[eden.stdlib.database :refer [import-stdlib-database]]))
 
 
@@ -34,5 +37,8 @@
       import-stdlib-io
       import-stdlib-transit
       import-stdlib-shell
-      import-stdlib-markdown))
+      import-stdlib-markdown
+      import-stdlib-thread
+      import-stdlib-promise))
+      ;;import-stdlib-async))
       ;;import-stdlib-database))

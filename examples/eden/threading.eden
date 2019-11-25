@@ -1,0 +1,14 @@
+
+local f = thread.future(function()
+  println(str("Hello from " thread.id() "!"))
+  print("Waiting")
+  for i in range(5) do
+    thread.sleep(500)
+    print(".")
+  end
+  println("Done")
+end)
+
+println("Started!")
+deref(f)
+println("Finished!")

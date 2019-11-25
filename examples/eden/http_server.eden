@@ -72,4 +72,6 @@ println("Started Web Server")
 println("Access at http://localhost:8000/index.html")
 
 
-while true do end
+while true do 
+  thread.sleep(1000)
+end

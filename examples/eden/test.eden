@@ -1,0 +1,29 @@
+;; Testing
+
+
+c = async.chan()
+fc = thread.future(function(c)
+  async.put!(c 42)
+end c)
+
+p = promise.new()
+f = thread.future(function(p)
+  println("hello " thread.id() " world!")
+  promise.deliver(p 42)
+  return 42
+end p)
+
+d = thread.delay(function()
+  println("I Processed This")
+  return 10
+end)
+
+println("Started!")
+println("Future Value : " deref(f))
+println("Delay Value : " deref(d))
+println("Delay Value : " deref(d))
+println("Promise Value : " deref(p))
+println("Finished!")
+
+println("Future With Channels")
+println(async.<!!(c))

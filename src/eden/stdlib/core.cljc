@@ -11,6 +11,12 @@
 ;;(uuid (str (uuid)))
 
 
+(defn throw-fn
+  ([msg data] (throw (ex-info msg data)))
+  ([msg] (throw-fn msg {}))
+  ([] (throw-fn "No Error Message" {})))
+
+
 (defn import-stdlib-core [eden]
   (-> eden
       (set-var! 'apply apply)
@@ -230,6 +236,7 @@
       (set-var! 'take-last take-last)
       (set-var! 'take-nth take-nth)
       (set-var! 'take-while take-while)
+      (set-var! 'throw throw-fn)
       (set-var! 'true? true?)
       (set-var! 'type type)
       (set-var! 'unreduced unreduced)
