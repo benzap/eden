@@ -1,0 +1,1 @@
+native-image -jar target/eden-0.9.0-standalone.jar -H:Name="eden-0.9.0" --initialize-at-build-time --no-server --no-fallback --report-unsupported-elements-at-runtime -H:EnableURLProtocols=http,https --enable-all-security-services -H:+ReportExceptionStackTraces -H:ReflectionConfigurationFiles=ReflectionConfig.json
