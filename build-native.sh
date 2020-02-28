@@ -14,14 +14,17 @@ export JAVA_HOME=$GRAAL_HOME
 # Add GRAAL VM to the PATH, should include native-image
 export PATH=$GRAAL_HOME/bin:$PATH
 
+# Lein Command Override
+LEIN_CMD=lein
+
 # Retrieve the current eden version
 echo "Getting Project Version..."
-EDEN_VERSION=`lein project-version`
+EDEN_VERSION=`$LEIN_CMD project-version`
 echo "Project Version: " $EDEN_VERSION
 echo ""
 
 echo "Generating Uberjar..."
-lein uberjar
+$LEIN_CMD uberjar
 echo ""
 
 echo "Building Native Image..."

@@ -31,10 +31,11 @@
 # Hardware Requirements: 64-bit Linux-based OS. Tested on Ubuntu 17.10
 # and Fedora 28. 8Gb+ of Memory. Latest Builds were made in a Virtual
 # Machine with 12Gb of memory.
+LEIN_CMD := lein
 
 
 PREFIX := /usr/bin
-EDEN_VERSION := $(shell lein project-version)
+EDEN_VERSION := $(shell $(LEIN_CMD) project-version)
 EDEN_EXE_NAME := eden-$(EDEN_VERSION)
 PROJ_EDEN_EXE := bin/$(EDEN_EXE_NAME)
 
